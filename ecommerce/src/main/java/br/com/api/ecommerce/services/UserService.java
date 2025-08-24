@@ -88,7 +88,7 @@ public class UserService {
         user.setEmail(dto.email());
         user.setPhone(dto.phone());
         user.setBirthDate(dto.birthDate());
-        user.setAddresses(addressService.create(dto.addresses()));
+        user.setAddresses(addressService.create(dto.addresses(), user));
 
         return user;
     }
