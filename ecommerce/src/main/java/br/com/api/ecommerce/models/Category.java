@@ -22,7 +22,7 @@ public class Category {
     private UUID id;
     @Column(unique = true)
     private String name;
-    private String descricao;
+    private String description;
     @ManyToMany(mappedBy = "categories")
     private List<Product> products;
     private Boolean active;
