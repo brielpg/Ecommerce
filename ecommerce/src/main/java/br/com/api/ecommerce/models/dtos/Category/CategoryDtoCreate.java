@@ -6,6 +6,6 @@ public record CategoryDtoCreate(
         @NotBlank(message = "{dto.category.name.notblank}")
         String name,
         @NotBlank(message = "{dto.category.description.notblank}")
-        String descricao
+        String description
 ) {
 }

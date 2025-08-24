@@ -65,7 +65,7 @@ public class CategoryService {
     private Category dtoToEntity(CategoryDtoCreate dto){
         Category category = new Category();
         category.setName(dto.name());
-        category.setDescription(dto.descricao());
+        category.setDescription(dto.description());
 
         return category;
     }
