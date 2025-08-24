@@ -24,31 +24,31 @@ public class UserController {
     private UserService service;
 
     @PostMapping
-    private ResponseEntity<User> create(@RequestBody @Valid UserDtoCreate dto){
+    public ResponseEntity<User> create(@RequestBody @Valid UserDtoCreate dto){
         User user = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @GetMapping
-    private ResponseEntity<Page<User>> getAll(Pageable pageable){
+    public ResponseEntity<Page<User>> getAll(Pageable pageable){
         Page<User> users = service.getAll(pageable);
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    private ResponseEntity<User> getById(@PathVariable UUID id){
+    public ResponseEntity<User> getById(@PathVariable UUID id){
         User user = service.getById(id);
         return ResponseEntity.ok(user);
     }
 
     @PutMapping
-    private ResponseEntity<User> update(@RequestBody @Valid UserDtoUpdate dto){
+    public ResponseEntity<User> update(@RequestBody @Valid UserDtoUpdate dto){
         User user = service.update(dto);
         return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<Void> delete(@PathVariable UUID id){
+    public ResponseEntity<Void> delete(@PathVariable UUID id){
         service.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

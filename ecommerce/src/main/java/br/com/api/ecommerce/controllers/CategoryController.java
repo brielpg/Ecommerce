@@ -22,31 +22,31 @@ public class CategoryController {
     private CategoryService service;
 
     @PostMapping
-    private ResponseEntity<Category> create(@RequestBody @Valid CategoryDtoCreate dto){
+    public ResponseEntity<Category> create(@RequestBody @Valid CategoryDtoCreate dto){
         Category category = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
 
     @GetMapping
-    private ResponseEntity<Page<Category>> getAll(Pageable pageable){
+    public ResponseEntity<Page<Category>> getAll(Pageable pageable){
         Page<Category> categories = service.getAll(pageable);
         return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/{id}")
-    private ResponseEntity<Category> getById(@PathVariable UUID id){
+    public ResponseEntity<Category> getById(@PathVariable UUID id){
         Category category = service.getById(id);
         return ResponseEntity.ok(category);
     }
 
     @PutMapping
-    private ResponseEntity<Category> update(@RequestBody @Valid CategoryDtoUpdate dto){
+    public ResponseEntity<Category> update(@RequestBody @Valid CategoryDtoUpdate dto){
         Category category = service.update(dto);
         return ResponseEntity.ok(category);
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<Void> delete(@PathVariable UUID id){
+    public ResponseEntity<Void> delete(@PathVariable UUID id){
         service.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
