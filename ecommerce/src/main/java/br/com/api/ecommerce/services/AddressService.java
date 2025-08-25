@@ -3,12 +3,20 @@ package br.com.api.ecommerce.services;
 import br.com.api.ecommerce.models.Address;
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Address.AddressDtoCreate;
+import br.com.api.ecommerce.repositories.AddressRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AddressService {
+
+    @Autowired
+    private AddressRepository repository;
+
     public List<Address> create(List<AddressDtoCreate> dtos, User user){
         return dtos.stream()
                 .map(dto -> {
@@ -24,5 +32,11 @@ public class AddressService {
                     return address;
                 })
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Address getById(UUID id){
+        return repository.findById(id)
+                .orElseThrow(RuntimeException::new);
     }
 }
