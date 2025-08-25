@@ -21,6 +21,7 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
     private Integer quantity;
     private BigDecimal unitPrice;
