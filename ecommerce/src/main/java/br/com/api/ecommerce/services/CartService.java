@@ -2,9 +2,8 @@ package br.com.api.ecommerce.services;
 
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.Item;
-import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.User;
-import br.com.api.ecommerce.models.dtos.Cart.CartDtoItemRequest;
+import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.repositories.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -57,12 +55,12 @@ public class CartService {
     }
 
     @Transactional
-    public void addItemsToUserCart(UUID userId, List<CartDtoItemRequest> itemsDto) {
+    public void addItemsToUserCart(UUID userId, List<DtoItemRequest> itemsDto) {
         Cart cart = this.getByUserId(userId);
 
         BigDecimal totalPriceToAdd = BigDecimal.ZERO;
 
-        for (CartDtoItemRequest itemRequest : itemsDto) {
+        for (DtoItemRequest itemRequest : itemsDto) {
             Item existingItem = cart.getItems().stream()
                     .filter(item -> item.getProduct().getId().equals(itemRequest.productId()))
                     .findFirst()
@@ -83,13 +81,13 @@ public class CartService {
     }
 
     @Transactional
-    public void removeItemsFromUserCart(UUID userId, List<CartDtoItemRequest> itemsToRemove) {
+    public void removeItemsFromUserCart(UUID userId, List<DtoItemRequest> itemsToRemove) {
         if (itemsToRemove.isEmpty()) throw new RuntimeException();
 
         Cart cart = this.getByUserId(userId);
         BigDecimal totalPriceToRemove = BigDecimal.ZERO;
 
-        for (CartDtoItemRequest itemRequest : itemsToRemove) {
+        for (DtoItemRequest itemRequest : itemsToRemove) {
             Item itemToRemove = cart.getItems().stream()
                     .filter(item -> item.getProduct().getId().equals(itemRequest.productId()))
                     .findFirst()

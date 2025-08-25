@@ -1,7 +1,7 @@
 package br.com.api.ecommerce.controllers;
 
 import br.com.api.ecommerce.models.Cart;
-import br.com.api.ecommerce.models.dtos.Cart.CartDtoItemRequest;
+import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.services.CartService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +32,13 @@ public class CartController {
     }
 
     @PostMapping("/{userId}/items")
-    public ResponseEntity<Void> addItemsToUserCart(@PathVariable UUID userId, @RequestBody @Valid List<CartDtoItemRequest> dto){
+    public ResponseEntity<Void> addItemsToUserCart(@PathVariable UUID userId, @RequestBody @Valid List<DtoItemRequest> dto){
         service.addItemsToUserCart(userId, dto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/{userId}/items}")
-    public ResponseEntity<Void> removeItemsFromUserCart(@PathVariable UUID userId, @RequestBody List<CartDtoItemRequest> itemsToRemove){
+    public ResponseEntity<Void> removeItemsFromUserCart(@PathVariable UUID userId, @RequestBody List<DtoItemRequest> itemsToRemove){
         service.removeItemsFromUserCart(userId, itemsToRemove);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
