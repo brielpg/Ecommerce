@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,19 +25,16 @@ public class UserService {
     @Autowired
     private AddressService addressService;
 
-//    @Autowired
-//    private CartService cartService;
-//
-//    @Autowired
-//    private OrderService orderService;
+    @Autowired
+    private CartService cartService;
 
     @Transactional
     public User create(UserDtoCreate dto){
         if (repository.existsByEmail(dto.email())) throw new RuntimeException();
 
         User user = dtoToEntity(dto);
-//        Cart cart = cartService.create(user);
-//        user.setCart(cart);
+        Cart cart = cartService.create(user);
+        user.setCart(cart);
 
         repository.save(user);
         return user;
@@ -92,23 +90,16 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public boolean existsByIdAndActiveTrue(UUID id){
-        return repository.existsByIdAndActiveTrue(id);
+    public List<Order> getOrdersByUser(UUID userId) {
+        User user = this.getById(userId);
+
+        return user.getOrders();
     }
 
-//    @Transactional(readOnly = true)
-//    public Page<Order> getOrdersByUser(UUID userId, Pageable pageable) {
-//        if (!this.existsByIdAndActiveTrue(userId))
-//            throw new RuntimeException();
-//
-//        return orderService.findByUserId(userId, pageable);
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public Cart getCartByUser(UUID userId) {
-//        if (!this.existsByIdAndActiveTrue(userId))
-//            throw new RuntimeException();
-//
-//        return cartService.findByUserId(userId);
-//    }
+    @Transactional(readOnly = true)
+    public Cart getCartByUser(UUID userId) {
+        User user = this.getById(userId);
+
+        return user.getCart();
+    }
 }

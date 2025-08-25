@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -53,15 +54,15 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-//    @GetMapping("/{id}/orders")
-//    private ResponseEntity<Page<Order>> getOrdersByUser(@PathVariable UUID id, Pageable pageable){
-//        Page<Order> orders = service.getOrdersByUser(id, pageable);
-//        return ResponseEntity.ok(orders);
-//    }
-//
-//    @GetMapping("/{id}/cart")
-//    private ResponseEntity<Cart> getCartByUser(@PathVariable UUID id){
-//        Cart cart = service.getCartByUser(id);
-//        return ResponseEntity.ok(cart);
-//    }
+    @GetMapping("/{id}/orders")
+    private ResponseEntity<List<Order>> getOrdersByUser(@PathVariable UUID id){
+        List<Order> orders = service.getOrdersByUser(id);
+        return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/{id}/cart")
+    private ResponseEntity<Cart> getCartByUser(@PathVariable UUID id){
+        Cart cart = service.getCartByUser(id);
+        return ResponseEntity.ok(cart);
+    }
 }
