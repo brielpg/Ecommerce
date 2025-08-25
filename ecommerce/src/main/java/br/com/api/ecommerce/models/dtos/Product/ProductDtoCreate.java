@@ -14,7 +14,7 @@ public record ProductDtoCreate(
         String name,
         @NotBlank(message = "{dto.product.description.notblank}")
         String description,
-        @NotBlank(message = "{dto.product.price.notblank}")
+        @NotNull(message = "{dto.product.price.notnull}")
         @DecimalMin(value = "0.0", message = "{dto.product.price.min}")
         BigDecimal price,
         @NotNull(message = "{dto.product.stock.notnull}")

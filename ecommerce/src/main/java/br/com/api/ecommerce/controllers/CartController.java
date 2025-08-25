@@ -25,7 +25,7 @@ public class CartController {
         return ResponseEntity.ok(cart);
     }
 
-    @DeleteMapping("/{userId}}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Void> clearUserCart(@PathVariable UUID userId){
         service.clearUserCart(userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -37,7 +37,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping("/{userId}/items}")
+    @DeleteMapping("/{userId}/items")
     public ResponseEntity<Void> removeItemsFromUserCart(@PathVariable UUID userId, @RequestBody List<DtoItemRequest> itemsToRemove){
         service.removeItemsFromUserCart(userId, itemsToRemove);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
