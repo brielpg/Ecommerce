@@ -1,5 +1,7 @@
 package br.com.api.ecommerce.models.dtos.Product;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
@@ -10,7 +12,9 @@ public record ProductDtoUpdate(
         UUID id,
         String name,
         String description,
+        @DecimalMin(value = "0.0", message = "{dto.product.price.min}")
         BigDecimal price,
+        @Min(value = 0, message = "{dto.product.stock.min}")
         Integer stock
 ) {
 }
