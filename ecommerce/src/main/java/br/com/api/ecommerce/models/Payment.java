@@ -2,6 +2,7 @@ package br.com.api.ecommerce.models;
 
 import br.com.api.ecommerce.models.enums.PaymentMethods;
 import br.com.api.ecommerce.models.enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class Payment {
     private PaymentStatus status;
     @OneToOne
     @JoinColumn(name = "order_id")
+    @JsonIgnore
     private Order order;
     private BigDecimal totalPrice;
     private LocalDate timestamp;

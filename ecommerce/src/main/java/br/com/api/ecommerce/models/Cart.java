@@ -1,5 +1,6 @@
 package br.com.api.ecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,8 +24,10 @@ public class Cart {
     private UUID id;
     @OneToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Item> items;
     private BigDecimal totalPrice;
     private LocalDate timestamp;

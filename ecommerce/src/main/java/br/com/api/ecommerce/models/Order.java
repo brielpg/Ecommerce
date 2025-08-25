@@ -1,6 +1,7 @@
 package br.com.api.ecommerce.models;
 
 import br.com.api.ecommerce.models.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,14 +26,18 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Item> items;
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
     @ManyToOne
     @JoinColumn(name = "delivery_address_id")
+    @JsonIgnore
     private Address deliveryAddress;
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Payment payment;
     private BigDecimal totalPrice;
     private LocalDate timestamp;

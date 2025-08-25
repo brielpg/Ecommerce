@@ -1,5 +1,6 @@
 package br.com.api.ecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class Category {
     private String name;
     private String description;
     @ManyToMany(mappedBy = "categories")
+    @JsonIgnore
     private List<Product> products;
     private Boolean active;
     private LocalDate timestamp;
