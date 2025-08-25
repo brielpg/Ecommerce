@@ -39,6 +39,7 @@ public class Order {
 
     @PrePersist
     public void prePersist(){
+        this.status = OrderStatus.NEW;
         this.timestamp = LocalDate.now();
     }
 }
