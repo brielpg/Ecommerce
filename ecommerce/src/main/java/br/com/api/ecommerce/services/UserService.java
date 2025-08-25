@@ -44,8 +44,7 @@ public class UserService {
 
     @Transactional
     public void delete(UUID id) {
-        User user = repository.findByIdAndActiveTrue(id)
-                .orElseThrow(RuntimeException::new);
+        User user = this.getById(id);
 
         user.setActive(false);
         repository.save(user);
@@ -53,8 +52,7 @@ public class UserService {
 
     @Transactional
     public User update(UserDtoUpdate dto) {
-        User user = repository.findByIdAndActiveTrue(dto.id())
-                .orElseThrow(RuntimeException::new);
+        User user = this.getById(dto.id());
 
         if (dto.email() != null && !dto.email().equals(user.getEmail())) {
             if (repository.existsByEmail(dto.email())) {
@@ -93,9 +91,14 @@ public class UserService {
         return user;
     }
 
+    @Transactional(readOnly = true)
+    public boolean existsByIdAndActiveTrue(UUID id){
+        return repository.existsByIdAndActiveTrue(id);
+    }
+
 //    @Transactional(readOnly = true)
 //    public Page<Order> getOrdersByUser(UUID userId, Pageable pageable) {
-//        if (!repository.existsByIdAndActiveTrue(userId))
+//        if (!this.existsByIdAndActiveTrue(userId))
 //            throw new RuntimeException();
 //
 //        return orderService.findByUserId(userId, pageable);
@@ -103,7 +106,7 @@ public class UserService {
 //
 //    @Transactional(readOnly = true)
 //    public Cart getCartByUser(UUID userId) {
-//        if (!repository.existsByIdAndActiveTrue(userId))
+//        if (!this.existsByIdAndActiveTrue(userId))
 //            throw new RuntimeException();
 //
 //        return cartService.findByUserId(userId);

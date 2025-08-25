@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -25,29 +26,27 @@ public class CategoryService {
 
         Category category = dtoToEntity(dto);
 
-        repository.save(category);
+        this.save(category);
         return category;
     }
 
     @Transactional
     public void delete(UUID id) {
-        Category category = repository.findByIdAndActiveTrue(id)
-                .orElseThrow(RuntimeException::new);
+        Category category = this.getById(id);
 
         category.setActive(false);
-        repository.save(category);
+        this.save(category);
     }
 
     @Transactional
     public Category update(CategoryDtoUpdate dto) {
-        Category category = repository.findByIdAndActiveTrue(dto.id())
-                .orElseThrow(RuntimeException::new);
+        Category category = this.getById(dto.id());
 
 
         if (dto.name() != null) category.setName(dto.name());
         if (dto.description() != null) category.setDescription(dto.description());
 
-        repository.save(category);
+        this.save(category);
         return category;
     }
 
@@ -68,5 +67,15 @@ public class CategoryService {
         category.setDescription(dto.description());
 
         return category;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Category> getCategoriesByIds(List<UUID> ids) {
+        return repository.findAllByIdInAndActiveTrue(ids);
+    }
+
+    @Transactional
+    public void save(Category category){
+        repository.save(category);
     }
 }
