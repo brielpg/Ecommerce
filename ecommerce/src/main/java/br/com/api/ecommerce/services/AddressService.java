@@ -1,5 +1,6 @@
 package br.com.api.ecommerce.services;
 
+import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Address;
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Address.AddressDtoCreate;
@@ -37,6 +38,6 @@ public class AddressService {
     @Transactional(readOnly = true)
     public Address getById(UUID id){
         return repository.findById(id)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NotFoundException("exception.address.not.found"));
     }
 }

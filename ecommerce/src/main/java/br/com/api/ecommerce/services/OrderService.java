@@ -1,8 +1,8 @@
 package br.com.api.ecommerce.services;
 
+import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.*;
 import br.com.api.ecommerce.models.dtos.Order.OrderDtoCreate;
-import br.com.api.ecommerce.models.enums.OrderStatus;
 import br.com.api.ecommerce.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +32,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public Order getById(UUID id) {
         return repository.findById(id)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NotFoundException("exception.order.not.found"));
     }
 
     @Transactional(readOnly = true)
@@ -58,7 +57,7 @@ public class OrderService {
         order.setTotalPrice(total);
 
         Address deliveryAddress = addressService.getById(dto.addressId());
-        if (user.getAddresses().stream().noneMatch(addr -> addr.getId().equals(deliveryAddress.getId()))) throw new RuntimeException();
+        if (user.getAddresses().stream().noneMatch(addr -> addr.getId().equals(deliveryAddress.getId()))) throw new NotFoundException("exception.address.not.found");
         order.setDeliveryAddress(deliveryAddress);
 
         items.forEach(item -> {

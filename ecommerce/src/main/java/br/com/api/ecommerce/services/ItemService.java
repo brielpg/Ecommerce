@@ -1,5 +1,6 @@
 package br.com.api.ecommerce.services;
 
+import br.com.api.ecommerce.exceptions.BadRequestException;
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.Item;
 import br.com.api.ecommerce.models.Order;
@@ -35,7 +36,7 @@ public class ItemService {
             Item item = new Item();
             Product product = productService.getById(dto.productId());
             item.setProduct(product);
-            if (product.getStock() < dto.quantity()) throw new RuntimeException();
+            if (product.getStock() < dto.quantity()) throw new BadRequestException("exception.item.quantity.not.available");
             item.setQuantity(dto.quantity());
             item.setUnitPrice(product.getPrice());
             item.setOrder(order);

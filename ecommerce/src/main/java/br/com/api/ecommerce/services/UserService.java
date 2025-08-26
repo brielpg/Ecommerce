@@ -1,6 +1,7 @@
 package br.com.api.ecommerce.services;
 
-import br.com.api.ecommerce.models.Address;
+import br.com.api.ecommerce.exceptions.ConflictException;
+import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.Order;
 import br.com.api.ecommerce.models.User;
@@ -30,7 +31,7 @@ public class UserService {
 
     @Transactional
     public User create(UserDtoCreate dto){
-        if (repository.existsByEmail(dto.email())) throw new RuntimeException();
+        this.existsByEmail(dto.email());
 
         User user = dtoToEntity(dto);
         Cart cart = cartService.create(user);
@@ -48,14 +49,18 @@ public class UserService {
         repository.save(user);
     }
 
+    @Transactional(readOnly = true)
+    private void existsByEmail(String email){
+        if (repository.existsByEmail(email))
+            throw new ConflictException("exception.user.email.already.registered");
+    }
+
     @Transactional
     public User update(UserDtoUpdate dto) {
         User user = this.getById(dto.id());
 
         if (dto.email() != null && !dto.email().equals(user.getEmail())) {
-            if (repository.existsByEmail(dto.email())) {
-                throw new RuntimeException();
-            }
+            this.existsByEmail(dto.email());
             user.setEmail(dto.email());
         }
 
@@ -70,7 +75,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public User getById(UUID id) {
         return repository.findByIdAndActiveTrue(id)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NotFoundException("exception.user.not.found"));
     }
 
     @Transactional(readOnly = true)

@@ -1,5 +1,7 @@
 package br.com.api.ecommerce.services;
 
+import br.com.api.ecommerce.exceptions.ConflictException;
+import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoCreate;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoUpdate;
@@ -22,7 +24,7 @@ public class CategoryService {
 
     @Transactional
     public Category create(CategoryDtoCreate dto){
-        if (repository.existsByName(dto.name())) throw new RuntimeException();
+        this.existsByName(dto.name());
 
         Category category = dtoToEntity(dto);
 
@@ -38,10 +40,16 @@ public class CategoryService {
         this.save(category);
     }
 
+    @Transactional(readOnly = true)
+    private void existsByName(String name){
+        if (repository.existsByName(name))
+            throw new ConflictException("exception.category.name.already.exists");
+    }
+
     @Transactional
     public Category update(CategoryDtoUpdate dto) {
         Category category = this.getById(dto.id());
-
+        this.existsByName(dto.name());
 
         if (dto.name() != null) category.setName(dto.name());
         if (dto.description() != null) category.setDescription(dto.description());
@@ -53,7 +61,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public Category getById(UUID id) {
         return repository.findByIdAndActiveTrue(id)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NotFoundException("exception.category.not.found"));
     }
 
     @Transactional(readOnly = true)

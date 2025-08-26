@@ -1,5 +1,7 @@
 package br.com.api.ecommerce.services;
 
+import br.com.api.ecommerce.exceptions.ConflictException;
+import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoAddCategory;
@@ -8,7 +10,6 @@ import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,7 @@ public class ProductService {
 
     @Transactional
     public Product create(ProductDtoCreate dto){
-        if (repository.existsByName(dto.name())) throw new RuntimeException();
+        this.existsByName(dto.name());
 
         Product product = dtoToEntity(dto);
 
@@ -39,7 +40,13 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Product getById(UUID id) {
         return repository.findByIdAndActiveTrue(id)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NotFoundException("exception.product.not.found"));
+    }
+
+    @Transactional(readOnly = true)
+    private void existsByName(String name){
+        if (repository.existsByName(name))
+            throw new ConflictException("exception.product.name.already.exists");
     }
 
     @Transactional
@@ -53,6 +60,7 @@ public class ProductService {
     @Transactional
     public Product update(ProductDtoUpdate dto) {
         Product product = this.getById(dto.id());
+        this.existsByName(dto.name());
 
         if (dto.name() != null) product.setName(dto.name());
         if (dto.description() != null) product.setDescription(dto.description());

@@ -1,5 +1,7 @@
 package br.com.api.ecommerce.services;
 
+import br.com.api.ecommerce.exceptions.BadRequestException;
+import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.Item;
 import br.com.api.ecommerce.models.User;
@@ -42,7 +44,7 @@ public class CartService {
     @Transactional(readOnly = true)
     public Cart getByUserId(UUID userId) {
         return repository.findByUser_Id(userId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NotFoundException("exception.cart.not.found"));
     }
 
     @Transactional
@@ -82,7 +84,7 @@ public class CartService {
 
     @Transactional
     public void removeItemsFromUserCart(UUID userId, List<DtoItemRequest> itemsToRemove) {
-        if (itemsToRemove.isEmpty()) throw new RuntimeException();
+        if (itemsToRemove.isEmpty()) throw new BadRequestException("exception.cart.items.is.empty");
 
         Cart cart = this.getByUserId(userId);
         BigDecimal totalPriceToRemove = BigDecimal.ZERO;
@@ -91,13 +93,13 @@ public class CartService {
             Item itemToRemove = cart.getItems().stream()
                     .filter(item -> item.getProduct().getId().equals(itemRequest.productId()))
                     .findFirst()
-                    .orElseThrow(RuntimeException::new);
+                    .orElseThrow(() -> new NotFoundException("exception.cart.product.not.in"));
 
 
             Integer availableQuantity = itemToRemove.getQuantity();
             Integer quantityToRemove = itemRequest.quantity();
 
-            if (quantityToRemove > availableQuantity) throw new RuntimeException();
+            if (quantityToRemove > availableQuantity) throw new BadRequestException("exception.cart.quantity.not.available");
 
             if (quantityToRemove.equals(availableQuantity)) {
                 // If the quantity to be removed is equal to the available one, we remove the item
