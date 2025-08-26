@@ -32,18 +32,15 @@ public class CategoryService {
         return category;
     }
 
-    @Transactional
-    public void delete(UUID id) {
-        Category category = this.getById(id);
-
-        category.setActive(false);
-        this.save(category);
+    @Transactional(readOnly = true)
+    public Page<Category> getAll(Pageable pageable) {
+        return repository.findAllByActiveTrue(pageable);
     }
 
     @Transactional(readOnly = true)
-    private void existsByName(String name){
-        if (repository.existsByName(name))
-            throw new ConflictException("exception.category.name.already.exists");
+    public Category getById(UUID id) {
+        return repository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new NotFoundException("exception.category.not.found"));
     }
 
     @Transactional
@@ -58,23 +55,18 @@ public class CategoryService {
         return category;
     }
 
-    @Transactional(readOnly = true)
-    public Category getById(UUID id) {
-        return repository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new NotFoundException("exception.category.not.found"));
+    @Transactional
+    public void delete(UUID id) {
+        Category category = this.getById(id);
+
+        category.setActive(false);
+        this.save(category);
     }
 
     @Transactional(readOnly = true)
-    public Page<Category> getAll(Pageable pageable) {
-        return repository.findAllByActiveTrue(pageable);
-    }
-
-    private Category dtoToEntity(CategoryDtoCreate dto){
-        Category category = new Category();
-        category.setName(dto.name());
-        category.setDescription(dto.description());
-
-        return category;
+    private void existsByName(String name){
+        if (repository.existsByName(name))
+            throw new ConflictException("exception.category.name.already.exists");
     }
 
     @Transactional(readOnly = true)
@@ -85,5 +77,13 @@ public class CategoryService {
     @Transactional
     public void save(Category category){
         repository.save(category);
+    }
+
+    private Category dtoToEntity(CategoryDtoCreate dto){
+        Category category = new Category();
+        category.setName(dto.name());
+        category.setDescription(dto.description());
+
+        return category;
     }
 }
