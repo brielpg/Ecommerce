@@ -2,6 +2,7 @@ package br.com.api.ecommerce.controllers;
 
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
+import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
 import br.com.api.ecommerce.services.UserService;
 import jakarta.validation.Valid;
@@ -28,8 +29,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<User>> getAll(Pageable pageable){
-        Page<User> users = service.getAll(pageable);
+    public ResponseEntity<Page<UserDtoList>> getAll(Pageable pageable){
+        Page<UserDtoList> users = service.getAll(pageable);
         return ResponseEntity.ok(users);
     }
 

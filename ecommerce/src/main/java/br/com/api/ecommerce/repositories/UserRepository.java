@@ -1,6 +1,7 @@
 package br.com.api.ecommerce.repositories;
 
 import br.com.api.ecommerce.models.User;
+import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByIdAndActiveTrue(UUID id);
 
     @Query("SELECT new br.com.api.ecommerce.models.dtos.User.UserDtoList(u.id, u.name, u.email) FROM User u WHERE u.active = true")
-    Page<User> findAllByActiveTrue(Pageable pageable);
+    Page<UserDtoList> findAllByActiveTrue(Pageable pageable);
 
     @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.email = ?1")
     boolean existsByEmail(String email);

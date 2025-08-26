@@ -2,6 +2,7 @@ package br.com.api.ecommerce.controllers;
 
 import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoCreate;
+import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoUpdate;
 import br.com.api.ecommerce.services.CategoryService;
 import jakarta.validation.Valid;
@@ -28,8 +29,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Category>> getAll(Pageable pageable){
-        Page<Category> categories = service.getAll(pageable);
+    public ResponseEntity<Page<CategoryDtoList>> getAll(Pageable pageable){
+        Page<CategoryDtoList> categories = service.getAll(pageable);
         return ResponseEntity.ok(categories);
     }
 

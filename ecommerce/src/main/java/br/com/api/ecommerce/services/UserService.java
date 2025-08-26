@@ -5,6 +5,7 @@ import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
+import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
 import br.com.api.ecommerce.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Page<User> getAll(Pageable pageable) {
+    public Page<UserDtoList> getAll(Pageable pageable) {
         return repository.findAllByActiveTrue(pageable);
     }
 

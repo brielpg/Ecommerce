@@ -4,6 +4,7 @@ import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoCreate;
+import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoUpdate;
 import br.com.api.ecommerce.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Category> getAll(Pageable pageable) {
+    public Page<CategoryDtoList> getAll(Pageable pageable) {
         return repository.findAllByActiveTrue(pageable);
     }
 
