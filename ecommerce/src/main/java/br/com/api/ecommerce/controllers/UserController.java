@@ -1,7 +1,5 @@
 package br.com.api.ecommerce.controllers;
 
-import br.com.api.ecommerce.models.Cart;
-import br.com.api.ecommerce.models.Order;
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
@@ -14,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -52,17 +49,5 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable UUID id){
         service.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @GetMapping("/{id}/orders")
-    private ResponseEntity<List<Order>> getOrdersByUser(@PathVariable UUID id){
-        List<Order> orders = service.getOrdersByUser(id);
-        return ResponseEntity.ok(orders);
-    }
-
-    @GetMapping("/{id}/cart")
-    private ResponseEntity<Cart> getCartByUser(@PathVariable UUID id){
-        Cart cart = service.getCartByUser(id);
-        return ResponseEntity.ok(cart);
     }
 }

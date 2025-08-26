@@ -3,7 +3,6 @@ package br.com.api.ecommerce.services;
 import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Cart;
-import br.com.api.ecommerce.models.Order;
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -37,8 +35,34 @@ public class UserService {
         Cart cart = cartService.create(user);
         user.setCart(cart);
 
-        repository.save(user);
-        return user;
+        return repository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<User> getAll(Pageable pageable) {
+        return repository.findAllByActiveTrue(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public User getById(UUID id) {
+        return repository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new NotFoundException("exception.user.not.found"));
+    }
+
+    @Transactional
+    public User update(UserDtoUpdate dto) {
+        User user = this.getById(dto.id());
+
+        if (dto.email() != null && !dto.email().equals(user.getEmail())) {
+            this.existsByEmail(dto.email());
+            user.setEmail(dto.email());
+        }
+
+        if (dto.name() != null) user.setName(dto.name());
+        if (dto.phone() != null) user.setPhone(dto.phone());
+        if (dto.birthDate() != null) user.setBirthDate(dto.birthDate());
+
+        return repository.save(user);
     }
 
     @Transactional
@@ -55,34 +79,6 @@ public class UserService {
             throw new ConflictException("exception.user.email.already.registered");
     }
 
-    @Transactional
-    public User update(UserDtoUpdate dto) {
-        User user = this.getById(dto.id());
-
-        if (dto.email() != null && !dto.email().equals(user.getEmail())) {
-            this.existsByEmail(dto.email());
-            user.setEmail(dto.email());
-        }
-
-        if (dto.name() != null) user.setName(dto.name());
-        if (dto.phone() != null) user.setPhone(dto.phone());
-        if (dto.birthDate() != null) user.setBirthDate(dto.birthDate());
-
-        repository.save(user);
-        return user;
-    }
-
-    @Transactional(readOnly = true)
-    public User getById(UUID id) {
-        return repository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new NotFoundException("exception.user.not.found"));
-    }
-
-    @Transactional(readOnly = true)
-    public Page<User> getAll(Pageable pageable) {
-        return repository.findAllByActiveTrue(pageable);
-    }
-
     private User dtoToEntity(UserDtoCreate dto){
         User user = new User();
         user.setName(dto.name());
@@ -92,19 +88,5 @@ public class UserService {
         user.setAddresses(addressService.create(dto.addresses(), user));
 
         return user;
-    }
-
-    @Transactional(readOnly = true)
-    public List<Order> getOrdersByUser(UUID userId) {
-        User user = this.getById(userId);
-
-        return user.getOrders();
-    }
-
-    @Transactional(readOnly = true)
-    public Cart getCartByUser(UUID userId) {
-        User user = this.getById(userId);
-
-        return user.getCart();
     }
 }
