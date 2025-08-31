@@ -2,7 +2,9 @@ package br.com.api.ecommerce.controllers;
 
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Auth.AuthDtoLogin;
+import br.com.api.ecommerce.models.dtos.Auth.AuthReturnToken;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
+import br.com.api.ecommerce.services.TokenService;
 import br.com.api.ecommerce.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +28,19 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid AuthDtoLogin dto){
+    public ResponseEntity<AuthReturnToken> login(@RequestBody @Valid AuthDtoLogin dto){
         UsernamePasswordAuthenticationToken usernamePassword =
                 new UsernamePasswordAuthenticationToken(dto.login(), dto.password());
 
         Authentication auth = this.authenticationManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok().build();
+        String token = tokenService.generateToken((User) auth.getPrincipal());
+
+        return ResponseEntity.ok(new AuthReturnToken(token));
     }
 
     @PostMapping("/register")
