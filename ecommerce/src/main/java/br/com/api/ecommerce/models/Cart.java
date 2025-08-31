@@ -34,6 +34,7 @@ public class Cart {
 
     @PrePersist
     public void prePersist(){
+        this.totalPrice = BigDecimal.ZERO;
         this.timestamp = LocalDate.now();
     }
 }

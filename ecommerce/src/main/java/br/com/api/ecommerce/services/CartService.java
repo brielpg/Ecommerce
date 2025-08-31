@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -43,17 +44,14 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public Cart getByUserId(UUID userId) {
-        return repository.findByUser_Id(userId)
+        return repository.findCartByUserId(userId)
                 .orElseThrow(() -> new NotFoundException("exception.cart.not.found"));
     }
 
     @Transactional
     public void clearUserCart(UUID userId) {
-        Cart cart = this.getByUserId(userId);
-        cart.getItems().clear();
-        cart.setTotalPrice(BigDecimal.ZERO);
-
-        this.save(cart);
+        repository.deleteAllItemsFromUserCart(userId);
+        repository.resetCartTotal(userId);
     }
 
     @Transactional
