@@ -1,13 +1,18 @@
 package br.com.api.ecommerce.models;
 
+import br.com.api.ecommerce.models.enums.UserRoles;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,7 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(of = "id")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -36,10 +41,31 @@ public class User {
     private List<Order> orders;
     private Boolean active;
     private LocalDate timestamp;
+    @JsonIgnore
+    private String password;
+    @Enumerated(EnumType.STRING)
+    private UserRoles role;
 
     @PrePersist
     public void prePersist(){
         this.timestamp = LocalDate.now();
         this.active = true;
+        this.role = UserRoles.CUSTOMER;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        String role = this.role == UserRoles.CUSTOMER ? "ROLE_USER" : "ROLE_" + this.role.name();
+        return List.of(new SimpleGrantedAuthority(role));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
     }
 }
