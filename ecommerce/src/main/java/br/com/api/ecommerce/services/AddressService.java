@@ -40,4 +40,10 @@ public class AddressService {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("exception.address.not.found"));
     }
+
+    @Transactional(readOnly = true)
+    public void existsByIdAndUser(UUID addressId, UUID userId){
+        if (!repository.existsByIdAndUserId(addressId, userId))
+            throw new NotFoundException("exception.address.not.found");
+    }
 }
