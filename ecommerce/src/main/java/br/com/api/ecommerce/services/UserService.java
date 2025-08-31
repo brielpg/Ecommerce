@@ -11,6 +11,7 @@ import br.com.api.ecommerce.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,9 @@ public class UserService {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     @Transactional
     public User create(UserDtoCreate dto){
         this.existsByEmail(dto.email());
@@ -35,6 +39,7 @@ public class UserService {
         User user = dtoToEntity(dto);
         Cart cart = cartService.create(user);
         user.setCart(cart);
+        user.setPassword(authorizationService.encodePassword(dto.password()));
 
         return repository.save(user);
     }

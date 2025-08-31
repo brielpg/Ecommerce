@@ -22,12 +22,6 @@ public class UserController {
     @Autowired
     private UserService service;
 
-    @PostMapping
-    public ResponseEntity<User> create(@RequestBody @Valid UserDtoCreate dto){
-        User user = service.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
-    }
-
     @GetMapping
     public ResponseEntity<Page<UserDtoList>> getAll(Pageable pageable){
         Page<UserDtoList> users = service.getAll(pageable);
