@@ -37,35 +37,34 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public Page<Order> getAllByUser(UUID userId, Pageable pageable) {
-        return repository.findAllByUser_Id(userId, pageable);
+        return repository.findOrdersByUserId(userId, pageable);
     }
 
     @Transactional
     public Order create(OrderDtoCreate dto) {
         User user = userService.getById(dto.userId());
 
-        Order order = new Order();
-        List<Item> items = itemService.createListOfItems(dto.items(), order);
+        addressService.existsByIdAndUser(dto.addressId(), dto.userId());
+        Address deliveryAddress = addressService.getById(dto.addressId());
 
+        Order order = new Order();
         order.setUser(user);
-        order.setItems(items);
+        order.setDeliveryAddress(deliveryAddress);
+
+        List<Item> items = itemService.createListOfItems(dto.items(), order);
 
         BigDecimal total = items.stream()
                 .map(item -> item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        order.setItems(items);
         order.setTotalPrice(total);
-
-        Address deliveryAddress = addressService.getById(dto.addressId());
-        if (user.getAddresses().stream().noneMatch(addr -> addr.getId().equals(deliveryAddress.getId()))) throw new NotFoundException("exception.address.not.found");
-        order.setDeliveryAddress(deliveryAddress);
 
         items.forEach(item -> {
             Product product = item.getProduct();
             product.setStock(product.getStock() - item.getQuantity());
         });
 
-        repository.save(order);
-        return order;
+        return repository.save(order);
     }
 }
