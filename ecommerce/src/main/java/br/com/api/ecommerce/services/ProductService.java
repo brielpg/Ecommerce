@@ -6,6 +6,7 @@ import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoAddCategory;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
+import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,23 +39,14 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Product getById(UUID id) {
-        return repository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new NotFoundException("exception.product.not.found"));
+    public Page<ProductDtoList> getAll(Pageable pageable) {
+        return repository.findAllByActiveTrue(pageable);
     }
 
     @Transactional(readOnly = true)
-    private void existsByName(String name){
-        if (repository.existsByName(name))
-            throw new ConflictException("exception.product.name.already.exists");
-    }
-
-    @Transactional
-    public void delete(UUID id) {
-        Product product = this.getById(id);
-
-        product.setActive(false);
-        this.save(product);
+    public Product getById(UUID id) {
+        return repository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new NotFoundException("exception.product.not.found"));
     }
 
     @Transactional
@@ -71,9 +63,48 @@ public class ProductService {
         return product;
     }
 
+    @Transactional
+    public void delete(UUID id) {
+        Product product = this.getById(id);
+
+        product.setActive(false);
+        this.save(product);
+    }
+
+    @Transactional
+    public void addCategoriesInProduct(UUID id, ProductDtoAddCategory dto) {
+        Product product = this.getById(id);
+        List<Category> categories = categoryService.getCategoriesByIds(dto.categories());
+
+        for (Category category : categories){
+            if (!repository.existsCategoryInProduct(id, category.getId())) {
+                repository.addCategoryToProduct(id, category.getId());
+            }
+        }
+
+        this.save(product);
+    }
+
+    @Transactional
+    public void removeCategoryFromProduct(UUID id, UUID categoryId) {
+        Product product = this.getById(id);
+        Category category = categoryService.getById(categoryId);
+
+        repository.removeCategoryFromProduct(id, categoryId);
+
+        this.save(product);
+        categoryService.save(category);
+    }
+
     @Transactional(readOnly = true)
-    public Page<Product> getAll(Pageable pageable) {
-        return repository.findAllByActiveTrue(pageable);
+    private void existsByName(String name){
+        if (repository.existsByName(name))
+            throw new ConflictException("exception.product.name.already.exists");
+    }
+
+    @Transactional
+    public void save(Product product){
+        repository.save(product);
     }
 
     private Product dtoToEntity(ProductDtoCreate dto){
@@ -86,44 +117,5 @@ public class ProductService {
             product.setCategories(categoryService.getCategoriesByIds(dto.categories()));
 
         return product;
-    }
-
-    @Transactional(readOnly = true)
-    public List<Category> getCategoriesByProduct(UUID id) {
-        Product product = this.getById(id);
-
-        return product.getCategories();
-    }
-
-    @Transactional
-    public void addCategoriesInProduct(UUID id, ProductDtoAddCategory dto) {
-        Product product = this.getById(id);
-        List<Category> categories = categoryService.getCategoriesByIds(dto.categories());
-
-        for (Category category : categories){
-            if (!product.getCategories().contains(category)){
-                product.getCategories().add(category);
-                category.getProducts().add(product);
-            }
-        }
-
-        this.save(product);
-    }
-
-    @Transactional
-    public void removeCategoryFromProduct(UUID id, UUID categoryId) {
-        Product product = this.getById(id);
-        Category category = categoryService.getById(categoryId);
-
-        product.getCategories().remove(category);
-        category.getProducts().remove(product);
-
-        this.save(product);
-        categoryService.save(category);
-    }
-
-    @Transactional
-    public void save(Product product){
-        repository.save(product);
     }
 }

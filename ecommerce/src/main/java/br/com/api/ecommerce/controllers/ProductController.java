@@ -1,9 +1,9 @@
 package br.com.api.ecommerce.controllers;
 
-import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoAddCategory;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
+import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.services.ProductService;
 import jakarta.validation.Valid;
@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -31,8 +30,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Product>> getAll(Pageable pageable){
-        Page<Product> products = service.getAll(pageable);
+    public ResponseEntity<Page<ProductDtoList>> getAll(Pageable pageable){
+        Page<ProductDtoList> products = service.getAll(pageable);
         return ResponseEntity.ok(products);
     }
 
@@ -52,12 +51,6 @@ public class ProductController {
     public ResponseEntity<Void> delete(@PathVariable UUID id){
         service.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @GetMapping("/{id}/categories")
-    public ResponseEntity<List<Category>> getCategoriesByProduct(@PathVariable UUID id){
-        List<Category> categories = service.getCategoriesByProduct(id);
-        return ResponseEntity.ok(categories);
     }
 
     @PostMapping("/{id}/categories")
