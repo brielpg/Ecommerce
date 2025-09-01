@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 
 @Service
 public class TokenService {
@@ -19,8 +19,15 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
-    // TODO add this 'issuer' into a .env
-    private final String issuer = "ecommerce";
+    @Value("${api.security.token.issuer}")
+    private String issuer;
+
+    @Value("${api.security.token.expiration-hours}")
+    private Long expirationHours;
+
+    @Value("${api.security.token.timezone}")
+    private String timezone;
+
 
     public String generateToken(User user){
         try {
@@ -31,7 +38,6 @@ public class TokenService {
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
         } catch (JWTCreationException ex){
-            // TODO add custom exception
             throw new RuntimeException("Error while generating token ", ex);
         }
     }
@@ -45,13 +51,13 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException ex){
-            // TODO add custom exception
             throw new RuntimeException("Invalid token ", ex);
         }
     }
 
-    private Instant genExpirationDate(){
-        // TODO change to dinamic timezone (.env)
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+    private Instant genExpirationDate() {
+        ZoneId zoneId = timezone.equals("default") ? ZoneId.systemDefault() : ZoneId.of(timezone);
+
+        return LocalDateTime.now(zoneId).plusHours(expirationHours).atZone(zoneId).toInstant();
     }
 }
