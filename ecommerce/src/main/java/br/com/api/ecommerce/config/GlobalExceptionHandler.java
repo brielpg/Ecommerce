@@ -1,5 +1,6 @@
 package br.com.api.ecommerce.config;
 
+import br.com.api.ecommerce.exceptions.AccessDeniedException;
 import br.com.api.ecommerce.exceptions.BadRequestException;
 import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
@@ -25,6 +26,15 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorDto> handleBadRequestException(Exception ex) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        String errorMessage = messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
+        ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), List.of(errorMessage));
+        return ResponseEntity.status(httpStatus).body(errorDto);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ErrorDto> handleAccessDeniedException(Exception ex) {
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
         String errorMessage = messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
         ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), List.of(errorMessage));
         return ResponseEntity.status(httpStatus).body(errorDto);
