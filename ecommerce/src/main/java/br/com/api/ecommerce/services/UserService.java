@@ -11,6 +11,8 @@ import br.com.api.ecommerce.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,9 @@ public class UserService {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     @Transactional
     public User create(UserDtoCreate dto){
         this.existsByEmail(dto.email());
@@ -35,22 +40,26 @@ public class UserService {
         User user = dtoToEntity(dto);
         Cart cart = cartService.create(user);
         user.setCart(cart);
+        user.setPassword(authorizationService.encodePassword(dto.password()));
 
         return repository.save(user);
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<UserDtoList> getAll(Pageable pageable) {
         return repository.findAllByActiveTrue(pageable);
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public User getById(UUID id) {
         return repository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new NotFoundException("exception.user.not.found"));
     }
 
     @Transactional
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public User update(UserDtoUpdate dto) {
         User user = this.getById(dto.id());
 
@@ -67,6 +76,7 @@ public class UserService {
     }
 
     @Transactional
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public void delete(UUID id) {
         User user = this.getById(id);
 

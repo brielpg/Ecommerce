@@ -12,6 +12,7 @@ import br.com.api.ecommerce.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ public class ProductService {
 
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public Product create(ProductDtoCreate dto){
         this.existsByName(dto.name());
 
@@ -50,6 +52,7 @@ public class ProductService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public Product update(ProductDtoUpdate dto) {
         Product product = this.getById(dto.id());
         this.existsByName(dto.name());
@@ -64,6 +67,7 @@ public class ProductService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(UUID id) {
         Product product = this.getById(id);
 
@@ -72,6 +76,7 @@ public class ProductService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void addCategoriesInProduct(UUID id, ProductDtoAddCategory dto) {
         Product product = this.getById(id);
         List<Category> categories = categoryService.getCategoriesByIds(dto.categories());
@@ -86,6 +91,7 @@ public class ProductService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void removeCategoryFromProduct(UUID id, UUID categoryId) {
         Product product = this.getById(id);
         Category category = categoryService.getById(categoryId);

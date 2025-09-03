@@ -7,6 +7,7 @@ import br.com.api.ecommerce.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,21 +28,31 @@ public class OrderService {
     private AddressService addressService;
 
     @Autowired
+    private AuthorizationService authorizationService;
+
+    @Autowired
     private ItemService itemService;
 
     @Transactional(readOnly = true)
     public Order getById(UUID id) {
-        return repository.findById(id)
+        Order order = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("exception.order.not.found"));
+
+        authorizationService.validateCurrentUser(order.getUser().getId());
+
+        return order;
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public Page<Order> getAllByUser(UUID userId, Pageable pageable) {
         return repository.findOrdersByUserId(userId, pageable);
     }
 
     @Transactional
     public Order create(OrderDtoCreate dto) {
+        authorizationService.validateCurrentUser(dto.userId());
+
         User user = userService.getById(dto.userId());
 
         addressService.existsByIdAndUser(dto.addressId(), dto.userId());
