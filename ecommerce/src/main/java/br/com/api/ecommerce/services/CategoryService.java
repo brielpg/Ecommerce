@@ -10,6 +10,7 @@ import br.com.api.ecommerce.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class CategoryService {
 
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public Category create(CategoryDtoCreate dto){
         this.existsByName(dto.name());
 
@@ -45,6 +47,7 @@ public class CategoryService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public Category update(CategoryDtoUpdate dto) {
         Category category = this.getById(dto.id());
         this.existsByName(dto.name());
@@ -57,6 +60,7 @@ public class CategoryService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(UUID id) {
         Category category = this.getById(id);
 

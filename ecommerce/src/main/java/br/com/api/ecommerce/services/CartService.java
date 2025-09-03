@@ -8,6 +8,7 @@ import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.repositories.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,18 +44,21 @@ public class CartService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public Cart getByUserId(UUID userId) {
         return repository.findCartByUserId(userId)
                 .orElseThrow(() -> new NotFoundException("exception.cart.not.found"));
     }
 
     @Transactional
+    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public void clearUserCart(UUID userId) {
         repository.deleteAllItemsFromUserCart(userId);
         repository.resetCartTotal(userId);
     }
 
     @Transactional
+    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public void addItemsToUserCart(UUID userId, List<DtoItemRequest> itemsDto) {
         Cart cart = this.getByUserId(userId);
 
@@ -81,6 +85,7 @@ public class CartService {
     }
 
     @Transactional
+    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public void removeItemsFromUserCart(UUID userId, List<DtoItemRequest> itemsToRemove) {
         if (itemsToRemove.isEmpty()) throw new BadRequestException("exception.cart.items.is.empty");
 
