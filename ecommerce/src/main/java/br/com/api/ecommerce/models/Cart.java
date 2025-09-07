@@ -27,7 +27,6 @@ public class Cart {
     @JsonIgnore
     private User user;
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<Item> items;
     private BigDecimal totalPrice;
     private LocalDate timestamp;
