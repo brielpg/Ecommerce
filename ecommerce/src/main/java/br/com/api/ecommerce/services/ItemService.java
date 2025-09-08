@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -23,6 +24,8 @@ public class ItemService {
         Item item = new Item();
         Product product = productService.getById(itemRequest.productId());
         item.setProduct(product);
+        item.setName(product.getName());
+        item.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
         item.setQuantity(itemRequest.quantity());
         item.setUnitPrice(product.getPrice());
         item.setCart(cart);

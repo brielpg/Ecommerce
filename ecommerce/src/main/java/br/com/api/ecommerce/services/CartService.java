@@ -72,6 +72,7 @@ public class CartService {
 
             if (existingItem != null) {
                 existingItem.setQuantity(existingItem.getQuantity() + itemRequest.quantity());
+                existingItem.setSubTotal(existingItem.getUnitPrice().multiply(BigDecimal.valueOf(existingItem.getQuantity())));
                 totalPriceToAdd = totalPriceToAdd.add(existingItem.getUnitPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
             } else {
                 Item item = itemService.create(itemRequest, cart);
@@ -111,6 +112,7 @@ public class CartService {
             } else {
                 // Otherwise, we reduce the amount
                 itemToRemove.setQuantity(availableQuantity - quantityToRemove);
+                itemToRemove.setSubTotal(itemToRemove.getUnitPrice().multiply(BigDecimal.valueOf(itemToRemove.getQuantity())));
                 totalPriceToRemove = totalPriceToRemove.add(itemToRemove.getUnitPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
             }
         }

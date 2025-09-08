@@ -25,8 +25,10 @@ public class Item {
     @JoinColumn(name = "product_id")
     @JsonIgnore
     private Product product;
+    private String name;
     private Integer quantity;
     private BigDecimal unitPrice;
+    private BigDecimal subTotal;
     @ManyToOne
     @JoinColumn(name = "cart_id")
     @JsonIgnore
