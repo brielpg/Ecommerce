@@ -65,7 +65,7 @@ public class OrderService {
         List<Item> items = itemService.createListOfItems(dto.items(), order);
 
         BigDecimal total = items.stream()
-                .map(item -> item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         order.setItems(items);

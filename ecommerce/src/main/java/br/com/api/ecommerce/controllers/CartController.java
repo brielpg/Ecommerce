@@ -1,6 +1,7 @@
 package br.com.api.ecommerce.controllers;
 
 import br.com.api.ecommerce.models.Cart;
+import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.services.CartService;
 import jakarta.validation.Valid;
@@ -20,9 +21,9 @@ public class CartController {
     private CartService service;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Cart> getByUserId(@PathVariable UUID userId){
+    public ResponseEntity<CartDtoList> getByUserId(@PathVariable UUID userId){
         Cart cart = service.getByUserId(userId);
-        return ResponseEntity.ok(cart);
+        return ResponseEntity.ok(service.entityToDto(cart));
     }
 
     @DeleteMapping("/{userId}")

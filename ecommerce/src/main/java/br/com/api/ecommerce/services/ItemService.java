@@ -24,10 +24,8 @@ public class ItemService {
         Item item = new Item();
         Product product = productService.getById(itemRequest.productId());
         item.setProduct(product);
-        item.setName(product.getName());
         item.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
         item.setQuantity(itemRequest.quantity());
-        item.setUnitPrice(product.getPrice());
         item.setCart(cart);
 
         return item;
@@ -41,7 +39,6 @@ public class ItemService {
             item.setProduct(product);
             if (product.getStock() < dto.quantity()) throw new BadRequestException("exception.item.quantity.not.available");
             item.setQuantity(dto.quantity());
-            item.setUnitPrice(product.getPrice());
             item.setOrder(order);
             return item;
         }).toList();

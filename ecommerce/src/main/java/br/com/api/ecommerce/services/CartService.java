@@ -5,7 +5,10 @@ import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.Item;
 import br.com.api.ecommerce.models.User;
+import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
+import br.com.api.ecommerce.models.dtos.Item.ItemDtoList;
+import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.repositories.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -72,12 +75,12 @@ public class CartService {
 
             if (existingItem != null) {
                 existingItem.setQuantity(existingItem.getQuantity() + itemRequest.quantity());
-                existingItem.setSubTotal(existingItem.getUnitPrice().multiply(BigDecimal.valueOf(existingItem.getQuantity())));
-                totalPriceToAdd = totalPriceToAdd.add(existingItem.getUnitPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
+                existingItem.setSubTotal(existingItem.getProduct().getPrice().multiply(BigDecimal.valueOf(existingItem.getQuantity())));
+                totalPriceToAdd = totalPriceToAdd.add(existingItem.getProduct().getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
             } else {
                 Item item = itemService.create(itemRequest, cart);
                 cart.getItems().add(item);
-                totalPriceToAdd = totalPriceToAdd.add(item.getUnitPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
+                totalPriceToAdd = totalPriceToAdd.add(item.getProduct().getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
             }
         }
 
@@ -108,16 +111,36 @@ public class CartService {
             if (quantityToRemove.equals(availableQuantity)) {
                 // If the quantity to be removed is equal to the available one, we remove the item
                 cart.getItems().remove(itemToRemove);
-                totalPriceToRemove = totalPriceToRemove.add(itemToRemove.getUnitPrice().multiply(BigDecimal.valueOf(availableQuantity)));
+                totalPriceToRemove = totalPriceToRemove.add(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(availableQuantity)));
             } else {
                 // Otherwise, we reduce the amount
                 itemToRemove.setQuantity(availableQuantity - quantityToRemove);
-                itemToRemove.setSubTotal(itemToRemove.getUnitPrice().multiply(BigDecimal.valueOf(itemToRemove.getQuantity())));
-                totalPriceToRemove = totalPriceToRemove.add(itemToRemove.getUnitPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+                itemToRemove.setSubTotal(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(itemToRemove.getQuantity())));
+                totalPriceToRemove = totalPriceToRemove.add(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
             }
         }
 
         cart.setTotalPrice(cart.getTotalPrice().subtract(totalPriceToRemove));
         this.save(cart);
+    }
+
+    public CartDtoList entityToDto(Cart cart) {
+        return new CartDtoList(
+                cart.getId(),
+                cart.getItems().stream()
+                        .map(item -> new ItemDtoList(
+                                item.getId(),
+                                new ProductDtoList(
+                                        item.getProduct().getId(),
+                                        item.getProduct().getName(),
+                                        item.getProduct().getDescription(),
+                                        item.getProduct().getPrice(),
+                                        item.getProduct().getStock()
+                                ),
+                                item.getQuantity(),
+                                item.getSubTotal()
+                        )).toList(),
+                cart.getTotalPrice()
+        );
     }
 }
