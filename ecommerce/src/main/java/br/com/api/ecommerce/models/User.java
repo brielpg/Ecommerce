@@ -39,6 +39,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Order> orders;
+    @ManyToMany
+    @JoinTable(name = "tb_user_favorites",
+            joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
+    private List<Product> favorites;
     private Boolean active;
     private LocalDate timestamp;
     @JsonIgnore
