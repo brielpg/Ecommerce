@@ -3,7 +3,9 @@ package br.com.api.ecommerce.services;
 import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Cart;
+import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.User;
+import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,6 +32,9 @@ public class UserService {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private AuthorizationService authorizationService;
@@ -82,6 +88,23 @@ public class UserService {
 
         user.setActive(false);
         repository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductDtoList> getFavorites(UUID id) {
+        List<Product> favorites = repository.getFavorites(id);
+
+        return favorites.stream().map(p -> productService.entityToDto(p)).toList();
+    }
+
+    @Transactional
+    public void addFavorite(UUID id, UUID productId) {
+        repository.addFavorite(id, productId);
+    }
+
+    @Transactional
+    public void removeFavorite(UUID id, UUID productId) {
+        repository.removeFavorite(id, productId);
     }
 
     @Transactional(readOnly = true)

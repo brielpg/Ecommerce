@@ -1,6 +1,8 @@
 package br.com.api.ecommerce.controllers;
 
+import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.User;
+import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -43,6 +46,24 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id){
         service.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/{id}/favorites")
+    public ResponseEntity<List<ProductDtoList>> getFavorites(@PathVariable UUID id){
+        List<ProductDtoList> favorites = service.getFavorites(id);
+        return ResponseEntity.ok(favorites);
+    }
+
+    @PostMapping("/{id}/favorites/{productId}")
+    public ResponseEntity<Void> addFavorite(@PathVariable UUID id, @PathVariable UUID productId){
+        service.addFavorite(id, productId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/{id}/favorites/{productId}")
+    public ResponseEntity<Void> removeFavorite(@PathVariable UUID id, @PathVariable UUID productId){
+        service.removeFavorite(id, productId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
