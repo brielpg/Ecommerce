@@ -124,4 +124,14 @@ public class ProductService {
 
         return product;
     }
+
+    public ProductDtoList entityToDto(Product entity){
+        return new ProductDtoList(
+                entity.getId(),
+                entity.getName(),
+                entity.getDescription(),
+                entity.getPrice(),
+                entity.getStock()
+        );
+    }
 }
