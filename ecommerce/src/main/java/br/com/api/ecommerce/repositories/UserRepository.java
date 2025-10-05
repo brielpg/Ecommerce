@@ -35,10 +35,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO tb_user_favorites (user_id, product_id) VALUES (:userId, :productId)", nativeQuery = true)
-    void addFavorite(UUID id, UUID productId);
+    void addFavorite(UUID userId, UUID productId);
 
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM tb_user_favorites WHERE user_id = :userId AND product_id = :productId", nativeQuery = true)
-    void removeFavorite(UUID id, UUID productId);
+    void removeFavorite(UUID userId, UUID productId);
 }
