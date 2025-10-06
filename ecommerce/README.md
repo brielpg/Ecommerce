@@ -29,6 +29,17 @@
 | DELETE | /api/categories/{id} | Deactivates a category       | Admin         |
 
 
+## 🎫 Coupon
+
+| Method | Endpoint          | Description                | Permission    |
+|--------|-------------------|----------------------------|---------------|
+| POST   | /api/coupons      | Creates a new coupon       | Admin         |
+| GET    | /api/coupons      | Lists all active coupons   | Authenticated |
+| GET    | /api/coupons/{id} | Fetches a coupon by its ID | Authenticated |
+| PUT    | /api/coupons      | Updates an existing coupon | Admin         |
+| DELETE | /api/coupons/{id} | Deactivates a coupon       | Admin         |
+
+
 ## 📦 Order
 
 | Method | Endpoint                  | Description                | Permission              |
