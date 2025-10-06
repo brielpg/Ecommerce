@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -80,14 +81,17 @@ public class CouponService {
     public Coupon update(CouponDtoUpdate dto) {
         Coupon coupon = this.getById(dto.id());
         this.existsByCode(dto.code());
-        this.validDates(dto.validFrom(), dto.validUntil());
+
+        LocalDate newValidFrom = dto.validFrom() != null ? dto.validFrom() : coupon.getValidFrom();
+        LocalDate newValidUntil = dto.validUntil() != null ? dto.validUntil() : coupon.getValidUntil();
+        if (dto.validFrom() != null || dto.validUntil() != null) {
+            this.validDates(newValidFrom, newValidUntil);
+        }
 
         if (dto.code() != null) coupon.setCode(dto.code());
         if (dto.description() != null) coupon.setDescription(dto.description());
         if (dto.discountType() != null) coupon.setDiscountType(dto.discountType());
         if (dto.value() != null) coupon.setValue(dto.value());
-        if (dto.validFrom() != null) coupon.setValidFrom(dto.validFrom());
-        if (dto.validUntil() != null) coupon.setValidUntil(dto.validUntil());
         if (dto.maxUses() != null) coupon.setMaxUses(dto.maxUses());
 
         if (dto.productIds() != null && !dto.productIds().isEmpty()) {
@@ -151,7 +155,8 @@ public class CouponService {
         else
             discount = coupon.getValue().min(eligibleTotal);
 
-        return subtotal.subtract(discount);
+        BigDecimal total = subtotal.subtract(discount);
+        return total.setScale(2, RoundingMode.CEILING);
     }
 
     private Coupon dtoToEntity(CouponDtoCreate dto){
