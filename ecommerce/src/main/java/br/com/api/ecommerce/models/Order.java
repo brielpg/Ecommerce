@@ -36,9 +36,13 @@ public class Order {
     @JoinColumn(name = "delivery_address_id")
     @JsonIgnore
     private Address deliveryAddress;
+    @ManyToOne
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonIgnore
     private Payment payment;
+    private BigDecimal subtotal;
     private BigDecimal totalPrice;
     private LocalDate timestamp;
 

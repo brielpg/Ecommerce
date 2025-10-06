@@ -1,6 +1,7 @@
 package br.com.api.ecommerce.models;
 
 import br.com.api.ecommerce.models.enums.DiscountType;
+import br.com.api.ecommerce.models.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,11 +42,19 @@ public class Coupon {
             joinColumns = @JoinColumn(name = "coupon_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     @JsonIgnore
     private List<Category> categories;
+    private Boolean active;
+    private LocalDate timestamp;
 
     public boolean isValid() {
         LocalDate today = LocalDate.now();
         return (validFrom == null || !today.isBefore(validFrom)) &&
                 (validUntil == null || !today.isAfter(validUntil)) &&
                 (maxUses == null || usedCount < maxUses);
+    }
+
+    @PrePersist
+    public void prePersist(){
+        this.timestamp = LocalDate.now();
+        this.active = true;
     }
 }

@@ -69,7 +69,7 @@ public class OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         order.setItems(items);
-        order.setTotalPrice(total);
+        order.setSubtotal(total);
 
         items.forEach(item -> {
             Product product = item.getProduct();
