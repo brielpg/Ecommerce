@@ -46,6 +46,11 @@ public class CategoryService {
                 .orElseThrow(() -> new NotFoundException("exception.category.not.found"));
     }
 
+    @Transactional(readOnly = true)
+    public List<Category> findAllById(List<UUID> ids) {
+        return repository.findAllById(ids);
+    }
+
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public Category update(CategoryDtoUpdate dto) {

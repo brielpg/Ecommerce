@@ -51,6 +51,11 @@ public class ProductService {
                 .orElseThrow(() -> new NotFoundException("exception.product.not.found"));
     }
 
+    @Transactional(readOnly = true)
+    public List<Product> findAllById(List<UUID> ids) {
+        return repository.findAllById(ids);
+    }
+
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public Product update(ProductDtoUpdate dto) {
