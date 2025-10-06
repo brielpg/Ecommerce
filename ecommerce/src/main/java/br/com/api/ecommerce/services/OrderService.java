@@ -31,7 +31,7 @@ public class OrderService {
     private AuthorizationService authorizationService;
 
     @Autowired
-    private CouponService discountService;
+    private CouponService couponService;
 
     @Autowired
     private ItemService itemService;
@@ -64,6 +64,8 @@ public class OrderService {
         Order order = new Order();
         order.setUser(user);
         order.setDeliveryAddress(deliveryAddress);
+        if (dto.couponCode() != null)
+            order.setCoupon(couponService.getByCode(dto.couponCode()));
 
         List<Item> items = itemService.createListOfItems(dto.items(), order);
 
@@ -75,7 +77,7 @@ public class OrderService {
         order.setSubtotal(subtotal);
 
         BigDecimal totalPrice = (order.getCoupon() != null)
-                ? discountService.calculateDiscount(order, subtotal)
+                ? couponService.calculateDiscount(order, subtotal)
                 : subtotal;
 
         order.setTotalPrice(totalPrice);

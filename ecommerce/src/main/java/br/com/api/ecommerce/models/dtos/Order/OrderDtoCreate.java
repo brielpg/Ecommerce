@@ -13,6 +13,7 @@ public record OrderDtoCreate(
         UUID userId,
         @NotNull(message = "{dto.order.addressid.notnull}")
         UUID addressId,
+        String couponCode,
         @NotEmpty(message = "{dto.order.items.notempty}")
         List<@Valid DtoItemRequest> items
 ) {
