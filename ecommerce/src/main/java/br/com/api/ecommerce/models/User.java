@@ -42,6 +42,7 @@ public class User implements UserDetails {
     @ManyToMany
     @JoinTable(name = "tb_user_favorites",
             joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @JsonIgnore
     private List<Product> favorites;
     private Boolean active;
     private LocalDate timestamp;
