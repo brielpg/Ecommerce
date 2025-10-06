@@ -21,11 +21,7 @@ public class ItemService {
 
     @Transactional
     public Item create(DtoItemRequest itemRequest, Cart cart) {
-        Item item = new Item();
-        Product product = productService.getById(itemRequest.productId());
-        item.setProduct(product);
-        item.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
-        item.setQuantity(itemRequest.quantity());
+        Item item = dtoToEntity(itemRequest);
         item.setCart(cart);
 
         return item;
@@ -34,13 +30,20 @@ public class ItemService {
     @Transactional
     public List<Item> createListOfItems(List<DtoItemRequest> itemsRequest, Order order){
         return itemsRequest.stream().map(dto -> {
-            Item item = new Item();
-            Product product = productService.getById(dto.productId());
-            item.setProduct(product);
-            if (product.getStock() < dto.quantity()) throw new BadRequestException("exception.item.quantity.not.available");
-            item.setQuantity(dto.quantity());
+            Item item = dtoToEntity(dto);
             item.setOrder(order);
             return item;
         }).toList();
+    }
+
+    private Item dtoToEntity(DtoItemRequest dto){
+        Item item = new Item();
+        Product product = productService.getById(dto.productId());
+        if (product.getStock() < dto.quantity()) throw new BadRequestException("exception.item.quantity.not.available");
+        item.setProduct(product);
+        item.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(dto.quantity())));
+        item.setQuantity(dto.quantity());
+
+        return item;
     }
 }
