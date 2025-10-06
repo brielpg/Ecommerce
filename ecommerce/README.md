@@ -53,9 +53,12 @@
 
 ## 👤 User
 
-| Method | Endpoint        | Description              | Permission              |
-|--------|-----------------|--------------------------|-------------------------|
-| GET    | /api/users      | Lists all active users   | Admin                   |
-| GET    | /api/users/{id} | Fetches a user by its ID | Resource owner or Admin |
-| PUT    | /api/users      | Updates a user's data    | Resource owner or Admin |
-| DELETE | /api/users/{id} | Deactivates a user       | Resource owner or Admin |
+| Method | Endpoint                              | Description                                         | Permission              |
+|--------|---------------------------------------|-----------------------------------------------------|-------------------------|
+| GET    | /api/users                            | Lists all active users                              | Admin                   |
+| GET    | /api/users/{id}                       | Fetches a user by its ID                            | Resource owner or Admin |
+| PUT    | /api/users                            | Updates a user's data                               | Resource owner or Admin |
+| DELETE | /api/users/{id}                       | Deactivates a user                                  | Resource owner or Admin |
+| GET    | /api/users/{id}/favorites             | List all products the user has added to favorites   | Resource owner or Admin |
+| POST   | /api/users/{id}/favorites/{productId} | Adds a product to the user's list of favorites      | Resource owner or Admin |
+| DELETE | /api/users/{id}/favorites/{productId} | Removes a product from the user's list of favorites | Resource owner or Admin |

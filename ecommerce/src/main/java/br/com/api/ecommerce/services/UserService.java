@@ -91,6 +91,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public List<ProductDtoList> getFavorites(UUID id) {
         List<Product> favorites = repository.getFavorites(id);
 
@@ -98,11 +99,13 @@ public class UserService {
     }
 
     @Transactional
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public void addFavorite(UUID id, UUID productId) {
         repository.addFavorite(id, productId);
     }
 
     @Transactional
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public void removeFavorite(UUID id, UUID productId) {
         repository.removeFavorite(id, productId);
     }
