@@ -31,6 +31,9 @@ public class OrderService {
     private AuthorizationService authorizationService;
 
     @Autowired
+    private DiscountService discountService;
+
+    @Autowired
     private ItemService itemService;
 
     @Transactional(readOnly = true)
@@ -64,12 +67,18 @@ public class OrderService {
 
         List<Item> items = itemService.createListOfItems(dto.items(), order);
 
-        BigDecimal total = items.stream()
+        BigDecimal subtotal = items.stream()
                 .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         order.setItems(items);
-        order.setSubtotal(total);
+        order.setSubtotal(subtotal);
+
+        BigDecimal totalPrice = (order.getCoupon() != null)
+                ? discountService.calculateDiscount(order, subtotal)
+                : subtotal;
+
+        order.setTotalPrice(totalPrice);
 
         items.forEach(item -> {
             Product product = item.getProduct();
