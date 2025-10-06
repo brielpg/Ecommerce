@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-public class DiscountService {
+public class CouponService {
 
     public BigDecimal calculateDiscount(Order order, BigDecimal subtotal) {
         if (!order.getCoupon().isValid())

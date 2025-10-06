@@ -31,7 +31,7 @@ public class OrderService {
     private AuthorizationService authorizationService;
 
     @Autowired
-    private DiscountService discountService;
+    private CouponService discountService;
 
     @Autowired
     private ItemService itemService;
