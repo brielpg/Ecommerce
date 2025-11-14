@@ -42,7 +42,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login", "/logout").permitAll()
                         .requestMatchers(HttpMethod.GET, "/", "/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/cart", "/categories", "/profile").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/cart", "/profile").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
