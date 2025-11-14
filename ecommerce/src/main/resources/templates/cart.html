@@ -24,6 +24,7 @@
                                 <th>Quantidade</th>
                                 <th>Preço Unitário</th>
                                 <th>Subtotal</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -32,11 +33,21 @@
                                 <td th:text="${item.quantity}">1</td>
                                 <td>R$ <span th:text="${#numbers.formatDecimal(item.product.price, 1, 2)}">0.00</span></td>
                                 <td>R$ <span th:text="${#numbers.formatDecimal(item.subTotal, 1, 2)}">0.00</span></td>
+                                <td>
+                                    <form th:action="@{/cart/remove}" method="post" class="d-inline">
+                                        <input type="hidden" name="productId" th:value="${item.product.id}">
+                                        <input type="number" name="quantity" min="1" th:max="${item.quantity}" class="form-control d-inline" style="width: 80px;" placeholder="Qtd">
+                                        <button type="submit" class="btn btn-danger btn-sm">Remover</button>
+                                    </form>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="text-end">
                         <h4>Total: R$ <span th:text="${#numbers.formatDecimal(cart.totalPrice, 1, 2)}">0.00</span></h4>
+                        <form th:action="@{/cart/clear}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-warning">Limpar Carrinho</button>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -47,4 +47,31 @@ public class CartController {
         }
         return "redirect:/";
     }
+
+    @PostMapping("/cart/remove")
+    public String removeFromCart(@AuthenticationPrincipal User user,
+                                 @RequestParam UUID productId,
+                                 @RequestParam Integer quantity,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            DtoItemRequest itemRequest = new DtoItemRequest(productId, quantity);
+            cartService.removeItemsFromUserCart(user.getId(), List.of(itemRequest));
+            redirectAttributes.addFlashAttribute("success", "Produto removido do carrinho!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erro ao remover produto do carrinho: " + e.getMessage());
+        }
+        return "redirect:/cart";
+    }
+
+    @PostMapping("/cart/clear")
+    public String clearCart(@AuthenticationPrincipal User user,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            cartService.clearUserCart(user.getId());
+            redirectAttributes.addFlashAttribute("success", "Carrinho limpo!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erro ao limpar carrinho: " + e.getMessage());
+        }
+        return "redirect:/cart";
+    }
 }
