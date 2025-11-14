@@ -41,13 +41,13 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login", "/logout").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/home", "/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products", "/cart", "/categories", "/profile").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/", "/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/cart", "/categories", "/profile").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .formLogin(f -> f.loginPage("/login").defaultSuccessUrl("/home", true))
-                .logout(l -> l.logoutSuccessUrl("/home").invalidateHttpSession(true).deleteCookies("JSESSIONID"))
+                .formLogin(f -> f.loginPage("/login").defaultSuccessUrl("/", true))
+                .logout(l -> l.logoutSuccessUrl("/").invalidateHttpSession(true).deleteCookies("JSESSIONID"))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

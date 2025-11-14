@@ -15,21 +15,41 @@
                 <h1>Bem-vindo ao Ecommerce</h1>
                 <p>Esta é a página inicial da nossa aplicação de e-commerce.</p>
 
+                <!-- Exibir mensagens de sucesso ou erro -->
+                <div th:if="${success}" class="alert alert-success" role="alert">
+                    <span th:text="${success}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <span th:text="${error}"></span>
+                </div>
+
                 <div sec:authorize="!isAuthenticated()">
                     <p>Para acessar mais funcionalidades, faça o login.</p>
                     <a href="/login" class="btn btn-primary">Fazer Login</a>
                 </div>
 
                 <div sec:authorize="isAuthenticated()">
-                    <p>Você está logado e pode acessar as funcionalidades da API e das telas MVC.</p>
-                    <div class="mt-4">
-                        <h3>Links das Telas MVC:</h3>
-                        <ul>
-                            <li><a href="/products">Produtos</a></li>
-                            <li><a href="/categories">Categorias</a></li>
-                            <li><a href="/cart">Carrinho</a></li>
-                            <li><a href="/profile">Perfil</a></li>
-                        </ul>
+                    <!-- Exibição dos Produtos -->
+                    <div class="mt-15">
+                        <h2>Produtos em Destaque</h2>
+                        <div class="row">
+                            <div class="col-md-4 mb-4" th:each="product : ${products.content}">
+                                <div class="card h-100">
+                                    <!-- Imagem do Produto (placeholder se não houver) -->
+                                    <img src="https://via.placeholder.com/300x200?text=Imagem+do+Produto" class="card-img-top" alt="Imagem do Produto">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title fw-bold" th:text="${product.name}">Nome do Produto</h5>
+                                        <p class="card-text" th:text="${product.description}">Descrição do produto</p>
+                                        <p class="card-text fw-bold">R$ <span th:text="${#numbers.formatDecimal(product.price, 1, 2)}">0.00</span></p>
+                                        <form th:action="@{/cart/add}" method="post" class="mt-auto">
+                                            <input type="hidden" th:name="productId" th:value="${product.id}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn btn-primary w-100">Adicionar ao Carrinho</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

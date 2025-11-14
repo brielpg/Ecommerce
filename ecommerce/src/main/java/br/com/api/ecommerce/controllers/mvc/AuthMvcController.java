@@ -14,6 +14,6 @@ public class AuthMvcController {
 
     @PostMapping("/login")
     public String loginPost() {
-        return "redirect:/home";
+        return "redirect:/";
     }
 }
