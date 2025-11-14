@@ -11,14 +11,14 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h1 class="card-title text-danger">Oops! Algo deu errado</h1>
-                        <p class="card-text">Desculpe, ocorreu um erro inesperado. Por favor, tente novamente mais tarde.</p>
-                        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
-                            <span th:text="${errorMessage}">Mensagem de erro</span>
-                        </div>
-                        <a href="/" class="btn btn-primary">Voltar à Página Inicial</a>
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        <h3 class="text-center">Ops! Algo deu errado</h3>
+                    </div>
+                    <div class="card-body text-center">
+                        <p>Desculpe, ocorreu um erro inesperado. Tente novamente mais tarde.</p>
+<!--                        <p th:if="${errorMessage}" class="text-muted">Detalhes: <span th:text="${errorMessage}"></span></p>-->
+                        <a href="/" class="btn btn-primary">Voltar ao Início</a>
                     </div>
                 </div>
             </div>
