@@ -13,30 +13,35 @@
     <div class="container">
         <a class="navbar-brand" href="/">Ecommerce</a>
         <div class="navbar-nav ms-auto">
-            <div class="d-flex align-items-center" sec:authorize="!isAuthenticated()">
-                <a class="nav-link" href="/login">Login</a>
-                <a class="nav-link" href="/register">Criar Conta</a>
-            </div>
-            <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
+            <div class="d-flex align-items-center">
                 <a class="nav-link" href="/admin" sec:authorize="hasRole('ADMIN')">Administração</a>
+
+                <a class="nav-link" href="#">
+                    <i class="fa-solid fa-heart-o me-2"></i> Favoritos
+                </a>
 
                 <div class="dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa-solid fa-circle-user fs-5"></i>
-                        <span class="ms-2">Olá, <span sec:authentication="principal.username"></span></span>
+                        <span class="ms-2">Minha Conta</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li>
+                        <li sec:authorize="!isAuthenticated()">
+                            <a class="dropdown-item d-flex align-items-center" href="/login">
+                                <i class="fa-solid fa-user me-2"></i> Login
+                            </a>
+                        </li>
+                        <li sec:authorize="!isAuthenticated()">
+                            <a class="dropdown-item d-flex align-items-center" href="/register">
+                                <i class="fa-solid fa-user me-2"></i> Criar Conta
+                            </a>
+                        </li>
+                        <li sec:authorize="isAuthenticated()">
                             <a class="dropdown-item d-flex align-items-center" href="/profile">
                                 <i class="fa-solid fa-user me-2"></i> Meu Perfil
                             </a>
                         </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="/cart">
-                                <i class="fa-solid fa-cart-shopping me-2"></i> Carrinho
-                            </a>
-                        </li>
-                        <li>
+                        <li sec:authorize="isAuthenticated()">
                             <form th:action="@{/logout}" method="post" class="d-inline">
                                 <button type="submit" class="dropdown-item d-flex align-items-center">
                                     <i class="fa-solid fa-right-from-bracket me-2"></i> Sair
@@ -45,6 +50,10 @@
                         </li>
                     </ul>
                 </div>
+
+                <a class="nav-link" href="/cart">
+                    <i class="fa-solid fa-cart-shopping me-2"></i> Carrinho
+                </a>
             </div>
         </div>
     </div>
