@@ -32,19 +32,22 @@ public class SecurityConfiguration {
     @Autowired
     private SecurityFilter securityFilter;
 
-    @Value("${infra.front.endpoints}")
-    private String frontEndpoints;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login", "/logout").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/home", "/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products", "/cart", "/categories", "/profile").authenticated()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .formLogin(f -> f.loginPage("/login").defaultSuccessUrl("/home", true))
+                .logout(l -> l.logoutSuccessUrl("/home").invalidateHttpSession(true).deleteCookies("JSESSIONID"))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -57,22 +60,5 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        List<String> origins = Arrays.stream(frontEndpoints.split(";"))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty()).toList();
-
-        config.setAllowedOrigins(origins);
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
     }
 }
