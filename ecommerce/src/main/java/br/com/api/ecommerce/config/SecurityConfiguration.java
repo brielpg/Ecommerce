@@ -41,8 +41,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login", "/logout", "/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/", "/login", "/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/cart", "/profile").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/", "/login", "/register", "/error").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/favorites/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/cart", "/profile", "/favorites").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
