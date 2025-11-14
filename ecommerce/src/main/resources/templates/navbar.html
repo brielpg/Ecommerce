@@ -13,8 +13,9 @@
     <div class="container">
         <a class="navbar-brand" href="/">Ecommerce</a>
         <div class="navbar-nav ms-auto">
-            <div sec:authorize="!isAuthenticated()">
+            <div class="d-flex align-items-center" sec:authorize="!isAuthenticated()">
                 <a class="nav-link" href="/login">Login</a>
+                <a class="nav-link" href="/register">Criar Conta</a>
             </div>
             <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
                 <a class="nav-link" href="/admin" sec:authorize="hasRole('ADMIN')">Administração</a>

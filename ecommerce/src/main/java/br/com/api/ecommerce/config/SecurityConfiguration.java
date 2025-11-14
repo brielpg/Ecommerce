@@ -40,8 +40,8 @@ public class SecurityConfiguration {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login", "/logout").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/", "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login", "/logout", "/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/", "/login", "/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/cart", "/profile").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
