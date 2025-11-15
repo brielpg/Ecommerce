@@ -25,13 +25,8 @@
                     <span th:text="${error}"></span>
                 </div>
 
-                <div sec:authorize="!isAuthenticated()">
-                    <p>Para acessar mais funcionalidades, faça o login.</p>
-                    <a href="/login" class="btn btn-primary">Fazer Login</a>
-                </div>
-
                 <!-- Carrossel de Categorias -->
-                <div class="mt-5" sec:authorize="isAuthenticated()">
+                <div class="mt-5">
                     <h3>Categorias</h3>
                     <div id="categoriesCarousel" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
@@ -58,14 +53,14 @@
                     </div>
                 </div>
 
-                <div class="mt-35" sec:authorize="isAuthenticated()">
+                <div class="mt-35">
                     <!-- Exibição dos Produtos -->
                     <div class="mt-5">
                         <h2>Produtos em Destaque</h2>
                         <div class="row">
                             <div class="col-md-4 mb-4" th:each="product : ${products.content}">
                                 <div class="card h-100 position-relative">
-                                    <form th:action="@{/favorites/{productId}(productId=${product.id})}" method="post" class="position-absolute top-0 end-0 m-2">
+                                    <form th:action="@{/favorites/{productId}(productId=${product.id})}" method="post" class="position-absolute top-0 end-0 m-2" sec:authorize="isAuthenticated()">
                                         <button type="submit" class="btn btn-outline-danger favorite-overlay-btn">
                                             <i th:class="${favoriteIds.contains(product.id)} ? 'fas fa-heart' : 'far fa-heart'"></i>
                                         </button>
