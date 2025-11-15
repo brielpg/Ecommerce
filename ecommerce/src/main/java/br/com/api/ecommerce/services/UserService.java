@@ -65,7 +65,7 @@ public class UserService {
     }
 
     @Transactional
-    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
+    @PreAuthorize("#dto.id() == authentication.principal.id or hasRole('ADMIN')")
     public User update(UserDtoUpdate dto) {
         User user = this.getById(dto.id());
 
