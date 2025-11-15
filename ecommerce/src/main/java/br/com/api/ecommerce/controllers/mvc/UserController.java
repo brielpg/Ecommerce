@@ -2,13 +2,16 @@ package br.com.api.ecommerce.controllers.mvc;
 
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
+import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
 import br.com.api.ecommerce.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -47,5 +50,23 @@ public class UserController {
         }
 
         return "redirect:" + request.getHeader("Referer");
+    }
+
+    @PostMapping("/profile/update")
+    public String updateProfile(@AuthenticationPrincipal User user, @Valid UserDtoUpdate dto, Model model) {
+        try {
+            userService.update(dto);
+            model.addAttribute("success", "Perfil atualizado com sucesso!");
+        } catch (Exception e) {
+            model.addAttribute("error", "Erro ao atualizar perfil: " + e.getMessage());
+        }
+        model.addAttribute("user", userService.getById(user.getId()));
+        return "profile";
+    }
+
+    @PostMapping("/profile/delete")
+    public String deleteProfile(@AuthenticationPrincipal User user) {
+        userService.delete(user.getId());
+        return "redirect:/logout";
     }
 }
