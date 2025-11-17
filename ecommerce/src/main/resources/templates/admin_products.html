@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Produtos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body style="background-color: rgb(250, 250, 250); display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+<nav th:replace="~{navbar :: navbar}"></nav>
+
+<div th:replace="~{admin_sidebar :: sidebar}"></div>
+
+<div style="flex-grow: 1; margin-left: 250px; padding-top: 80px;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="fa-solid fa-box me-2"></i>Gerenciar Produtos</h1>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createProductModal">
+                        <i class="fa-solid fa-plus me-2"></i>Novo Produto
+                    </button>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="get" th:action="@{/admin/products}" class="row g-3">
+                            <div class="col-md-4">
+                                <label for="search" class="form-label">Pesquisar</label>
+                                <input type="text" class="form-control" id="search" name="search" th:value="${param.search}" placeholder="Nome do produto...">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="categoryId" class="form-label">Categoria</label>
+                                <select class="form-select" id="categoryId" name="categoryId">
+                                    <option value="">Todas as categorias</option>
+                                    <option th:each="category : ${allCategories}" th:value="${category.id}" th:text="${category.name}" th:selected="${param.categoryId == category.id}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-outline-primary d-block">
+                                    <i class="fa-solid fa-search me-2"></i>Pesquisar
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <a href="/admin/products" class="btn btn-outline-secondary d-block">
+                                    <i class="fa-solid fa-times me-2"></i>Limpar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Lista de Produtos</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Preço</th>
+                                    <th>Estoque</th>
+                                    <th>Ações</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="product : ${products.content}">
+                                    <td th:text="${product.id}"></td>
+                                    <td th:text="${product.name}"></td>
+                                    <td>R$ <span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></td>
+                                    <td th:text="${product.stock}"></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning me-2" onclick="editProduct(this)"
+                                                th:data-id="${product.id}"
+                                                th:data-name="${product.name}"
+                                                th:data-price="${product.price}"
+                                                th:data-description="${product.description}"
+                                                th:data-stock="${product.stock}">
+                                            <i class="fa-solid fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(this)" th:data-id="${product.id}" th:data-name="${product.name}">
+                                            <i class="fa-solid fa-trash"></i> Excluir
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <nav aria-label="Products pagination" th:if="${totalPages > 1}">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/admin/products(page=${currentPage - 1}, size=10, search=${param.search}, categoryId=${param.categoryId})}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
+                                    <a class="page-link" th:href="@{/admin/products(page=${i}, size=10, search=${param.search}, categoryId=${param.categoryId})}" th:text="${i + 1}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/admin/products(page=${currentPage + 1}, size=10, search=${param.search}, categoryId=${param.categoryId})}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createProductModal" tabindex="-1" aria-labelledby="createProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createProductModalLabel">Criar Novo Produto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="productForm" method="post" th:action="@{/admin/products}" th:object="${productDto}" enctype="multipart/form-data" data-mode="create">
+                <div class="modal-body">
+                    <input type="hidden" id="productId" name="id">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="productName" class="form-label">Nome do Produto</label>
+                                <input type="text" class="form-control" id="productName" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="productPrice" class="form-label">Preço</label>
+                                <input type="number" step="0.01" class="form-control" id="productPrice" name="price" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="productDescription" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="productStock" class="form-label">Estoque</label>
+                                <input type="number" class="form-control" id="productStock" name="stock" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="productCategories" class="form-label">Categorias</label>
+                                <select multiple class="form-select" id="productCategories" name="categories">
+                                    <option th:each="category : ${allCategories}" th:value="${category.id}" th:text="${category.name}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productImage" class="form-label">Imagem do Produto</label>
+                        <input type="file" class="form-control" id="productImage" name="image" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="saveProductBtn">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function editProduct(button) {
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const price = button.getAttribute('data-price');
+        const description = button.getAttribute('data-description');
+        const stock = button.getAttribute('data-stock');
+        const categoriesString = button.getAttribute('data-categories');
+        const categories = categoriesString ? categoriesString.split(',') : [];
+
+        // 1. Armazena os dados originais no formulário
+        const form = document.getElementById('productForm');
+        form.dataset.originalId = id;
+        form.dataset.originalName = name;
+        // O preço e estoque precisam ser strings para comparação direta com o valor do input
+        form.dataset.originalPrice = parseFloat(price).toFixed(2);
+        form.dataset.originalDescription = description;
+        form.dataset.originalStock = stock;
+        form.dataset.originalCategories = categories.join(',');
+
+        // 2. Preenche os campos do formulário (o restante do código é o mesmo)
+        document.getElementById('productId').value = id;
+        document.getElementById('productName').value = name;
+        document.getElementById('productPrice').value = form.dataset.originalPrice;
+        document.getElementById('productDescription').value = description;
+        document.getElementById('productStock').value = stock;
+
+        // 3. Define as categorias selecionadas
+        const categorySelect = document.getElementById('productCategories');
+        for (let option of categorySelect.options) {
+            option.selected = categories.includes(option.value);
+        }
+
+        // 4. Configura o formulário para MODO EDIÇÃO
+        form.dataset.mode = 'edit';
+        document.getElementById('saveProductBtn').innerHTML = 'Atualizar';
+        document.getElementById('createProductModalLabel').innerHTML = 'Editar Produto';
+        document.getElementById('productImage').required = false;
+
+        const modal = new bootstrap.Modal(document.getElementById('createProductModal'));
+        modal.show();
+    }
+
+    function deleteProduct(button) {
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+
+        if (confirm(`Tem certeza que deseja excluir o produto "${name}"?`)) {
+            fetch(`/api/products/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao excluir produto');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro ao excluir produto');
+            });
+        }
+    }
+
+    document.getElementById('productForm').addEventListener('submit', function (event) {
+        const form = event.target;
+        const productId = document.getElementById('productId').value;
+        const mode = form.dataset.mode;
+
+        if (mode === 'edit' && productId) {
+            event.preventDefault();
+
+            // 1. Coleta os valores atuais e originais
+            const currentPrice = document.getElementById('productPrice').value.replace(',', '.');
+            const currentStock = document.getElementById('productStock').value;
+            const currentName = document.getElementById('productName').value;
+            const currentDescription = document.getElementById('productDescription').value;
+            const originalName = form.dataset.originalName;
+            const originalDescription = form.dataset.originalDescription;
+            const originalPrice = form.dataset.originalPrice;
+            const originalStock = form.dataset.originalStock;
+
+            // 2. Constrói o DTO de atualização parcial
+            const productData = {
+                id: productId
+            };
+
+            // Compara e adiciona ao JSON SOMENTE se for diferente
+            if (currentName !== originalName) { productData.name = currentName; }
+            if (currentDescription !== originalDescription) { productData.description = currentDescription; }
+            if (currentPrice !== originalPrice) {  productData.price = parseFloat(currentPrice); }
+            if (currentStock !== originalStock) { productData.stock = parseInt(currentStock); }
+
+            const keysToUpdate = Object.keys(productData).filter(key => key !== 'id');
+
+            if (keysToUpdate.length === 0) {
+                alert('Nenhuma alteração detectada para o produto.');
+                // Fecha o modal se nada foi alterado
+                bootstrap.Modal.getInstance(document.getElementById('createProductModal')).hide();
+                return;
+            }
+
+            // Se houver campos alterados, realiza o PUT
+            fetch('/api/products', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    return response.json().then(err => {
+                        alert(`Erro ao atualizar produto: ${err.message || response.statusText}`);
+                    }).catch(() => {
+                        alert(`Erro ao atualizar produto: ${response.statusText}`);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro de rede ao atualizar produto.');
+            });
+        }
+    });
+
+    // Reset modal when closed
+    document.getElementById('createProductModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('productId').value = '';
+        document.getElementById('productName').value = '';
+        document.getElementById('productPrice').value = '';
+        document.getElementById('productDescription').value = '';
+        document.getElementById('productStock').value = '';
+        document.getElementById('productImage').value = '';
+
+        // Limpa as seleções de categoria
+        const categorySelect = document.getElementById('productCategories');
+        for (let option of categorySelect.options) {
+            option.selected = false;
+        }
+
+        // Restaura o texto e título para o modo CRIAÇÃO
+        document.getElementById('saveProductBtn').innerHTML = 'Salvar';
+        document.getElementById('createProductModalLabel').innerHTML = 'Criar Novo Produto';
+    });
+
+</script>
+</body>
+<footer th:replace="~{footer :: footer}"></footer>
+</html>

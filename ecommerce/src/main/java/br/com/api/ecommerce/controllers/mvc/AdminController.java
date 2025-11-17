@@ -5,7 +5,9 @@ import br.com.api.ecommerce.models.dtos.Category.CategoryDtoForm;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoUpdate;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
+import br.com.api.ecommerce.models.dtos.Product.ProductDtoForm;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
+import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.services.CategoryService;
 import br.com.api.ecommerce.services.ProductService;
@@ -55,6 +57,7 @@ public class AdminController {
         return "admin";
     }
 
+    // CATEGORIES
     @GetMapping("/admin/categories")
     public String categories(@RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "10") int size,
@@ -92,8 +95,7 @@ public class AdminController {
         return "redirect:/admin/categories";
     }
 
-
-
+    // PRODUCTS
     @GetMapping("/admin/products")
     public String products(@RequestParam(defaultValue = "0") int page,
                           @RequestParam(defaultValue = "10") int size,
@@ -113,20 +115,29 @@ public class AdminController {
     }
 
     @PostMapping("/admin/products")
-    public String createProduct(@Valid ProductDtoCreate dto, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String createOrUpdateProduct(@Valid ProductDtoForm dtoForm, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao criar produto: " + result.getAllErrors().get(0).getDefaultMessage());
-            return "redirect:/admin/products";
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar categoria: " + result.getAllErrors().get(0).getDefaultMessage());
+            return "redirect:/admin/categories";
         }
         try {
-            productService.create(dto);
-            redirectAttributes.addFlashAttribute("successMessage", "Produto criado com sucesso!");
+            if (dtoForm.id() != null) {
+                ProductDtoUpdate dtoUpdate = new ProductDtoUpdate(dtoForm.id(), dtoForm.name(), dtoForm.description(), dtoForm.price(), dtoForm.stock());
+                System.out.println(dtoForm);
+                productService.update(dtoUpdate);
+                redirectAttributes.addFlashAttribute("successMessage", "Produto atualizado com sucesso!");
+            } else {
+                ProductDtoCreate dtoCreate = new ProductDtoCreate(dtoForm.name(), dtoForm.description(), dtoForm.price(), dtoForm.stock(), dtoForm.categories());
+                productService.create(dtoCreate);
+                redirectAttributes.addFlashAttribute("successMessage", "Produto criado com sucesso!");
+            }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao criar produto: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar produto: " + e.getMessage());
         }
         return "redirect:/admin/products";
     }
 
+    // USERS
     @GetMapping("/admin/users")
     public String users(@RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "10") int size,
