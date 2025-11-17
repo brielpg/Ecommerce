@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Sidebar</title>
+</head>
+<body>
+<div th:fragment="sidebar" class="bg-dark text-white vh-100" style="width: 250px; position: fixed; left: 0; top: 56px; overflow-y: auto;">
+    <div class="p-3">
+        <h5 class="text-center mb-4">Administração</h5>
+        <ul class="nav flex-column">
+            <li class="nav-item mb-2">
+                <a class="nav-link text-white d-flex align-items-center" href="/admin">
+                    <i class="fa-solid fa-tachometer-alt me-2"></i> Visão Geral
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-white d-flex align-items-center" href="/admin/products">
+                    <i class="fa-solid fa-box me-2"></i> Produtos
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-white d-flex align-items-center" href="/admin/categories">
+                    <i class="fa-solid fa-tags me-2"></i> Categorias
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-white d-flex align-items-center" href="/admin/users">
+                    <i class="fa-solid fa-users me-2"></i> Usuários
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
