@@ -68,6 +68,15 @@ public class ProductService {
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
+    public void restore(UUID id) {
+        Product product = this.getById(id);
+
+        product.setActive(true);
+        this.save(product);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(UUID id) {
         Product product = this.getById(id);
 

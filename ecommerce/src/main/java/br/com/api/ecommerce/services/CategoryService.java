@@ -61,6 +61,15 @@ public class CategoryService {
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
+    public void restore(UUID id) {
+        Category category = this.getById(id);
+
+        category.setActive(true);
+        this.save(category);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(UUID id) {
         Category category = this.getById(id);
 
