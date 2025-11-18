@@ -83,6 +83,15 @@ public class UserService {
 
     @Transactional
     @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
+    public void restore(UUID id) {
+        User user = this.getById(id);
+
+        user.setActive(true);
+        repository.save(user);
+    }
+
+    @Transactional
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public void delete(UUID id) {
         User user = this.getById(id);
 

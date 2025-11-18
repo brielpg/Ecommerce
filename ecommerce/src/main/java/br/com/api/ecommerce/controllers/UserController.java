@@ -43,6 +43,12 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restore(@PathVariable UUID id){
+        service.restore(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id){
         service.delete(id);
