@@ -17,6 +17,11 @@ public record UserDtoUpdate(
         @Pattern(regexp = "\\d{10,15}", message = "{dto.user.phone.pattern}")
         String phone,
         @Past(message = "{dto.user.birthdate.past}")
-        LocalDate birthDate
+        LocalDate birthDate,
+        @NotBlank(message = "{dto.user.current.password.notblank}")
+        String currentPassword,
+        String newPassword,
+        @Valid
+        List<AddressDtoCreate> addresses
 ) {
 }

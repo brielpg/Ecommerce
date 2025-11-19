@@ -1,7 +1,9 @@
 package br.com.api.ecommerce.services;
 
+import br.com.api.ecommerce.exceptions.BadRequestException;
 import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
+import br.com.api.ecommerce.models.Address;
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.User;
@@ -69,6 +71,9 @@ public class UserService {
     public User update(UserDtoUpdate dto) {
         User user = this.getById(dto.id());
 
+        if (!authorizationService.matchesPassword(dto.currentPassword(), user.getPassword()))
+            throw new BadRequestException("exception.user.current.password.invalid");
+
         if (dto.email() != null && !dto.email().equals(user.getEmail())) {
             this.existsByEmail(dto.email());
             user.setEmail(dto.email());
@@ -77,6 +82,17 @@ public class UserService {
         if (dto.name() != null) user.setName(dto.name());
         if (dto.phone() != null) user.setPhone(dto.phone());
         if (dto.birthDate() != null) user.setBirthDate(dto.birthDate());
+
+        if (dto.newPassword() != null && !dto.newPassword().isBlank()) {
+            String encodedNewPassword = authorizationService.encodePassword(dto.newPassword());
+            user.setPassword(encodedNewPassword);
+        }
+
+        if (dto.addresses() != null) {
+            user.getAddresses().clear();
+            List<Address> newAddresses = addressService.create(dto.addresses(), user);
+            user.getAddresses().addAll(newAddresses);
+        }
 
         return repository.save(user);
     }
