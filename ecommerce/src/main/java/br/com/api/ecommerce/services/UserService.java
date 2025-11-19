@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +40,9 @@ public class UserService {
 
     @Autowired
     private AuthorizationService authorizationService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Transactional
     public User create(UserDtoCreate dto){
@@ -71,7 +74,7 @@ public class UserService {
     public User update(UserDtoUpdate dto) {
         User user = this.getById(dto.id());
 
-        if (!authorizationService.matchesPassword(dto.currentPassword(), user.getPassword()))
+        if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword()))
             throw new BadRequestException("exception.user.current.password.invalid");
 
         if (dto.email() != null && !dto.email().equals(user.getEmail())) {
