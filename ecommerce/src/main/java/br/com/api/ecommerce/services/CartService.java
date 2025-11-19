@@ -62,8 +62,6 @@ public class CartService {
     public void addItemsToUserCart(UUID userId, List<DtoItemRequest> itemsDto) {
         Cart cart = this.getByUserId(userId);
 
-        BigDecimal totalPriceToAdd = BigDecimal.ZERO;
-
         for (DtoItemRequest itemRequest : itemsDto) {
             Item existingItem = cart.getItems().stream()
                     .filter(item -> item.getProduct().getId().equals(itemRequest.productId()))

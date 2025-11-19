@@ -24,8 +24,6 @@ public class ItemService {
         Item item = new Item();
         Product product = productService.getById(itemRequest.productId());
 
-        this.validateStock(product.getStock(), itemRequest.quantity());
-
         item.setProduct(product);
         item.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
         item.setQuantity(itemRequest.quantity());
