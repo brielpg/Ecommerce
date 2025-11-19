@@ -27,9 +27,6 @@ public class CartService {
     private CartRepository repository;
 
     @Autowired
-    private ProductService productService;
-
-    @Autowired
     private ItemService itemService;
 
 
@@ -74,17 +71,16 @@ public class CartService {
                     .orElse(null);
 
             if (existingItem != null) {
-                existingItem.setQuantity(existingItem.getQuantity() + itemRequest.quantity());
-                existingItem.setSubTotal(existingItem.getProduct().getPrice().multiply(BigDecimal.valueOf(existingItem.getQuantity())));
-                totalPriceToAdd = totalPriceToAdd.add(existingItem.getProduct().getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
+                int newQuantity = existingItem.getQuantity() + itemRequest.quantity();
+                existingItem.setQuantity(newQuantity);
+                existingItem.setSubTotal(existingItem.getProduct().getPrice().multiply(BigDecimal.valueOf(newQuantity)));
             } else {
                 Item item = itemService.create(itemRequest, cart);
                 cart.getItems().add(item);
-                totalPriceToAdd = totalPriceToAdd.add(item.getProduct().getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
             }
         }
 
-        cart.setTotalPrice(cart.getTotalPrice().add(totalPriceToAdd));
+        this.recalculateCartTotal(cart);
         this.save(cart);
     }
 
@@ -94,7 +90,6 @@ public class CartService {
         if (itemsToRemove.isEmpty()) throw new BadRequestException("exception.cart.items.is.empty");
 
         Cart cart = this.getByUserId(userId);
-        BigDecimal totalPriceToRemove = BigDecimal.ZERO;
 
         for (DtoItemRequest itemRequest : itemsToRemove) {
             Item itemToRemove = cart.getItems().stream()
@@ -111,17 +106,35 @@ public class CartService {
             if (quantityToRemove.equals(availableQuantity)) {
                 // If the quantity to be removed is equal to the available one, we remove the item
                 cart.getItems().remove(itemToRemove);
-                totalPriceToRemove = totalPriceToRemove.add(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(availableQuantity)));
             } else {
                 // Otherwise, we reduce the amount
-                itemToRemove.setQuantity(availableQuantity - quantityToRemove);
-                itemToRemove.setSubTotal(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(itemToRemove.getQuantity())));
-                totalPriceToRemove = totalPriceToRemove.add(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+                int newQuantity = availableQuantity - quantityToRemove;
+                itemToRemove.setQuantity(newQuantity);
+                itemToRemove.setSubTotal(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(newQuantity)));
             }
         }
 
-        cart.setTotalPrice(cart.getTotalPrice().subtract(totalPriceToRemove));
+        this.recalculateCartTotal(cart);
         this.save(cart);
+    }
+
+    @Transactional
+    public void removeProductFromAllCarts(UUID productId) {
+        List<Cart> carts = repository.findCartsContainingProduct(productId);
+
+        for (Cart cart : carts) {
+            cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
+            this.recalculateCartTotal(cart);
+            repository.save(cart);
+        }
+    }
+
+    private void recalculateCartTotal(Cart cart) {
+        BigDecimal newTotal = cart.getItems().stream()
+                .map(Item::getSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        cart.setTotalPrice(newTotal);
     }
 
     public CartDtoList entityToDto(Cart cart) {
