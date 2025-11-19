@@ -119,6 +119,11 @@ public class UserService {
         repository.removeFavorite(id, productId);
     }
 
+    @Transactional
+    public void removeProductFromAllFavorites(UUID productId) {
+        repository.removeProductFromAllFavorites(productId);
+    }
+
     @Transactional(readOnly = true)
     private void existsByEmail(String email){
         if (repository.existsByEmail(email))

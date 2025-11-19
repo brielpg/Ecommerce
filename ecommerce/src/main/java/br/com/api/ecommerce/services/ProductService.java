@@ -10,6 +10,7 @@ import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +28,14 @@ public class ProductService {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    @Lazy
+    private CartService cartService;
+
+    @Autowired
+    @Lazy
+    private UserService userService;
 
 
     @Transactional
@@ -80,6 +89,9 @@ public class ProductService {
     public void delete(UUID id) {
         Product product = this.getById(id);
 
+        cartService.removeProductFromAllCarts(id);
+        userService.removeProductFromAllFavorites(id);
+
         product.setActive(false);
         this.save(product);
     }
@@ -90,11 +102,9 @@ public class ProductService {
         Product product = this.getById(id);
         List<Category> categories = categoryService.getCategoriesByIds(dto.categories());
 
-        for (Category category : categories){
-            if (!repository.existsCategoryInProduct(id, category.getId())) {
+        for (Category category : categories)
+            if (!repository.existsCategoryInProduct(id, category.getId()))
                 repository.addCategoryToProduct(id, category.getId());
-            }
-        }
 
         this.save(product);
     }
