@@ -23,6 +23,9 @@ public class ItemService {
     public Item create(DtoItemRequest itemRequest, Cart cart) {
         Item item = new Item();
         Product product = productService.getById(itemRequest.productId());
+
+        this.validateStock(product.getStock(), itemRequest.quantity());
+
         item.setProduct(product);
         item.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
         item.setQuantity(itemRequest.quantity());
@@ -36,11 +39,20 @@ public class ItemService {
         return itemsRequest.stream().map(dto -> {
             Item item = new Item();
             Product product = productService.getById(dto.productId());
+
+            this.validateStock(product.getStock(), dto.quantity());
+
             item.setProduct(product);
-            if (product.getStock() < dto.quantity()) throw new BadRequestException("exception.item.quantity.not.available");
+            item.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(dto.quantity())));
             item.setQuantity(dto.quantity());
             item.setOrder(order);
+
             return item;
         }).toList();
+    }
+
+    private void validateStock(Integer stock, Integer quantity){
+        if (stock < quantity)
+            throw new BadRequestException("exception.item.quantity.not.available");
     }
 }
