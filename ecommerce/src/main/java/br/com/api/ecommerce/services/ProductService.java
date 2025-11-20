@@ -37,6 +37,10 @@ public class ProductService {
     @Lazy
     private UserService userService;
 
+    @Autowired
+    @Lazy
+    private ItemService itemService;
+
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
@@ -68,8 +72,12 @@ public class ProductService {
 
         if (dto.name() != null) product.setName(dto.name());
         if (dto.description() != null) product.setDescription(dto.description());
-        if (dto.price() != null) product.setPrice(dto.price());
         if (dto.stock() != null) product.setStock(dto.stock());
+
+        if (dto.price() != null && !dto.price().equals(product.getPrice())) {
+            product.setPrice(dto.price());
+            itemService.updateItemsPrice(product);
+        }
 
         this.save(product);
         return product;

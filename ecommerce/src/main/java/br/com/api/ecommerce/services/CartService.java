@@ -127,7 +127,7 @@ public class CartService {
         }
     }
 
-    private void recalculateCartTotal(Cart cart) {
+    public void recalculateCartTotal(Cart cart) {
         BigDecimal newTotal = cart.getItems().stream()
                 .map(Item::getSubTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
