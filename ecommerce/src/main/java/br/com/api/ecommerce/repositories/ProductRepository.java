@@ -24,8 +24,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("SELECT p FROM Product p LEFT JOIN FETCH p.categories c WHERE p.id = :id AND p.active = true")
     Optional<Product> findByIdAndActiveTrue(UUID id);
 
-    @Query("SELECT new br.com.api.ecommerce.models.dtos.Product.ProductDtoList(p.id, p.name, p.description, p.price, p.stock) FROM Product p WHERE p.active = true")
-    Page<ProductDtoList> findAllByActiveTrue(Pageable pageable);
+    Page<Product> findAllByActiveTrue(Pageable pageable);
 
     @Modifying
     @Query(value = "INSERT INTO tb_product_category (product_id, category_id) VALUES (:productId, :categoryId)", nativeQuery = true)

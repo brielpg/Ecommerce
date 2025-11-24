@@ -21,9 +21,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.addresses a WHERE u.id = :id AND u.active = true")
     Optional<User> findByIdAndActiveTrue(UUID id);
 
-    @Query("SELECT new br.com.api.ecommerce.models.dtos.User.UserDtoList(u.id, u.name, u.email) FROM User u WHERE u.active = true")
-    Page<UserDtoList> findAllByActiveTrue(Pageable pageable);
-
     @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.email = ?1")
     boolean existsByEmail(String email);
 

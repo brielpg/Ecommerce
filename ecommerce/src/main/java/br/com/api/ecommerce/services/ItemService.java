@@ -6,6 +6,7 @@ import br.com.api.ecommerce.models.Item;
 import br.com.api.ecommerce.models.Order;
 import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
+import br.com.api.ecommerce.models.dtos.Item.ItemDtoList;
 import br.com.api.ecommerce.repositories.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -73,5 +74,14 @@ public class ItemService {
         }
 
         repository.saveAll(items);
+    }
+
+    public ItemDtoList entityToDto(Item item) {
+        return new ItemDtoList(
+                item.getId(),
+                productService.entityToDto(item.getProduct()),
+                item.getQuantity(),
+                item.getSubTotal()
+        );
     }
 }

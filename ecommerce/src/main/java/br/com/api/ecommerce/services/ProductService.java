@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,32 +42,48 @@ public class ProductService {
     @Lazy
     private ItemService itemService;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public Product create(ProductDtoCreate dto){
+    public ProductDtoList create(ProductDtoCreate dto){
         this.existsByName(dto.name());
 
         Product product = dtoToEntity(dto);
 
         this.save(product);
-        return product;
+        return entityToDto(product);
     }
 
     @Transactional(readOnly = true)
     public Page<ProductDtoList> getAll(Pageable pageable) {
-        return repository.findAllByActiveTrue(pageable);
+        Page<Product> products;
+
+        if (authorizationService.validateAdminUser()) {
+            products = repository.findAll(pageable);
+        } else {
+            products = repository.findAllByActiveTrue(pageable);
+        }
+
+        return products.map(this::entityToDto);
     }
 
     @Transactional(readOnly = true)
     public Product getById(UUID id) {
+        if (authorizationService.validateAdminUser()) {
+            Optional<Product> product = repository.findById(id);
+            if (product.isPresent()) return product.get();
+        }
+
         return repository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new NotFoundException("exception.product.not.found"));
     }
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public Product update(ProductDtoUpdate dto) {
+    public ProductDtoList update(ProductDtoUpdate dto) {
         Product product = this.getById(dto.id());
         this.existsByName(dto.name());
 
@@ -80,7 +97,7 @@ public class ProductService {
         }
 
         this.save(product);
-        return product;
+        return entityToDto(product);
     }
 
     @Transactional
@@ -158,7 +175,9 @@ public class ProductService {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getPrice(),
-                entity.getStock()
+                entity.getStock(),
+                entity.getActive(),
+                entity.getTimestamp()
         );
     }
 }

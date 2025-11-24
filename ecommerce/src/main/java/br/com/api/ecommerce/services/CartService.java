@@ -8,7 +8,6 @@ import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.models.dtos.Item.ItemDtoList;
-import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.repositories.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -138,19 +136,7 @@ public class CartService {
     public CartDtoList entityToDto(Cart cart) {
         return new CartDtoList(
                 cart.getId(),
-                cart.getItems().stream()
-                        .map(item -> new ItemDtoList(
-                                item.getId(),
-                                new ProductDtoList(
-                                        item.getProduct().getId(),
-                                        item.getProduct().getName(),
-                                        item.getProduct().getDescription(),
-                                        item.getProduct().getPrice(),
-                                        item.getProduct().getStock()
-                                ),
-                                item.getQuantity(),
-                                item.getSubTotal()
-                        )).toList(),
+                cart.getItems().stream().map(item -> itemService.entityToDto(item)).toList(),
                 cart.getTotalPrice()
         );
     }

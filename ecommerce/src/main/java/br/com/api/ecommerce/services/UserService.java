@@ -7,11 +7,13 @@ import br.com.api.ecommerce.models.Address;
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.User;
+import br.com.api.ecommerce.models.dtos.Address.AddressDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
 import br.com.api.ecommerce.repositories.UserRepository;
+import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,7 +48,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User create(UserDtoCreate dto){
+    public UserDtoList create(UserDtoCreate dto){
         this.existsByEmail(dto.email());
 
         User user = dtoToEntity(dto);
@@ -53,25 +56,33 @@ public class UserService {
         user.setCart(cart);
         user.setPassword(authorizationService.encodePassword(dto.password()));
 
-        return repository.save(user);
+        this.save(user);
+        return entityToDto(user);
     }
 
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ADMIN')")
     public Page<UserDtoList> getAll(Pageable pageable) {
-        return repository.findAllByActiveTrue(pageable);
+        Page<User> users = repository.findAll(pageable);
+
+        return users.map(this::entityToDto);
     }
 
     @Transactional(readOnly = true)
     @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public User getById(UUID id) {
+        if (authorizationService.validateAdminUser()) {
+            Optional<User> user = repository.findById(id);
+            if (user.isPresent()) return user.get();
+        }
+
         return repository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new NotFoundException("exception.user.not.found"));
     }
 
     @Transactional
     @PreAuthorize("#dto.id() == authentication.principal.id or hasRole('ADMIN')")
-    public User update(UserDtoUpdate dto) {
+    public UserDtoList update(UserDtoUpdate dto) {
         User user = this.getById(dto.id());
 
         if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword()))
@@ -97,7 +108,8 @@ public class UserService {
             user.getAddresses().addAll(newAddresses);
         }
 
-        return repository.save(user);
+        this.save(user);
+        return entityToDto(user);
     }
 
     @Transactional
@@ -106,7 +118,7 @@ public class UserService {
         User user = this.getById(id);
 
         user.setActive(true);
-        repository.save(user);
+        this.save(user);
     }
 
     @Transactional
@@ -115,7 +127,7 @@ public class UserService {
         User user = this.getById(id);
 
         user.setActive(false);
-        repository.save(user);
+        this.save(user);
     }
 
     @Transactional(readOnly = true)
@@ -149,6 +161,11 @@ public class UserService {
             throw new ConflictException("exception.user.email.already.registered");
     }
 
+    @Transactional
+    private void save(User user) {
+        repository.save(user);
+    }
+
     private User dtoToEntity(UserDtoCreate dto){
         User user = new User();
         user.setName(dto.name());
@@ -158,5 +175,27 @@ public class UserService {
         user.setAddresses(addressService.create(dto.addresses(), user));
 
         return user;
+    }
+
+    public UserDtoList entityToDto(User entity){
+        List<AddressDtoList> addressesDto;
+
+        try {
+            addressesDto = entity.getAddresses().stream().map(a -> addressService.entityToDto(a)).toList();
+        } catch (LazyInitializationException ex) {
+            addressesDto = addressService.findByUserId(entity.getId())
+                    .stream().map(addressService::entityToDto).toList();
+        }
+
+        return new UserDtoList(
+                entity.getId(),
+                entity.getName(),
+                entity.getEmail(),
+                entity.getPhone(),
+                entity.getBirthDate(),
+                addressesDto,
+                entity.getActive(),
+                entity.getTimestamp()
+        );
     }
 }

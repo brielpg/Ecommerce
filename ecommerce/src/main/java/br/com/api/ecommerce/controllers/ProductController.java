@@ -24,8 +24,8 @@ public class ProductController {
     private ProductService service;
 
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody @Valid ProductDtoCreate dto){
-        Product product = service.create(dto);
+    public ResponseEntity<ProductDtoList> create(@RequestBody @Valid ProductDtoCreate dto){
+        ProductDtoList product = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
@@ -36,14 +36,15 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getById(@PathVariable UUID id){
+    public ResponseEntity<ProductDtoList> getById(@PathVariable UUID id){
         Product product = service.getById(id);
-        return ResponseEntity.ok(product);
+        ProductDtoList productDtoList = service.entityToDto(product);
+        return ResponseEntity.ok(productDtoList);
     }
 
     @PutMapping
-    public ResponseEntity<Product> update(@RequestBody @Valid ProductDtoUpdate dto){
-        Product product = service.update(dto);
+    public ResponseEntity<ProductDtoList> update(@RequestBody @Valid ProductDtoUpdate dto){
+        ProductDtoList product = service.update(dto);
         return ResponseEntity.ok(product);
     }
 
