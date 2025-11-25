@@ -32,14 +32,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getById(@PathVariable UUID id){
+    public ResponseEntity<UserDtoList> getById(@PathVariable UUID id){
         User user = service.getById(id);
-        return ResponseEntity.ok(user);
+        UserDtoList userDtoList = service.entityToDto(user);
+        return ResponseEntity.ok(userDtoList);
     }
 
     @PutMapping
-    public ResponseEntity<User> update(@RequestBody @Valid UserDtoUpdate dto){
-        User user = service.update(dto);
+    public ResponseEntity<UserDtoList> update(@RequestBody @Valid UserDtoUpdate dto){
+        UserDtoList user = service.update(dto);
         return ResponseEntity.ok(user);
     }
 

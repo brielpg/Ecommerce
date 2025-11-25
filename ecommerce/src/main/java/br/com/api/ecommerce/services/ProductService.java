@@ -10,13 +10,17 @@ import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,42 +32,93 @@ public class ProductService {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    @Lazy
+    private CartService cartService;
+
+    @Autowired
+    @Lazy
+    private UserService userService;
+
+    @Autowired
+    @Lazy
+    private ItemService itemService;
+
+    @Autowired
+    private AuthorizationService authorizationService;
+
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public Product create(ProductDtoCreate dto){
+    public ProductDtoList create(ProductDtoCreate dto, MultipartFile imageFile){
         this.existsByName(dto.name());
 
         Product product = dtoToEntity(dto);
 
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                product.setImage(imageFile.getBytes());
+            } catch (IOException ignored) {}
+        }
+
         this.save(product);
-        return product;
+        return entityToDto(product);
     }
 
     @Transactional(readOnly = true)
     public Page<ProductDtoList> getAll(Pageable pageable) {
-        return repository.findAllByActiveTrue(pageable);
+        Page<Product> products;
+
+        if (authorizationService.validateAdminUser()) {
+            products = repository.findAll(pageable);
+        } else {
+            products = repository.findAllByActiveTrue(pageable);
+        }
+
+        return products.map(this::entityToDto);
     }
 
     @Transactional(readOnly = true)
     public Product getById(UUID id) {
+        if (authorizationService.validateAdminUser()) {
+            Optional<Product> product = repository.findById(id);
+            if (product.isPresent()) return product.get();
+        }
+
         return repository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new NotFoundException("exception.product.not.found"));
     }
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public Product update(ProductDtoUpdate dto) {
+    public ProductDtoList update(ProductDtoUpdate dto, MultipartFile imageFile) {
         Product product = this.getById(dto.id());
         this.existsByName(dto.name());
 
         if (dto.name() != null) product.setName(dto.name());
         if (dto.description() != null) product.setDescription(dto.description());
-        if (dto.price() != null) product.setPrice(dto.price());
         if (dto.stock() != null) product.setStock(dto.stock());
 
+        if (dto.price() != null && !dto.price().equals(product.getPrice())) {
+            product.setPrice(dto.price());
+            itemService.updateItemsPrice(product);
+        }
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                product.setImage(imageFile.getBytes());
+            } catch (IOException ignored) {}
+        }
+
         this.save(product);
-        return product;
+        return entityToDto(product);
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] getImageById(UUID id) {
+        Product product = this.getById(id);
+
+        return product.getImage();
     }
 
     @Transactional
@@ -80,6 +135,9 @@ public class ProductService {
     public void delete(UUID id) {
         Product product = this.getById(id);
 
+        cartService.removeProductFromAllCarts(id);
+        userService.removeProductFromAllFavorites(id);
+
         product.setActive(false);
         this.save(product);
     }
@@ -90,11 +148,9 @@ public class ProductService {
         Product product = this.getById(id);
         List<Category> categories = categoryService.getCategoriesByIds(dto.categories());
 
-        for (Category category : categories){
-            if (!repository.existsCategoryInProduct(id, category.getId())) {
+        for (Category category : categories)
+            if (!repository.existsCategoryInProduct(id, category.getId()))
                 repository.addCategoryToProduct(id, category.getId());
-            }
-        }
 
         this.save(product);
     }
@@ -140,7 +196,9 @@ public class ProductService {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getPrice(),
-                entity.getStock()
+                entity.getStock(),
+                entity.getActive(),
+                entity.getTimestamp()
         );
     }
 }

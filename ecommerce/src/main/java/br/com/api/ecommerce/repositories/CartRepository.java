@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,4 +23,7 @@ public interface CartRepository extends JpaRepository<Cart, UUID> {
     @Modifying
     @Query("UPDATE Cart c SET c.totalPrice = 0 WHERE c.user.id = :userId")
     void resetCartTotal(@Param("userId") UUID userId);
+
+    @Query("SELECT DISTINCT c FROM Cart c JOIN c.items i WHERE i.product.id = :productId")
+    List<Cart> findCartsContainingProduct(@Param("productId") UUID productId);
 }

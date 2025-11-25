@@ -8,7 +8,6 @@ import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.models.dtos.Item.ItemDtoList;
-import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.repositories.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -25,9 +23,6 @@ public class CartService {
 
     @Autowired
     private CartRepository repository;
-
-    @Autowired
-    private ProductService productService;
 
     @Autowired
     private ItemService itemService;
@@ -65,8 +60,6 @@ public class CartService {
     public void addItemsToUserCart(UUID userId, List<DtoItemRequest> itemsDto) {
         Cart cart = this.getByUserId(userId);
 
-        BigDecimal totalPriceToAdd = BigDecimal.ZERO;
-
         for (DtoItemRequest itemRequest : itemsDto) {
             Item existingItem = cart.getItems().stream()
                     .filter(item -> item.getProduct().getId().equals(itemRequest.productId()))
@@ -74,17 +67,16 @@ public class CartService {
                     .orElse(null);
 
             if (existingItem != null) {
-                existingItem.setQuantity(existingItem.getQuantity() + itemRequest.quantity());
-                existingItem.setSubTotal(existingItem.getProduct().getPrice().multiply(BigDecimal.valueOf(existingItem.getQuantity())));
-                totalPriceToAdd = totalPriceToAdd.add(existingItem.getProduct().getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
+                int newQuantity = existingItem.getQuantity() + itemRequest.quantity();
+                existingItem.setQuantity(newQuantity);
+                existingItem.setSubTotal(existingItem.getProduct().getPrice().multiply(BigDecimal.valueOf(newQuantity)));
             } else {
                 Item item = itemService.create(itemRequest, cart);
                 cart.getItems().add(item);
-                totalPriceToAdd = totalPriceToAdd.add(item.getProduct().getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
             }
         }
 
-        cart.setTotalPrice(cart.getTotalPrice().add(totalPriceToAdd));
+        this.recalculateCartTotal(cart);
         this.save(cart);
     }
 
@@ -94,7 +86,6 @@ public class CartService {
         if (itemsToRemove.isEmpty()) throw new BadRequestException("exception.cart.items.is.empty");
 
         Cart cart = this.getByUserId(userId);
-        BigDecimal totalPriceToRemove = BigDecimal.ZERO;
 
         for (DtoItemRequest itemRequest : itemsToRemove) {
             Item itemToRemove = cart.getItems().stream()
@@ -111,35 +102,41 @@ public class CartService {
             if (quantityToRemove.equals(availableQuantity)) {
                 // If the quantity to be removed is equal to the available one, we remove the item
                 cart.getItems().remove(itemToRemove);
-                totalPriceToRemove = totalPriceToRemove.add(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(availableQuantity)));
             } else {
                 // Otherwise, we reduce the amount
-                itemToRemove.setQuantity(availableQuantity - quantityToRemove);
-                itemToRemove.setSubTotal(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(itemToRemove.getQuantity())));
-                totalPriceToRemove = totalPriceToRemove.add(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(quantityToRemove)));
+                int newQuantity = availableQuantity - quantityToRemove;
+                itemToRemove.setQuantity(newQuantity);
+                itemToRemove.setSubTotal(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(newQuantity)));
             }
         }
 
-        cart.setTotalPrice(cart.getTotalPrice().subtract(totalPriceToRemove));
+        this.recalculateCartTotal(cart);
         this.save(cart);
+    }
+
+    @Transactional
+    public void removeProductFromAllCarts(UUID productId) {
+        List<Cart> carts = repository.findCartsContainingProduct(productId);
+
+        for (Cart cart : carts) {
+            cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
+            this.recalculateCartTotal(cart);
+            repository.save(cart);
+        }
+    }
+
+    public void recalculateCartTotal(Cart cart) {
+        BigDecimal newTotal = cart.getItems().stream()
+                .map(Item::getSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        cart.setTotalPrice(newTotal);
     }
 
     public CartDtoList entityToDto(Cart cart) {
         return new CartDtoList(
                 cart.getId(),
-                cart.getItems().stream()
-                        .map(item -> new ItemDtoList(
-                                item.getId(),
-                                new ProductDtoList(
-                                        item.getProduct().getId(),
-                                        item.getProduct().getName(),
-                                        item.getProduct().getDescription(),
-                                        item.getProduct().getPrice(),
-                                        item.getProduct().getStock()
-                                ),
-                                item.getQuantity(),
-                                item.getSubTotal()
-                        )).toList(),
+                cart.getItems().stream().map(item -> itemService.entityToDto(item)).toList(),
                 cart.getTotalPrice()
         );
     }

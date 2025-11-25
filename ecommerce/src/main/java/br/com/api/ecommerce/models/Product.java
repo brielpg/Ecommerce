@@ -26,6 +26,8 @@ public class Product {
     private String description;
     private BigDecimal price;
     private Integer stock;
+    @Lob
+    private byte[] image;
     @ManyToMany
     @JoinTable(name = "tb_product_category",
             joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))

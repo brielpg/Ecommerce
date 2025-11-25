@@ -20,8 +20,7 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     Optional<Category> findByIdAndActiveTrue(UUID id);
 
-    @Query("SELECT new br.com.api.ecommerce.models.dtos.Category.CategoryDtoList(c.id, c.name, c.description) FROM Category c WHERE c.active = true")
-    Page<CategoryDtoList> findAllByActiveTrue(Pageable pageable);
+    Page<Category> findAllByActiveTrue(Pageable pageable);
 
     @Query("SELECT c FROM Category c WHERE c.id IN :ids AND c.active = true")
     List<Category> findAllByIdInAndActiveTrue(List<UUID> ids);

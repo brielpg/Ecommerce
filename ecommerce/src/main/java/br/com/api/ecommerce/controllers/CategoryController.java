@@ -23,8 +23,8 @@ public class CategoryController {
     private CategoryService service;
 
     @PostMapping
-    public ResponseEntity<Category> create(@RequestBody @Valid CategoryDtoCreate dto){
-        Category category = service.create(dto);
+    public ResponseEntity<CategoryDtoList> create(@RequestBody @Valid CategoryDtoCreate dto){
+        CategoryDtoList category = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
 
@@ -35,18 +35,19 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getById(@PathVariable UUID id){
+    public ResponseEntity<CategoryDtoList> getById(@PathVariable UUID id){
         Category category = service.getById(id);
-        return ResponseEntity.ok(category);
+        CategoryDtoList categoryDtoList = service.entityToDto(category);
+        return ResponseEntity.ok(categoryDtoList);
     }
 
     @PutMapping
-    public ResponseEntity<Category> update(@RequestBody @Valid CategoryDtoUpdate dto){
-        Category category = service.update(dto);
+    public ResponseEntity<CategoryDtoList> update(@RequestBody @Valid CategoryDtoUpdate dto){
+        CategoryDtoList category = service.update(dto);
         return ResponseEntity.ok(category);
     }
 
-    @DeleteMapping("/{id}/restore")
+    @PostMapping("/{id}/restore")
     public ResponseEntity<Void> restore(@PathVariable UUID id){
         service.restore(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

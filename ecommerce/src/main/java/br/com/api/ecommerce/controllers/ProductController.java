@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -23,9 +25,9 @@ public class ProductController {
     @Autowired
     private ProductService service;
 
-    @PostMapping
-    public ResponseEntity<Product> create(@RequestBody @Valid ProductDtoCreate dto){
-        Product product = service.create(dto);
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<ProductDtoList> create(@RequestPart("product") @Valid ProductDtoCreate dto, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        ProductDtoList product = service.create(dto, imageFile);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
@@ -36,15 +38,25 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getById(@PathVariable UUID id){
+    public ResponseEntity<ProductDtoList> getById(@PathVariable UUID id){
         Product product = service.getById(id);
+        ProductDtoList productDtoList = service.entityToDto(product);
+        return ResponseEntity.ok(productDtoList);
+    }
+
+    @PutMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<ProductDtoList> update(@RequestPart("product") @Valid ProductDtoUpdate dto, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        ProductDtoList product = service.update(dto, imageFile);
         return ResponseEntity.ok(product);
     }
 
-    @PutMapping
-    public ResponseEntity<Product> update(@RequestBody @Valid ProductDtoUpdate dto){
-        Product product = service.update(dto);
-        return ResponseEntity.ok(product);
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getProductImage(@PathVariable UUID id) {
+        byte[] image = service.getImageById(id);
+
+        if (image == null) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).contentLength(image.length).body(image);
     }
 
     @PostMapping("/{id}/restore")

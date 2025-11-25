@@ -28,19 +28,13 @@ public class OrderService {
     private AddressService addressService;
 
     @Autowired
-    private AuthorizationService authorizationService;
-
-    @Autowired
     private ItemService itemService;
 
     @Transactional(readOnly = true)
+    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public Order getById(UUID id) {
-        Order order = repository.findById(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("exception.order.not.found"));
-
-        authorizationService.validateCurrentUser(order.getUser().getId());
-
-        return order;
     }
 
     @Transactional(readOnly = true)
@@ -50,19 +44,18 @@ public class OrderService {
     }
 
     @Transactional
+    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public Order create(OrderDtoCreate dto) {
-        authorizationService.validateCurrentUser(dto.userId());
-
         User user = userService.getById(dto.userId());
 
         addressService.existsByIdAndUser(dto.addressId(), dto.userId());
         Address deliveryAddress = addressService.getById(dto.addressId());
 
         Order order = new Order();
+        List<Item> items = itemService.createListOfItems(dto.items(), order);
+
         order.setUser(user);
         order.setDeliveryAddress(deliveryAddress);
-
-        List<Item> items = itemService.createListOfItems(dto.items(), order);
 
         BigDecimal total = items.stream()
                 .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
