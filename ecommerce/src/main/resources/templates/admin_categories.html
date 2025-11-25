@@ -49,6 +49,7 @@
                                             <th>ID</th>
                                             <th>Nome</th>
                                             <th>Descrição</th>
+                                            <th>Ativo</th>
                                             <th>Ações</th>
                                         </tr>
                                     </thead>
@@ -58,11 +59,17 @@
                                             <td th:text="${category.name}"></td>
                                             <td th:text="${category.description}"></td>
                                             <td>
+                                                <span th:text="${category.active} ? 'Ativo' : 'Desativado'" th:classappend="${category.active} ? 'text-success' : 'text-danger'"></span>
+                                            </td>
+                                            <td>
                                                 <button class="btn btn-sm btn-warning me-2" onclick="editCategory(this)" th:data-id="${category.id}" th:data-name="${category.name}" th:data-description="${category.description}">
                                                     <i class="fa-solid fa-edit"></i> Editar
                                                 </button>
-                                                <button class="btn btn-sm btn-danger" onclick="deleteCategory(this)" th:data-id="${category.id}" th:data-name="${category.name}">
+                                                <button class="btn btn-sm btn-danger" onclick="deleteCategory(this)" th:data-id="${category.id}" th:data-name="${category.name}" th:if="${category.active}">
                                                     <i class="fa-solid fa-trash"></i> Excluir
+                                                </button>
+                                                <button class="btn btn-sm btn-success" onclick="restoreCategory(this)" th:data-id="${category.id}" th:data-name="${category.name}" th:if="${!category.active}">
+                                                    <i class="fa-solid fa-rotate-left"></i> Restaurar
                                                 </button>
                                             </td>
                                         </tr>
@@ -126,6 +133,31 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        function restoreCategory(button) {
+            const id = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
+
+            if (confirm(`Tem certeza que deseja restaurar a categoria "${name}"?`)) {
+                fetch(`/api/categories/${id}/restore`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Erro ao restaurar categoria');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Erro ao restaurar categoria');
+                });
+            }
+        }
+
         function editCategory(button) {
             const id = button.getAttribute('data-id');
             const name = button.getAttribute('data-name');

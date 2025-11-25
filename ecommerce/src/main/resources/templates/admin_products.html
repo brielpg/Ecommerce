@@ -75,6 +75,7 @@
                                     <th>Nome</th>
                                     <th>Preço</th>
                                     <th>Estoque</th>
+                                    <th>Ativo</th>
                                     <th>Ações</th>
                                 </tr>
                                 </thead>
@@ -85,16 +86,25 @@
                                     <td>R$ <span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></td>
                                     <td th:text="${product.stock}"></td>
                                     <td>
+                                        <span th:text="${product.active} ? 'Ativo' : 'Desativado'" th:classappend="${product.active} ? 'text-success' : 'text-danger'"></span>
+                                    </td>
+                                    <td>
                                         <button class="btn btn-sm btn-warning me-2" onclick="editProduct(this)"
                                                 th:data-id="${product.id}"
                                                 th:data-name="${product.name}"
                                                 th:data-price="${product.price}"
                                                 th:data-description="${product.description}"
-                                                th:data-stock="${product.stock}">
+                                                th:data-stock="${product.stock}"
+                                                th:data-active="${product.active}">
                                             <i class="fa-solid fa-edit"></i> Editar
                                         </button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(this)" th:data-id="${product.id}" th:data-name="${product.name}">
+
+                                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(this)" th:data-id="${product.id}" th:data-name="${product.name}" th:if="${product.active}">
                                             <i class="fa-solid fa-trash"></i> Excluir
+                                        </button>
+
+                                        <button class="btn btn-sm btn-success" onclick="restoreProduct(this)" th:data-id="${product.id}" th:data-name="${product.name}" th:if="${!product.active}">
+                                            <i class="fa-solid fa-rotate-left"></i> Restaurar
                                         </button>
                                     </td>
                                 </tr>
@@ -186,6 +196,31 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    function restoreProduct(button) {
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+
+        if (confirm(`Tem certeza que deseja restaurar o produto "${name}"?`)) {
+                fetch(`/api/products/${id}/restore`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Erro ao restaurar produto');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Erro ao restaurar produto');
+                });
+        }
+    }
+
     function editProduct(button) {
         const id = button.getAttribute('data-id');
         const name = button.getAttribute('data-name');
