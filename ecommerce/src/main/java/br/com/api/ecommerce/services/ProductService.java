@@ -16,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,10 +50,16 @@ public class ProductService {
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public ProductDtoList create(ProductDtoCreate dto){
+    public ProductDtoList create(ProductDtoCreate dto, MultipartFile imageFile){
         this.existsByName(dto.name());
 
         Product product = dtoToEntity(dto);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                product.setImage(imageFile.getBytes());
+            } catch (IOException ignored) {}
+        }
 
         this.save(product);
         return entityToDto(product);
@@ -83,7 +91,7 @@ public class ProductService {
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public ProductDtoList update(ProductDtoUpdate dto) {
+    public ProductDtoList update(ProductDtoUpdate dto, MultipartFile imageFile) {
         Product product = this.getById(dto.id());
         this.existsByName(dto.name());
 
@@ -96,8 +104,21 @@ public class ProductService {
             itemService.updateItemsPrice(product);
         }
 
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                product.setImage(imageFile.getBytes());
+            } catch (IOException ignored) {}
+        }
+
         this.save(product);
         return entityToDto(product);
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] getImageById(UUID id) {
+        Product product = this.getById(id);
+
+        return product.getImage();
     }
 
     @Transactional

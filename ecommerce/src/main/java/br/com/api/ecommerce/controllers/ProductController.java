@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -23,9 +25,9 @@ public class ProductController {
     @Autowired
     private ProductService service;
 
-    @PostMapping
-    public ResponseEntity<ProductDtoList> create(@RequestBody @Valid ProductDtoCreate dto){
-        ProductDtoList product = service.create(dto);
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<ProductDtoList> create(@RequestPart("product") @Valid ProductDtoCreate dto, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        ProductDtoList product = service.create(dto, imageFile);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
@@ -42,10 +44,19 @@ public class ProductController {
         return ResponseEntity.ok(productDtoList);
     }
 
-    @PutMapping
-    public ResponseEntity<ProductDtoList> update(@RequestBody @Valid ProductDtoUpdate dto){
-        ProductDtoList product = service.update(dto);
+    @PutMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<ProductDtoList> update(@RequestPart("product") @Valid ProductDtoUpdate dto, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        ProductDtoList product = service.update(dto, imageFile);
         return ResponseEntity.ok(product);
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getProductImage(@PathVariable UUID id) {
+        byte[] image = service.getImageById(id);
+
+        if (image == null) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).contentLength(image.length).body(image);
     }
 
     @PostMapping("/{id}/restore")
