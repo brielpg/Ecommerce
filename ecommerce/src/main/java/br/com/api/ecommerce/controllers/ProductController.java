@@ -47,7 +47,7 @@ public class ProductController {
     @GetMapping("/best-sellers")
     public ResponseEntity<Page<ProductDtoList>> getBestSellers(@RequestParam(value = "limit", defaultValue = "10") int limit){
         Page<ProductDtoList> products = service.getBestSellers(limit);
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok(products);
     }
 
     @PutMapping(consumes = {"multipart/form-data"})

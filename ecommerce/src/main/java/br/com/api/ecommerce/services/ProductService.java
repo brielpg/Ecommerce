@@ -98,9 +98,7 @@ public class ProductService {
     public Page<ProductDtoList> getBestSellers(int limit) {
         Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "purchaseCount"));
 
-        Page<Product> products = this.getAll(pageable);
-
-        return products.map(this::entityToDto);
+        return this.getAll(pageable);
     }
 
     @Transactional
