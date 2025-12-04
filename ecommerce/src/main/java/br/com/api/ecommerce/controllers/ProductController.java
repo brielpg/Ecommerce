@@ -44,6 +44,12 @@ public class ProductController {
         return ResponseEntity.ok(productDtoList);
     }
 
+    @GetMapping("/best-sellers")
+    public ResponseEntity<Page<ProductDtoList>> getBestSellers(@RequestParam(value = "limit", defaultValue = "10") int limit){
+        Page<ProductDtoList> products = service.getBestSellers(limit);
+        return ResponseEntity.ok(product);
+    }
+
     @PutMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<ProductDtoList> update(@RequestPart("product") @Valid ProductDtoUpdate dto, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         ProductDtoList product = service.update(dto, imageFile);
