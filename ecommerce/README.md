@@ -47,6 +47,7 @@
 | GET    | /api/products                              | Lists all active products         | Authenticated |
 | GET    | /api/products/{id}                         | Fetches a product by its ID       | Authenticated |
 | GET    | /api/products/{id}/image                   | Returns the product image         | Authenticated |
+| GET    | /api/product/best-sellers?limit={X}        | Lists the X best-selling products | Authenticated |
 | PUT    | /api/products                              | Updates an existing product       | Admin         |
 | POST   | /api/products/{id}/restore                 | Restores a deactivated product    | Admin         |
 | DELETE | /api/products/{id}                         | Deactivates a product             | Admin         |
