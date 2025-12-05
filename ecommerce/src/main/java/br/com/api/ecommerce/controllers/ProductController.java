@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -42,6 +43,12 @@ public class ProductController {
         Product product = service.getById(id);
         ProductDtoList productDtoList = service.entityToDto(product);
         return ResponseEntity.ok(productDtoList);
+    }
+
+    @GetMapping("/best-sellers")
+    public ResponseEntity<List<ProductDtoList>> getBestSellers(@RequestParam(value = "limit", defaultValue = "10") int limit){
+        List<ProductDtoList> products = service.getBestSellers(limit);
+        return ResponseEntity.ok(products);
     }
 
     @PutMapping(consumes = {"multipart/form-data"})

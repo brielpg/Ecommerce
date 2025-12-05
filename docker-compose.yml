@@ -1,20 +1,35 @@
 services:
   postgres_db:
     image: postgres:16
-    container_name: postgres_db
+    container_name: postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       TZ: ${TIMEZONE}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
       retries: 5
 
   backend:
@@ -24,6 +39,8 @@ services:
     container_name: backend
     depends_on:
       postgres_db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     environment:
       - POSTGRES_HOST=${POSTGRES_HOST}
@@ -36,9 +53,14 @@ services:
       - TOKEN_EXPIRATION_HOURS=${TOKEN_EXPIRATION_HOURS}
       - TIMEZONE=${TIMEZONE}
       - FRONT_ENDPOINTS=${FRONT_ENDPOINTS}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_TIMEOUT=${REDIS_TIMEOUT}
     ports:
       - "8080:8080"
 
 volumes:
   db_data:
+    driver: local
+  redis_data:
     driver: local
