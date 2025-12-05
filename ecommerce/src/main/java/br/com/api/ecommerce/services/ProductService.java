@@ -11,9 +11,13 @@ import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,8 +98,19 @@ public class ProductService {
                 .orElseThrow(() -> new NotFoundException("exception.product.not.found"));
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable("best-sellers")
+    public List<ProductDtoList> getBestSellers(int limit) {
+        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "purchaseCount"));
+
+        Page<ProductDtoList> products = this.getAll(pageable);
+
+        return products.getContent();
+    }
+
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
+    @CacheEvict(value = "best-sellers", allEntries = true)
     public ProductDtoList update(ProductDtoUpdate dto, MultipartFile imageFile) {
         Product product = this.getById(dto.id());
         this.existsByName(dto.name());
@@ -225,6 +240,7 @@ public class ProductService {
                 entity.getPrice(),
                 entity.getStock(),
                 entity.getRating(),
+                entity.getPurchaseCount(),
                 entity.getActive(),
                 entity.getTimestamp()
         );

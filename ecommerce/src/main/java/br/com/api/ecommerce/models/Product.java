@@ -27,6 +27,7 @@ public class Product {
     private BigDecimal price;
     private Integer stock;
     private Double rating;
+    private Integer purchaseCount;
     @Lob
     private byte[] image;
     @ManyToMany
@@ -41,6 +42,7 @@ public class Product {
     @PrePersist
     public void prePersist(){
         this.timestamp = LocalDate.now();
+        this.purchaseCount = 0;
         this.active = true;
         this.rating = 0.0;
     }
