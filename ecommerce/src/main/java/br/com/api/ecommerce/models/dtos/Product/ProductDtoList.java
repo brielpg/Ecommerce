@@ -10,6 +10,7 @@ public record ProductDtoList(
         String description,
         BigDecimal price,
         Integer stock,
+        Integer purchaseCount,
         Boolean active,
         LocalDate timestamp
 ) {

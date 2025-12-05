@@ -95,10 +95,12 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     @Cacheable("best-sellers")
-    public Page<ProductDtoList> getBestSellers(int limit) {
+    public List<ProductDtoList> getBestSellers(int limit) {
         Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "purchaseCount"));
 
-        return this.getAll(pageable);
+        Page<ProductDtoList> products = this.getAll(pageable);
+
+        return products.getContent();
     }
 
     @Transactional
@@ -210,6 +212,7 @@ public class ProductService {
                 entity.getDescription(),
                 entity.getPrice(),
                 entity.getStock(),
+                entity.getPurchaseCount(),
                 entity.getActive(),
                 entity.getTimestamp()
         );
