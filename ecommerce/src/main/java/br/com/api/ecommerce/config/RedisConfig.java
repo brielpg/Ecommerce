@@ -1,5 +1,8 @@
 package br.com.api.ecommerce.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator; // Importar
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -17,9 +20,20 @@ public class RedisConfig {
 
     @Bean
     public RedisCacheConfiguration defaultCacheConfiguration() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        
+        objectMapper.registerModule(new JavaTimeModule());
+
+        objectMapper.activateDefaultTyping(
+            LaissezFaireSubTypeValidator.instance,
+            ObjectMapper.DefaultTyping.NON_FINAL
+        );
+
+        GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(redisTimeout))
                 .disableCachingNullValues()
-                .serializeValuesWith(SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+                .serializeValuesWith(SerializationPair.fromSerializer(jsonSerializer));
     }
 }
