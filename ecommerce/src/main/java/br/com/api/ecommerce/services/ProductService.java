@@ -196,21 +196,13 @@ public class ProductService {
     @Transactional
     public void updateProductRating(UUID productId) {
         Product product = getById(productId);
-        List<Review> reviews = product.getReviews();
+        Optional<Double> averageRating = repository.findAverageRatingByProductId(productId);
 
-        if (reviews.isEmpty()) {
+        if (averageRating.isEmpty()) {
             product.setRating(0.0);
-            repository.save(product);
-            return;
+        } else {
+            product.setRating(averageRating.get());
         }
-
-        double totalRating = 0.0;
-        for (Review review : reviews) {
-            totalRating += review.getRating();
-        }
-
-        double averageRating = totalRating / reviews.size();
-        product.setRating(averageRating);
 
         this.save(product);
     }
