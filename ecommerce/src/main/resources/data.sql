@@ -43,3 +43,19 @@ INSERT INTO tb_product_category (product_id, category_id) VALUES
 INSERT INTO tb_user_favorites (user_id, product_id) VALUES
 ('22222222-2222-2222-2222-222222222222', 'cccccccc-cccc-cccc-cccc-cccccccccccc'), -- John likes Laptop
 ('33333333-3333-3333-3333-333333333333', 'ffffffff-ffff-ffff-ffff-ffffffffffff'); -- Jane likes Novel
+
+
+-- Insert order
+INSERT INTO tb_orders (id, status, timestamp, total_price, delivery_address_id, user_id)
+VALUES ('22222222-2222-2222-2222-222222222222', 'DELIVERED', CURRENT_DATE, 255.99,
+    '33333333-3333-3333-3333-333333333333',  -- Admin Address UUID
+    '11111111-1111-1111-1111-111111111111'   -- Admin UUID
+);
+
+
+-- Insert item
+INSERT INTO tb_items (id, quantity, sub_total, order_id, product_id)
+VALUES ('22222222-2222-2222-2222-222222222224', 2, 49.90,
+    '22222222-2222-2222-2222-222222222222', -- order UUID
+    'dddddddd-dddd-dddd-dddd-dddddddddddd' -- product UUID T-Shirt
+);

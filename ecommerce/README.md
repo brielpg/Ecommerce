@@ -55,6 +55,16 @@
 | DELETE | /api/products/{id}/categories/{categoryId} | Removes a category from a product | Admin         |
 
 
+## ⭐️ Review
+
+| Method | Endpoint                         | Description                              | Permission              |
+|--------|----------------------------------|------------------------------------------|-------------------------|
+| POST   | /api/reviews                     | Creates a new review                     | Resource owner or Admin |
+| GET    | /api/reviews/product/{productId} | Lists all reviews for a specific product | Authenticated           |
+| PUT    | /api/reviews                     | Updates an existing review               | Resource owner or Admin |
+| DELETE | /api/reviews/{id}                | Deletes a review by its ID               | Resource owner or Admin |
+
+
 ## 👤 User
 
 | Method | Endpoint                              | Description                                         | Permission              |

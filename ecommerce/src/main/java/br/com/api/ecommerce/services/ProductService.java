@@ -4,6 +4,7 @@ import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.Product;
+import br.com.api.ecommerce.models.Review;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoAddCategory;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
@@ -50,6 +51,10 @@ public class ProductService {
 
     @Autowired
     private AuthorizationService authorizationService;
+
+    @Autowired
+    @Lazy
+    private ReviewService reviewService;
 
 
     @Transactional
@@ -189,6 +194,20 @@ public class ProductService {
     }
 
     @Transactional
+    public void updateProductRating(UUID productId) {
+        Product product = getById(productId);
+        Optional<Double> averageRating = repository.findAverageRatingByProductId(productId);
+
+        if (averageRating.isEmpty()) {
+            product.setRating(0.0);
+        } else {
+            product.setRating(averageRating.get());
+        }
+
+        this.save(product);
+    }
+
+    @Transactional
     public void save(Product product){
         repository.save(product);
     }
@@ -212,6 +231,7 @@ public class ProductService {
                 entity.getDescription(),
                 entity.getPrice(),
                 entity.getStock(),
+                entity.getRating(),
                 entity.getPurchaseCount(),
                 entity.getActive(),
                 entity.getTimestamp()

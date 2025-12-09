@@ -2,6 +2,7 @@ package br.com.api.ecommerce.services;
 
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.*;
+import br.com.api.ecommerce.models.enums.OrderStatus;
 import br.com.api.ecommerce.models.dtos.Order.OrderDtoCreate;
 import br.com.api.ecommerce.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,5 +71,10 @@ public class OrderService {
         });
 
         return repository.save(order);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByUserIdAndProductIdAndStatus(UUID userId, UUID productId, OrderStatus status) {
+        return repository.existsByUserIdAndProductIdAndStatus(userId, productId, status);
     }
 }
