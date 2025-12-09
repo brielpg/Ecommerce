@@ -36,4 +36,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.product.id = :productId")
     Optional<Double> findAverageRatingByProductId(@Param("productId") UUID productId);
+
+    @Query("SELECT p FROM Product p WHERE p.active = true AND (LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(p.description) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Product> searchProducts(@Param("query") String query, Pageable pageable);
 }

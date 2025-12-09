@@ -108,6 +108,17 @@ public class ProductService {
         return products.getContent();
     }
 
+    @Transactional(readOnly = true)
+    public Page<ProductDtoList> search(String query, Pageable pageable) {
+        if (query == null || query.trim().isEmpty()) {
+            return this.getAll(pageable); 
+        }
+
+        Page<Product> products = repository.searchProducts(query, pageable);
+
+        return products.map(this::entityToDto);
+    }
+
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "best-sellers", allEntries = true)

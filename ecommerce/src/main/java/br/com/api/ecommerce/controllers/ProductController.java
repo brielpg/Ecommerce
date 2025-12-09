@@ -45,6 +45,12 @@ public class ProductController {
         return ResponseEntity.ok(productDtoList);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProductDtoList>> search(@RequestParam(value = "q", required = false) String query, Pageable pageable) {
+        Page<ProductDtoList> products = service.search(query, pageable);
+        return ResponseEntity.ok(products);
+    }
+
     @GetMapping("/best-sellers")
     public ResponseEntity<List<ProductDtoList>> getBestSellers(@RequestParam(value = "limit", defaultValue = "10") int limit){
         List<ProductDtoList> products = service.getBestSellers(limit);
