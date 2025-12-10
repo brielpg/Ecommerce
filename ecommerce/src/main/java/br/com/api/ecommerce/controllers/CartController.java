@@ -25,10 +25,12 @@ public class CartController {
     @Autowired
     private CartService service;
 
-    @Operation(summary = "Get user cart", description = "Retrieves the cart for a specific user")
+    @Operation(summary = "Get user cart", description = "Retrieves the cart for a specific user. The user can access their own cart or an ADMIN can access any user's cart.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Cart retrieved successfully"),
-        @ApiResponse(responseCode = "404", description = "Cart not found")
+        @ApiResponse(responseCode = "403", description = "Access denied - user can only access their own cart"),
+        @ApiResponse(responseCode = "404", description = "Cart not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/{userId}")
     public ResponseEntity<CartDtoList> getByUserId(@PathVariable UUID userId){
@@ -36,10 +38,12 @@ public class CartController {
         return ResponseEntity.ok(service.entityToDto(cart));
     }
 
-    @Operation(summary = "Clear user cart", description = "Removes all items from the user's cart")
+    @Operation(summary = "Clear user cart", description = "Removes all items from the user's cart. The user can clear their own cart or an ADMIN can clear any user's cart.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Cart cleared successfully"),
-        @ApiResponse(responseCode = "404", description = "Cart not found")
+        @ApiResponse(responseCode = "403", description = "Access denied - user can only manage their own cart"),
+        @ApiResponse(responseCode = "404", description = "Cart not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> clearUserCart(@PathVariable UUID userId){
@@ -47,11 +51,13 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @Operation(summary = "Add items to cart", description = "Adds one or more items to the user's cart")
+    @Operation(summary = "Add items to cart", description = "Adds one or more items to the user's cart. The user can add items to their own cart or an ADMIN can add items to any user's cart.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Items added successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid input data or validation errors"),
+        @ApiResponse(responseCode = "403", description = "Access denied - user can only manage their own cart"),
         @ApiResponse(responseCode = "404", description = "Cart or product not found"),
-        @ApiResponse(responseCode = "500", description = "Invalid input data")
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/{userId}/items")
     public ResponseEntity<Void> addItemsToUserCart(@PathVariable UUID userId, @RequestBody @Valid List<DtoItemRequest> dto){
@@ -59,11 +65,13 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @Operation(summary = "Remove items from cart", description = "Removes one or more items from the user's cart")
+    @Operation(summary = "Remove items from cart", description = "Removes one or more items from the user's cart. The user can remove items from their own cart or an ADMIN can remove items from any user's cart.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Items removed successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid input data or validation errors"),
+        @ApiResponse(responseCode = "403", description = "Access denied - user can only manage their own cart"),
         @ApiResponse(responseCode = "404", description = "Cart or product not found"),
-        @ApiResponse(responseCode = "500", description = "Invalid input data")
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @DeleteMapping("/{userId}/items")
     public ResponseEntity<Void> removeItemsFromUserCart(@PathVariable UUID userId, @RequestBody List<DtoItemRequest> itemsToRemove){
