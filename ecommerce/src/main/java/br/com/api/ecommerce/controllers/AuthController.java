@@ -32,7 +32,8 @@ public class AuthController {
     @Operation(summary = "User login", description = "Authenticates a user and returns a JWT token")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Login successful"),
-        @ApiResponse(responseCode = "500", description = "Invalid credentials / Invalid input data")
+        @ApiResponse(responseCode = "400", description = "Invalid input data"),
+        @ApiResponse(responseCode = "500", description = "Internal server error / Invalid credentials")
     })
     @PostMapping("/login")
     public ResponseEntity<AuthReturnToken> login(@RequestBody @Valid AuthDtoLogin dto){
@@ -44,7 +45,8 @@ public class AuthController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Registration successful"),
         @ApiResponse(responseCode = "409", description = "Email already registered"),
-        @ApiResponse(responseCode = "500", description = "Invalid input data")
+        @ApiResponse(responseCode = "400", description = "Invalid input data"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/register")
     public ResponseEntity<AuthReturnToken> register(@RequestBody @Valid UserDtoCreate dto){
