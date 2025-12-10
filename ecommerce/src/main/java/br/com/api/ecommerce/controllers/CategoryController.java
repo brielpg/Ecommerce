@@ -5,6 +5,8 @@ import br.com.api.ecommerce.models.dtos.Category.CategoryDtoCreate;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoUpdate;
 import br.com.api.ecommerce.services.CategoryService;
+import br.com.api.ecommerce.config.SecurityConfiguration;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,6 +24,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/categories")
 @Tag(name = "Category", description = "Endpoints for managing categories")
+@SecurityRequirement(name = SecurityConfiguration.SECURITY)
 public class CategoryController {
 
     @Autowired

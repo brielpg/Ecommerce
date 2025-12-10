@@ -4,6 +4,8 @@ import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.services.CartService;
+import br.com.api.ecommerce.config.SecurityConfiguration;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,6 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/carts")
 @Tag(name = "Cart", description = "Endpoints for managing user carts")
+@SecurityRequirement(name = SecurityConfiguration.SECURITY)
 public class CartController {
 
     @Autowired

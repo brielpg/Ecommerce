@@ -6,6 +6,8 @@ import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.services.ProductService;
+import br.com.api.ecommerce.config.SecurityConfiguration;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,6 +28,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/products")
 @Tag(name = "Product", description = "Endpoints for managing products")
+@SecurityRequirement(name = SecurityConfiguration.SECURITY)
 public class ProductController {
 
     @Autowired

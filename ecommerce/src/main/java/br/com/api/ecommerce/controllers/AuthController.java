@@ -5,6 +5,8 @@ import br.com.api.ecommerce.models.dtos.Auth.AuthReturnToken;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.services.AuthorizationService;
 import br.com.api.ecommerce.services.UserService;
+import br.com.api.ecommerce.config.SecurityConfiguration;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication", description = "Endpoints for user authentication and registration")
+@SecurityRequirement(name = SecurityConfiguration.SECURITY)
 public class AuthController {
 
     @Autowired

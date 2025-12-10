@@ -4,6 +4,8 @@ import br.com.api.ecommerce.models.dtos.Review.ReviewDtoCreate;
 import br.com.api.ecommerce.models.dtos.Review.ReviewDtoList;
 import br.com.api.ecommerce.models.dtos.Review.ReviewDtoUpdate;
 import br.com.api.ecommerce.services.ReviewService;
+import br.com.api.ecommerce.config.SecurityConfiguration;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -21,6 +23,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/reviews")
 @Tag(name = "Review", description = "Endpoints for managing reviews")
+@SecurityRequirement(name = SecurityConfiguration.SECURITY)
 public class ReviewController {
 
     @Autowired
