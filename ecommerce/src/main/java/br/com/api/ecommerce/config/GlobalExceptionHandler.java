@@ -5,6 +5,8 @@ import br.com.api.ecommerce.exceptions.BadRequestException;
 import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.dtos.ErrorDto;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.FieldError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -55,6 +57,22 @@ public class GlobalExceptionHandler {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         String errorMessage = messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
         ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), List.of(errorMessage));
+        return ResponseEntity.status(httpStatus).body(errorDto);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        
+        List<String> errors = ex.getBindingResult().getAllErrors().stream()
+                .map(error -> {
+                    String fieldName = (error instanceof FieldError) ? ((FieldError) error).getField() : error.getObjectName();
+                    String errorMessage = messageSource.getMessage(error, LocaleContextHolder.getLocale());
+                    return fieldName + ": " + errorMessage;
+                }).toList();
+
+        ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), errors);
         return ResponseEntity.status(httpStatus).body(errorDto);
     }
 
