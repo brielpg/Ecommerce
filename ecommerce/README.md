@@ -1,5 +1,13 @@
 # Endpoints
 
+## 📚 Swagger
+
+| Method | Endpoint           | Description                                            | Permission |
+|--------|--------------------|--------------------------------------------------------|------------|
+| GET    | /swagger-ui.html   | Interface interativa para documentação e testes da API | Public     |
+| GET    | /v3/api-docs       | Arquivo JSON da documentação OpenAPI                   | Public     |
+
+
 ## 🛡️ Authentication
 
 | Method | Endpoint           | Description                                    | Permission |
