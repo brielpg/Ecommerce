@@ -41,10 +41,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    environment:
+    env_file:
       - .env
     ports:
-      - "${ECOMMERCE_PORT}:${ECOMMERCE_PORT}"
+      - "8080:8080"
     networks:
       - ecommerce-network
 
