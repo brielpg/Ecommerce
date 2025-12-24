@@ -1,15 +1,16 @@
 services:
-  postgres_db:
-    image: postgres:16
+  postgres:
+    image: postgres:16-alpine
     container_name: postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       TZ: ${TIMEZONE}
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-network
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -18,14 +19,17 @@ services:
       retries: 5
 
   redis:
-    image: redis:latest
+    image: redis:7-alpine
     container_name: redis
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     ports:
       - "${REDIS_PORT}:${REDIS_PORT}"
     volumes:
       - redis_data:/data
+    networks:
+      - ecommerce-network
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 5s
@@ -71,28 +75,18 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     depends_on:
-      postgres_db:
+      postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    environment:
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
-      TOKEN_ISSUER: ${TOKEN_ISSUER}
-      TOKEN_EXPIRATION_HOURS: ${TOKEN_EXPIRATION_HOURS}
-      TIMEZONE: ${TIMEZONE}
-      FRONT_ENDPOINTS: ${FRONT_ENDPOINTS}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-      REDIS_TIMEOUT: ${REDIS_TIMEOUT}
+    env_file:
+      - .env
     ports:
       - "8080:8080"
+    networks:
+      - ecommerce-network
 
   email_service:
     build:
@@ -129,3 +123,7 @@ volumes:
     driver: local
   rabbitmq_data:
     driver: local
+
+networks:
+  ecommerce-network:
+    driver: bridge
