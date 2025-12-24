@@ -8,12 +8,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       TZ: ${TIMEZONE}
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - ecommerce-network
-      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,17 +20,15 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
-    command: redis-server --requirepass ${REDIS_PASSWORD}
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-    ports:
-      - "${REDIS_PORT}:${REDIS_PORT}"
+      - REDISCLI_AUTH=${REDIS_PASSWORD}
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
     networks:
       - ecommerce-network
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -42,8 +39,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-    ports:
-      - "${MONGO_PORT}:${MONGO_PORT}"
     volumes:
       - mongo_data:/data/db
     healthcheck:
@@ -51,6 +46,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - email-network
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -68,6 +65,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - ecommerce-network
+      - email-network
 
   backend:
     build:
@@ -98,21 +98,10 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    environment:
-      TIMEZONE: ${TIMEZONE}
-      RABBITMQ_HOST: ${RABBITMQ_HOST}
-      RABBITMQ_PORT: ${RABBITMQ_PORT}
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-      MONGO_DB: ${MONGO_DB}
-      MONGO_HOST: ${MONGO_HOST}
-      MONGO_PORT: ${MONGO_PORT}
-      MONGO_USER: ${MONGO_USER}
-      MONGO_PASSWORD: ${MONGO_PASSWORD}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    env_file:
+      - .env
+    networks:
+      - email-network
 
 volumes:
   postgres_data:
@@ -126,4 +115,6 @@ volumes:
 
 networks:
   ecommerce-network:
+    driver: bridge
+  email-network:
     driver: bridge
