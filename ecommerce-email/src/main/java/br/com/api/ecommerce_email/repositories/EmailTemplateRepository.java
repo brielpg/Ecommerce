@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface EmailTemplateRepository extends MongoRepository<EmailTemplate, String> {
-    Optional<EmailTemplate> findByName(String name);
+    Optional<EmailTemplate> findByEventType(String eventType);
 }

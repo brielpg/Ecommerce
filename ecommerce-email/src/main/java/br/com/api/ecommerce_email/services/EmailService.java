@@ -2,7 +2,6 @@ package br.com.api.ecommerce_email.services;
 
 import br.com.api.ecommerce_email.models.EmailLog;
 import br.com.api.ecommerce_email.models.EmailTemplate;
-import br.com.api.ecommerce_email.models.dtos.EmailDto;
 import br.com.api.ecommerce_email.models.enums.StatusEnum;
 import br.com.api.ecommerce_email.repositories.EmailLogRepository;
 import br.com.api.ecommerce_email.repositories.EmailTemplateRepository;
@@ -36,19 +35,25 @@ public class EmailService {
     @Autowired
     private EmailTemplateRepository templateRepository;
 
-    public void sendEmail(EmailDto dto) {
-        EmailLog emailLog = dtoToEntity(dto);
+    public void sendEmail(String eventType, Map<String, Object> data) {
+        EmailTemplate template = templateRepository.findByEventType(eventType)
+                .orElseThrow(() -> new RuntimeException("Template not found"));
+
+        String emailTo = (String) data.get("emailTo");
+
+        EmailLog emailLog = new EmailLog();
+        emailLog.setEmailFrom(emailFrom);
+        emailLog.setEmailTo(emailTo);
+        emailLog.setEventType(eventType);
+        emailLog.setSentAt(LocalDateTime.now());
 
         try {
-            EmailTemplate template = templateRepository.findByName(dto.templateName())
-                    .orElseThrow(() -> new RuntimeException("Template not found"));
-
-            String html = compileTemplate(template.getHtmlContent(), dto.variables());
+            String html = compileTemplate(template.getHtmlContent(), data);
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setTo(dto.emailTo());
-            helper.setSubject(dto.subject());
+            helper.setTo(emailTo);
+            helper.setSubject(template.getSubject());
             helper.setText(html, true);
 
             mailSender.send(message);
@@ -68,16 +73,5 @@ public class EmailService {
         mustache.execute(writer, variables);
 
         return writer.toString();
-    }
-
-    private EmailLog dtoToEntity(EmailDto dto){
-        EmailLog emailLog = new EmailLog();
-        emailLog.setEmailFrom(emailFrom);
-        emailLog.setEmailTo(dto.emailTo());
-        emailLog.setSubject(dto.subject());
-        emailLog.setTemplateName(dto.templateName());
-        emailLog.setSentAt(LocalDateTime.now());
-
-        return emailLog;
     }
 }

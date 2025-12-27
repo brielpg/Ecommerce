@@ -19,8 +19,7 @@ public class EmailLog {
     private String id;
     private String emailFrom;
     private String emailTo;
-    private String subject;
-    private String templateName;
+    private String eventType;
     private LocalDateTime sentAt;
     private StatusEnum status;
 }
