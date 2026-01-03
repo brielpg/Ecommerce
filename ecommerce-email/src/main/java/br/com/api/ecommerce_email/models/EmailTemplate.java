@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "email_templates")
+@Document(collection = "tb_templates")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

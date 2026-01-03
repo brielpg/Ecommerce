@@ -39,6 +39,10 @@ public class EmailService {
         EmailTemplate template = templateRepository.findByEventType(eventType)
                 .orElseThrow(() -> new RuntimeException("Template not found"));
 
+        if (template.getHtmlContent() == null){
+            throw new RuntimeException("This \"" + template.getEventType() + "\" template has no content");
+        }
+
         String emailTo = (String) data.get("emailTo");
 
         EmailLog emailLog = new EmailLog();
