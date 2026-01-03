@@ -33,11 +33,14 @@ Access the management interface at the `/templates` endpoint. Here you can:
 
 Below are the variables available for the templates to be rendered correctly:
 
-| Variable    | Requirement  | Description                                                 |
-|-------------|--------------|-------------------------------------------------------------|
-| `eventType` | **Required** | The unique identifier for the event (e.g., `USER_WELCOME`). |
-| `data`      | **Required** | Object containing the specific user and event information.  |
-| `emailTo`   | **Required** | The recipient's email address.                              |
+| Variable        | Requirement      | Description                                                 |
+|-----------------|------------------|-------------------------------------------------------------|
+| `eventType`     | **Required**     | The unique identifier for the event (e.g., `USER_WELCOME`). |
+| `data`          | **Required**     | Object containing the specific user and event information.  |
+| `emailTo`       | **Required**     | The recipient's email address.                              |
+| `userName`      | **Not Required** | The recipient's name.                                       |
+| `userPhone`     | **Not Required** | The recipient's phone number.                               |
+| `userBirthDate` | **Not Required** | The recipient's birth date.                                 |
 
 ### Template Example
 
