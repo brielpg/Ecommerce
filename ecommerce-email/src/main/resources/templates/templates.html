@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de E-mails</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #dcfce7;
+            --success-text: #166534;
+            --warning: #fef9c3;
+            --warning-text: #854d0e;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        h1 { font-size: 1.875rem; font-weight: 600; margin-bottom: 2rem; color: #0f172a; }
+
+        /* Card Style */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header { padding: 20px; border-bottom: 1px solid var(--border); background: #fff; }
+        .card-header h2 { margin: 0; font-size: 1.25rem; }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f1f5f9; padding: 12px 20px; font-size: 0.875rem; text-transform: uppercase; color: var(--text-muted); }
+        td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        tr:last-child td { border-bottom: none; }
+
+        /* Badges */
+        .badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .filled { background: var(--success); color: var(--success-text); }
+        .not-filled { background: var(--warning); color: var(--warning-text); }
+
+        /* Forms */
+        .form-group { padding: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.875rem; }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); ring: 2px solid #c7d2fe; }
+        input:disabled { background: #f1f5f9; cursor: not-allowed; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-ghost { color: var(--text-muted); background: transparent; }
+        .btn-ghost:hover { color: var(--text-main); }
+        .btn-sm { padding: 6px 12px; font-size: 0.875rem; }
+
+        .actions { display: flex; gap: 10px; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Configurações de E-mail</h1>
+
+    <div class="card">
+        <table>
+            <thead>
+            <tr>
+                <th>Evento</th>
+                <th>Assunto</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="template : ${templates}">
+                <td th:text="${template.eventType}" style="font-weight: 500;"></td>
+                <td th:text="${template.subject}" style="color: var(--text-muted);"></td>
+                <td>
+                    <span th:class="${template.htmlContent != null && !template.htmlContent.isEmpty()} ? 'badge filled' : 'badge not-filled'"
+                          th:text="${template.htmlContent != null && !template.htmlContent.isEmpty()} ? 'Configurado' : 'Pendente'">
+                    </span>
+                </td>
+                <td>
+                    <a th:href="@{/templates/edit(id=${template.id})}" class="btn btn-primary btn-sm">Editar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card" th:if="${selectedTemplate.id != null}">
+        <div class="card-header">
+            <h2>Editando Template: <span th:text="${selectedTemplate.eventType}" style="color: var(--primary);"></span></h2>
+        </div>
+
+        <form th:action="@{/templates/update}" method="post" class="form-group">
+            <input type="hidden" name="id" th:value="${selectedTemplate.id}">
+
+            <label>Tipo de Evento</label>
+            <input type="text" th:value="${selectedTemplate.eventType}" disabled>
+
+            <label for="subject">Assunto do E-mail</label>
+            <input type="text" id="subject" name="subject" th:value="${selectedTemplate.subject}" required placeholder="Ex: Confirmação de Cadastro">
+
+            <label for="htmlContent">Conteúdo HTML (Corpo do e-mail)</label>
+            <textarea id="htmlContent" name="htmlContent" rows="12" th:text="${selectedTemplate.htmlContent}" placeholder="<html>...</html>"></textarea>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <a th:href="@{/templates}" class="btn btn-ghost">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <div th:if="${selectedTemplate.id == null}" style="text-align: center; color: var(--text-muted); padding: 40px;">
+        <p>Selecione um template na tabela acima para editar o conteúdo.</p>
+    </div>
+</div>
+
+</body>
+</html>
