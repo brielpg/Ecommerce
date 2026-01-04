@@ -9,6 +9,7 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -37,10 +38,10 @@ public class EmailService {
 
     public void sendEmail(String eventType, Map<String, Object> data) {
         EmailTemplate template = templateRepository.findByEventType(eventType)
-                .orElseThrow(() -> new RuntimeException("Template not found"));
+                .orElseThrow(() -> new AmqpRejectAndDontRequeueException("Template not found: " + eventType));
 
         if (template.getHtmlContent() == null){
-            throw new RuntimeException("This \"" + template.getEventType() + "\" template has no content");
+            throw new RuntimeException("Template has no content: " + eventType);
         }
 
         String emailTo = (String) data.get("emailTo");
