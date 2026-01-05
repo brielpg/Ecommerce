@@ -33,4 +33,10 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Modifying
     @Query(value = "DELETE FROM tb_product_category WHERE product_id = :productId AND category_id = :categoryId", nativeQuery = true)
     void removeCategoryFromProduct(@Param("productId") UUID productId, @Param("categoryId") UUID categoryId);
+
+    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.product.id = :productId")
+    Optional<Double> findAverageRatingByProductId(@Param("productId") UUID productId);
+
+    @Query("SELECT p FROM Product p WHERE p.active = true AND (LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(p.description) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Product> searchProducts(@Param("query") String query, Pageable pageable);
 }

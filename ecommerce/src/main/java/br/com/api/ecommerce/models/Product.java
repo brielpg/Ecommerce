@@ -26,18 +26,24 @@ public class Product {
     private String description;
     private BigDecimal price;
     private Integer stock;
+    private Double rating;
+    private Integer purchaseCount;
     @Lob
     private byte[] image;
     @ManyToMany
     @JoinTable(name = "tb_product_category",
             joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews;
     private Boolean active;
     private LocalDate timestamp;
 
     @PrePersist
     public void prePersist(){
         this.timestamp = LocalDate.now();
+        this.purchaseCount = 0;
         this.active = true;
+        this.rating = 0.0;
     }
 }

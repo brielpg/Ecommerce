@@ -13,7 +13,7 @@ FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/target/ecommerce-0.0.1-SNAPSHOT.jar ecommerce.jar
+COPY --from=build /app/target/*.jar ecommerce.jar
 
 EXPOSE 8080
 

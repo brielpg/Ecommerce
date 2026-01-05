@@ -1,5 +1,13 @@
 # Endpoints
 
+## 📚 Swagger
+
+| Method | Endpoint         | Description                                             | Permission |
+|--------|------------------|---------------------------------------------------------|------------|
+| GET    | /swagger-ui.html | Interactive interface for API documentation and testing | Public     |
+| GET    | /v3/api-docs     | OpenAPI documentation JSON file                         | Public     |
+
+
 ## 🛡️ Authentication
 
 | Method | Endpoint           | Description                                    | Permission |
@@ -41,17 +49,29 @@
 
 ## 🛍️ Product
 
-| Method | Endpoint                                   | Description                       | Permission    |
-|--------|--------------------------------------------|-----------------------------------|---------------|
-| POST   | /api/products                              | Creates a new product             | Admin         |
-| GET    | /api/products                              | Lists all active products         | Authenticated |
-| GET    | /api/products/{id}                         | Fetches a product by its ID       | Authenticated |
-| GET    | /api/products/{id}/image                   | Returns the product image         | Authenticated |
-| PUT    | /api/products                              | Updates an existing product       | Admin         |
-| POST   | /api/products/{id}/restore                 | Restores a deactivated product    | Admin         |
-| DELETE | /api/products/{id}                         | Deactivates a product             | Admin         |
-| POST   | /api/products/{id}/categories              | Adds categories to a product      | Admin         |
-| DELETE | /api/products/{id}/categories/{categoryId} | Removes a category from a product | Admin         |
+| Method | Endpoint                                   | Description                              | Permission    |
+|--------|--------------------------------------------|------------------------------------------|---------------|
+| POST   | /api/products                              | Creates a new product                    | Admin         |
+| GET    | /api/products                              | Lists all active products                | Authenticated |
+| GET    | /api/products/search?q={query}             | Searches products by name or description | Authenticated |
+| GET    | /api/products/{id}                         | Fetches a product by its ID              | Authenticated |
+| GET    | /api/products/{id}/image                   | Returns the product image                | Authenticated |
+| GET    | /api/product/best-sellers?limit={X}        | Lists the X best-selling products        | Authenticated |
+| PUT    | /api/products                              | Updates an existing product              | Admin         |
+| POST   | /api/products/{id}/restore                 | Restores a deactivated product           | Admin         |
+| DELETE | /api/products/{id}                         | Deactivates a product                    | Admin         |
+| POST   | /api/products/{id}/categories              | Adds categories to a product             | Admin         |
+| DELETE | /api/products/{id}/categories/{categoryId} | Removes a category from a product        | Admin         |
+
+
+## ⭐️ Review
+
+| Method | Endpoint                         | Description                              | Permission              |
+|--------|----------------------------------|------------------------------------------|-------------------------|
+| POST   | /api/reviews                     | Creates a new review                     | Resource owner or Admin |
+| GET    | /api/reviews/product/{productId} | Lists all reviews for a specific product | Authenticated           |
+| PUT    | /api/reviews                     | Updates an existing review               | Resource owner or Admin |
+| DELETE | /api/reviews/{id}                | Deletes a review by its ID               | Resource owner or Admin |
 
 
 ## 👤 User

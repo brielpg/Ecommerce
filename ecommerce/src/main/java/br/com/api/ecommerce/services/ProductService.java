@@ -4,15 +4,20 @@ import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.Product;
+import br.com.api.ecommerce.models.Review;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoAddCategory;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +51,10 @@ public class ProductService {
 
     @Autowired
     private AuthorizationService authorizationService;
+
+    @Autowired
+    @Lazy
+    private ReviewService reviewService;
 
 
     @Transactional
@@ -89,8 +98,30 @@ public class ProductService {
                 .orElseThrow(() -> new NotFoundException("exception.product.not.found"));
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable("best-sellers")
+    public List<ProductDtoList> getBestSellers(int limit) {
+        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "purchaseCount"));
+
+        Page<ProductDtoList> products = this.getAll(pageable);
+
+        return products.getContent();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductDtoList> search(String query, Pageable pageable) {
+        if (query == null || query.trim().isEmpty()) {
+            return this.getAll(pageable); 
+        }
+
+        Page<Product> products = repository.searchProducts(query, pageable);
+
+        return products.map(this::entityToDto);
+    }
+
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
+    @CacheEvict(value = "best-sellers", allEntries = true)
     public ProductDtoList update(ProductDtoUpdate dto, MultipartFile imageFile) {
         Product product = this.getById(dto.id());
         this.existsByName(dto.name());
@@ -174,6 +205,20 @@ public class ProductService {
     }
 
     @Transactional
+    public void updateProductRating(UUID productId) {
+        Product product = getById(productId);
+        Optional<Double> averageRating = repository.findAverageRatingByProductId(productId);
+
+        if (averageRating.isEmpty()) {
+            product.setRating(0.0);
+        } else {
+            product.setRating(averageRating.get());
+        }
+
+        this.save(product);
+    }
+
+    @Transactional
     public void save(Product product){
         repository.save(product);
     }
@@ -197,6 +242,8 @@ public class ProductService {
                 entity.getDescription(),
                 entity.getPrice(),
                 entity.getStock(),
+                entity.getRating(),
+                entity.getPurchaseCount(),
                 entity.getActive(),
                 entity.getTimestamp()
         );
