@@ -75,6 +75,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("permitAll()")
     public Page<ProductDtoList> getAll(Pageable pageable) {
         Page<Product> products;
 
@@ -88,6 +89,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("permitAll()")
     public Product getById(UUID id) {
         if (authorizationService.validateAdminUser()) {
             Optional<Product> product = repository.findById(id);
@@ -100,6 +102,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     @Cacheable("best-sellers")
+    @PreAuthorize("permitAll()")
     public List<ProductDtoList> getBestSellers(int limit) {
         Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "purchaseCount"));
 
@@ -109,6 +112,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("permitAll()")
     public Page<ProductDtoList> search(String query, Pageable pageable) {
         if (query == null || query.trim().isEmpty()) {
             return this.getAll(pageable); 

@@ -42,6 +42,7 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("permitAll()")
     public Page<CategoryDtoList> getAll(Pageable pageable) {
         Page<Category> categories;
 
@@ -55,6 +56,7 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("permitAll()")
     public Category getById(UUID id) {
         if (authorizationService.validateAdminUser()) {
             Optional<Category> category = repository.findById(id);

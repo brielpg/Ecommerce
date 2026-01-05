@@ -55,11 +55,13 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("permitAll()")
     public Page<ReviewDtoList> getAllByProduct(UUID productId, Pageable pageable) {
         return repository.findAllByProductId(pageable, productId).map(this::entityToDto);
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("permitAll()")
     private Review getById(UUID id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("exception.review.not.found"));
