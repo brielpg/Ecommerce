@@ -14,7 +14,7 @@ public class TemplateDataInitializer {
     @Bean
     CommandLineRunner initTemplates(EmailTemplateRepository repository) {
         return args -> {
-            List<String> defaultEvents = List.of("USER_WELCOME");
+            List<String> defaultEvents = List.of("USER_WELCOME", "USER_DEACTIVATED", "USER_REACTIVATED");
 
             for (String event : defaultEvents) {
                 if (!repository.existsByEventType(event)) {

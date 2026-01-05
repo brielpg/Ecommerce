@@ -12,6 +12,7 @@ import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
+import br.com.api.ecommerce.models.enums.EventTypes;
 import br.com.api.ecommerce.repositories.UserRepository;
 import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,6 +49,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmailProducer emailProducer;
+
     @Transactional
     public UserDtoList create(UserDtoCreate dto){
         this.existsByEmail(dto.email());
@@ -55,6 +60,8 @@ public class UserService {
         Cart cart = cartService.create(user);
         user.setCart(cart);
         user.setPassword(authorizationService.encodePassword(dto.password()));
+
+        this.emailSending(EventTypes.USER_WELCOME, user);
 
         this.save(user);
         return entityToDto(user);
@@ -118,6 +125,7 @@ public class UserService {
         User user = this.getById(id);
 
         user.setActive(true);
+        this.emailSending(EventTypes.USER_REACTIVATED, user);
         this.save(user);
     }
 
@@ -127,6 +135,7 @@ public class UserService {
         User user = this.getById(id);
 
         user.setActive(false);
+        this.emailSending(EventTypes.USER_DEACTIVATED, user);
         this.save(user);
     }
 
@@ -164,6 +173,14 @@ public class UserService {
     @Transactional
     private void save(User user) {
         repository.save(user);
+    }
+
+    private void emailSending(EventTypes eventType, User user) {
+        emailProducer.publishEvent(eventType, Map.of(
+                "emailTo", user.getEmail(),
+                "userName", user.getName(),
+                "userPhone", user.getPhone()
+        ));
     }
 
     private User dtoToEntity(UserDtoCreate dto){
