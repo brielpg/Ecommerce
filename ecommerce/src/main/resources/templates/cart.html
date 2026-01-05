@@ -6,58 +6,152 @@
     <title>Carrinho - Ecommerce</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Inter', sans-serif; }
+        .cart-item-card {
+            background: white;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1rem;
+            transition: 0.3s;
+        }
+        .cart-item-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .product-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 100px;
+        }
+        .quantity-input {
+            max-width: 70px;
+            text-align: center;
+            border-radius: 6px;
+        }
+        .empty-cart-icon {
+            font-size: 5rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+        .btn-checkout {
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
 </head>
-<body style="background-color: rgb(250, 250, 250); display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
-    <nav th:replace="~{navbar :: navbar}"></nav>
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+<nav th:replace="~{navbar :: navbar}"></nav>
 
-    <div style="flex-grow: 1;">
-    <div class="container mt-5" style="padding-top: 80px;">
-        <div class="row">
-            <div class="col-md-12">
-                <h1>Seu Carrinho</h1>
-                <div th:if="${#lists.isEmpty(cart.items)}">
-                    <p>Seu carrinho está vazio.</p>
+<div style="flex-grow: 1; padding-top: 100px; padding-bottom: 50px;">
+    <div class="container">
+        <h2 class="fw-bold mb-4">Seu Carrinho</h2>
+
+        <div th:if="${#lists.isEmpty(cart.items)}" class="text-center py-5">
+            <i class="fas fa-shopping-basket empty-cart-icon"></i>
+            <h3 class="text-muted">Seu carrinho está vazio</h3>
+            <p class="mb-4">Parece que você ainda não escolheu seus produtos.</p>
+            <a th:href="@{/}" class="btn btn-primary px-5 py-2">Voltar para a Loja</a>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(cart.items)}" class="row">
+            <div class="col-lg-8">
+                <div th:each="item : ${cart.items}" class="card cart-item-card p-3">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <img src="https://via.placeholder.com/100" class="product-img" alt="Produto">
+                        </div>
+                        <div class="col">
+                            <h5 class="fw-bold mb-1" th:text="${item.product.name}">Nome do Produto</h5>
+                            <p class="text-muted small mb-0">Preço unitário:
+                                <span>R$</span>
+                                <span th:text="${#numbers.formatDecimal(item.product.price, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                            </p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <label class="small text-muted d-block mb-1">Qtd</label>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <span class="badge bg-light text-dark border p-2 px-3 fs-6" th:text="${item.quantity}">1</span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <label class="small text-muted d-block mb-1">Subtotal</label>
+                            <div class="fw-bold text-primary">
+                                <span>R$</span>
+                                <span th:text="${#numbers.formatDecimal(item.subTotal, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                            </div>
+                        </div>
+                        <div class="col-auto ps-4">
+                            <form th:action="@{/cart/remove}" method="post">
+                                <input type="hidden" name="productId" th:value="${item.product.id}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm border-0" title="Remover item">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div th:if="${!#lists.isEmpty(cart.items)}">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Produto</th>
-                                <th>Quantidade</th>
-                                <th>Preço Unitário</th>
-                                <th>Subtotal</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="item : ${cart.items}">
-                                <td th:text="${item.product.name}">Nome do Produto</td>
-                                <td th:text="${item.quantity}">1</td>
-                                <td>R$ <span th:text="${#numbers.formatDecimal(item.product.price, 1, 2)}">0.00</span></td>
-                                <td>R$ <span th:text="${#numbers.formatDecimal(item.subTotal, 1, 2)}">0.00</span></td>
-                                <td>
-                                    <form th:action="@{/cart/remove}" method="post" class="d-inline">
-                                        <input type="hidden" name="productId" th:value="${item.product.id}">
-                                        <input type="number" name="quantity" min="1" th:max="${item.quantity}" class="form-control d-inline" style="width: 80px;" placeholder="Qtd">
-                                        <button type="submit" class="btn btn-danger btn-sm">Remover</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="text-end">
-                        <h4>Total: R$ <span th:text="${#numbers.formatDecimal(cart.totalPrice, 1, 2)}">0.00</span></h4>
-                        <form th:action="@{/cart/clear}" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-warning">Limpar Carrinho</button>
-                        </form>
+
+                <div class="mt-4">
+                    <form th:action="@{/cart/clear}" method="post">
+                        <button type="submit" class="btn btn-link text-muted text-decoration-none small">
+                            <i class="fas fa-eraser me-1"></i> Limpar todo o carrinho
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card summary-card p-4">
+                    <h4 class="fw-bold mb-4">Resumo</h4>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Subtotal</span>
+                        <div>
+                            <span>R$</span>
+                            <span th:text="${#numbers.formatDecimal(cart.totalPrice, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Entrega</span>
+                        <span class="text-success fw-bold">Grátis</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="h5 fw-bold">Total</span>
+                        <div class="h4 fw-bold text-primary">
+                            <span>R$</span>
+                            <span th:text="${#numbers.formatDecimal(cart.totalPrice, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="/checkout" class="btn btn-primary btn-checkout">
+                            FINALIZAR COMPRA <i class="fas fa-chevron-right ms-2"></i>
+                        </a>
+                        <a th:href="@{/}" class="btn btn-outline-secondary">
+                            Continuar Comprando
+                        </a>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <img src="https://logodownload.org/wp-content/uploads/2014/07/cartoes-visa-mastercard-3.png" height="25" style="opacity: 0.6;" alt="Pagamentos">
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 <footer th:replace="~{footer :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

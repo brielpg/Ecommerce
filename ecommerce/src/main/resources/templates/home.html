@@ -4,92 +4,164 @@
 <head>
     <meta charset="UTF-8">
     <title>Home - Ecommerce</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Inter', sans-serif; }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+            url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            margin-bottom: 50px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        /* Categorias Estilizadas */
+        .category-pill {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 50px;
+            padding: 15px 30px;
+            transition: 0.3s;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .category-pill:hover {
+            background: #0d6efd;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(13, 110, 253, 0.2);
+        }
+
+        /* Card de Produto */
+        .product-card {
+            border: none;
+            border-radius: 15px;
+            transition: 0.3s;
+            background: #fff;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        .product-card .img-container {
+            height: 250px;
+            overflow: hidden;
+            background: #fdfdfd;
+        }
+        .product-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+        .product-card:hover img { transform: scale(1.1); }
+
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            color: #ff4757;
+            z-index: 10;
+        }
+    </style>
 </head>
-<body style="background-color: rgb(250, 250, 250); display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
-    <nav th:replace="~{navbar :: navbar}"></nav>
+<body>
+<nav th:replace="~{navbar :: navbar}"></nav>
 
-    <div style="flex-grow: 1;">
-    <div class="container mt-5" style="padding-top: 80px;">
-        <div class="row">
-            <div class="col-md-12">
-                <h1>Bem-vindo ao Ecommerce</h1>
-                <p>Esta é a página inicial da nossa aplicação de e-commerce.</p>
+<header class="hero-section mt-5">
+    <div class="container">
+        <h1 class="display-3 fw-bold">Ofertas de Verão</h1>
+        <p class="lead mb-4">Descubra as melhores tendências com preços que você só encontra aqui.</p>
+        <a href="#produtos" class="btn btn-primary btn-lg px-5">Explorar Agora</a>
+    </div>
+</header>
 
-                <!-- Exibir mensagens de sucesso ou erro -->
-                <div th:if="${success}" class="alert alert-success" role="alert">
-                    <span th:text="${success}"></span>
-                </div>
-                <div th:if="${error}" class="alert alert-danger" role="alert">
-                    <span th:text="${error}"></span>
-                </div>
+<div class="container mb-5">
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 
-                <!-- Carrossel de Categorias -->
-                <div class="mt-5">
-                    <h3>Categorias</h3>
-                    <div id="categoriesCarousel" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="d-flex justify-content-center">
-                                    <div th:each="category : ${categories.content}" class="mx-2">
-                                        <div class="card text-center" style="width: 200px;">
-                                            <div class="card-body">
-                                                <h5 class="card-title" th:text="${category.name}">Nome da Categoria</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#categoriesCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
+    <section class="mb-5 text-center">
+        <h3 class="fw-bold mb-4">Explore por Categoria</h3>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <div th:each="category : ${categories.content}">
+                <a th:href="@{/category/{id}(id=${category.id})}" class="category-pill">
+                    <i class="fa-solid fa-tag me-2"></i>
+                    <span th:text="${category.name}">Categoria</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="produtos">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold m-0">Produtos em Destaque</h3>
+            <a href="/products" class="btn btn-link text-decoration-none fw-bold">Ver todos <i class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-sm-6 col-lg-4 col-xl-3" th:each="product : ${products.content}">
+                <div class="card product-card h-100 position-relative">
+                    <form th:action="@{/favorites/{productId}(productId=${product.id})}" method="post" sec:authorize="isAuthenticated()">
+                        <button type="submit" class="favorite-btn">
+                            <i th:class="${favoriteIds.contains(product.id)} ? 'fas fa-heart' : 'fa-regular fa-heart'"></i>
                         </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#categoriesCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+                    </form>
+
+                    <div class="img-container">
+                        <img src="https://via.placeholder.com/400x400" th:alt="${product.name}">
                     </div>
-                </div>
 
-                <div class="mt-35">
-                    <!-- Exibição dos Produtos -->
-                    <div class="mt-5">
-                        <h2>Produtos em Destaque</h2>
-                        <div class="row">
-                            <div class="col-md-4 mb-4" th:each="product : ${products.content}">
-                                <div class="card h-100 position-relative">
-                                    <form th:action="@{/favorites/{productId}(productId=${product.id})}" method="post" class="position-absolute top-0 end-0 m-2" sec:authorize="isAuthenticated()">
-                                        <button type="submit" class="btn btn-outline-danger favorite-overlay-btn">
-                                            <i th:class="${favoriteIds.contains(product.id)} ? 'fas fa-heart' : 'far fa-heart'"></i>
-                                        </button>
-                                    </form>
+                    <div class="card-body d-flex flex-column p-4">
+                        <small class="text-primary fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Novidade</small>
+                        <h5 class="card-title fw-bold mb-2" th:text="${product.name}">Nome do Produto</h5>
+                        <p class="card-text text-muted small mb-3 text-truncate-2" th:text="${product.description}" style="height: 40px; overflow: hidden;">
+                            Descrição.
+                        </p>
 
-                                    <img src="https://super.abril.com.br/wp-content/uploads/2018/05/filhotes-de-cachorro-alcanc3a7am-o-c3a1pice-de-fofura-com-8-semanas1.png?quality=70&strip=all&resize=420" class="card-img-top" alt="Imagem do Produto">
-                                    <div class="card-body d-flex flex-column">
-                                        <h5 class="card-title fw-bold" th:text="${product.name}">Nome do Produto</h5>
-                                        <p class="card-text" th:text="${product.description}">Descrição do produto</p>
-                                        <p class="card-text fw-bold">R$ <span th:text="${#numbers.formatDecimal(product.price, 1, 2)}">0.00</span></p>
-                                        <div class="d-flex justify-content-between align-items-center mt-auto">
-                                            <form th:action="@{/cart/add}" method="post" class="me-2">
-                                                <input type="hidden" th:name="productId" th:value="${product.id}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn btn-primary">Adicionar ao Carrinho</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="mt-auto">
+                            <h4 class="fw-bold text-dark" th:text="${#numbers.formatCurrency(product.price)}">R$ 0,00</h4>
+                            <form th:action="@{/cart/add}" method="post">
+                                <input type="hidden" th:name="productId" th:value="${product.id}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-primary w-100 py-2 mt-2">
+                                    <i class="fas fa-cart-plus me-2"></i>Comprar
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    </div>
+    </section>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 <footer th:replace="~{footer :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
