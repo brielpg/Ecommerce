@@ -19,10 +19,14 @@ public class EmailProducer {
     private String queueName;
 
     public void publishEvent(EventTypes eventType, Map<String, Object> data) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("eventType", eventType.toString());
-        payload.put("data", data);
+        try {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("eventType", eventType.toString());
+            payload.put("data", data);
 
-        rabbitTemplate.convertAndSend(queueName, payload);
+            rabbitTemplate.convertAndSend(queueName, payload);
+        } catch (Exception e) {
+            System.err.println("Erro ao enviar mensagem para RabbitMQ: " + e.getMessage());
+        }
     }
 }
