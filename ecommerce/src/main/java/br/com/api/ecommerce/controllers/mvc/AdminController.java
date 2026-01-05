@@ -124,11 +124,11 @@ public class AdminController {
             if (dtoForm.id() != null) {
                 ProductDtoUpdate dtoUpdate = new ProductDtoUpdate(dtoForm.id(), dtoForm.name(), dtoForm.description(), dtoForm.price(), dtoForm.stock());
                 System.out.println(dtoForm);
-                productService.update(dtoUpdate);
+                productService.update(dtoUpdate, null);
                 redirectAttributes.addFlashAttribute("successMessage", "Produto atualizado com sucesso!");
             } else {
                 ProductDtoCreate dtoCreate = new ProductDtoCreate(dtoForm.name(), dtoForm.description(), dtoForm.price(), dtoForm.stock(), dtoForm.categories());
-                productService.create(dtoCreate);
+                productService.create(dtoCreate, null);
                 redirectAttributes.addFlashAttribute("successMessage", "Produto criado com sucesso!");
             }
         } catch (Exception e) {
