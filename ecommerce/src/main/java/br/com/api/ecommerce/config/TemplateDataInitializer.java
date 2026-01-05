@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TemplateDataInitializer implements CommandLineRunner {
 
-    @Value("${api.setup.create-initial-admin}")
+    @Value("${api.setup.create-initial-admin:false}")
     private boolean shouldCreateAdmin;
 
     @Autowired
