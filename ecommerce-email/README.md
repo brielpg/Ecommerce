@@ -26,6 +26,8 @@ Access the management interface at the `/templates` endpoint. Here you can:
 ## 📂 Available Event Types
 
 * **`USER_WELCOME`**: Sent when a new user registers.
+* **`USER_DEACTIVATED`**: Sent when the user deletes their account.
+* **`USER_REACTIVATED`**: Sent when the user reactivates their account.
 
 ---
 
@@ -33,14 +35,13 @@ Access the management interface at the `/templates` endpoint. Here you can:
 
 Below are the variables available for the templates to be rendered correctly:
 
-| Variable        | Requirement      | Description                                                 |
-|-----------------|------------------|-------------------------------------------------------------|
-| `eventType`     | **Required**     | The unique identifier for the event (e.g., `USER_WELCOME`). |
-| `data`          | **Required**     | Object containing the specific user and event information.  |
-| `emailTo`       | **Required**     | The recipient's email address.                              |
-| `userName`      | **Not Required** | The recipient's name.                                       |
-| `userPhone`     | **Not Required** | The recipient's phone number.                               |
-| `userBirthDate` | **Not Required** | The recipient's birth date.                                 |
+| Variable        | Availability                                          | Description                                                 |
+|-----------------|-------------------------------------------------------|-------------------------------------------------------------|
+| `eventType`     | **All**                                               | The unique identifier for the event (e.g., `USER_WELCOME`). |
+| `data`          | **All**                                               | Object containing the specific user and event information.  |
+| `emailTo`       | **All**                                               | The recipient's email address.                              |
+| `userName`      | **USER_WELCOME, USER_DEACTIVATED, USER_REACTIVATED**  | The recipient's name.                                       |
+| `userPhone`     | **USER_WELCOME, USER_DEACTIVATED, USER_REACTIVATED**  | The recipient's phone number.                               |
 
 ### Template Example
 
