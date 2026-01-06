@@ -3,73 +3,194 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - Ecommerce</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Painel Admin - Ecommerce</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Ajuste do conteúdo principal para a Sidebar fixa */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            padding-top: 80px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+
+        /* Estilização dos Cards de Estatística */
+        .stat-card {
+            border: none;
+            border-radius: 15px;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon-shape {
+            width: 48px;
+            height: 48px;
+            background-position: center;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .text-gradient {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Estilo para tabelas rápidas */
+        .admin-table-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        @media (max-width: 992px) {
+            .main-wrapper { margin-left: 0; }
+        }
+    </style>
 </head>
-<body style="background-color: rgb(250, 250, 250); display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
-    <nav th:replace="~{fragments :: navbar}"></nav>
-    <div th:replace="~{fragments :: sidebar}"></div>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<div th:replace="~{fragments :: sidebar}"></div>
 
-    <!-- Main Content -->
-    <div style="flex-grow: 1; margin-left: 250px; padding-top: 80px;">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <!-- Success/Error Messages -->
-                    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-                        <span th:text="${successMessage}"></span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="main-wrapper">
+    <div class="container-fluid p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0">Olá, <span sec:authentication="name">Admin</span>! 👋</h2>
+                <p class="text-muted">Aqui está o que está acontecendo na sua loja hoje.</p>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card p-3">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-uppercase text-muted fw-bold small mb-1">Usuários</p>
+                            <h3 class="fw-bold mb-0" th:text="${users.totalElements}">0</h3>
+                        </div>
+                        <div class="icon-shape bg-primary text-white shadow">
+                            <i class="fas fa-users fs-4"></i>
+                        </div>
                     </div>
-                    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <span th:text="${errorMessage}"></span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card p-3">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-uppercase text-muted fw-bold small mb-1">Produtos</p>
+                            <h3 class="fw-bold mb-0" th:text="${totalProducts != null ? totalProducts : 0}">0</h3>
+                        </div>
+                        <div class="icon-shape bg-success text-white shadow">
+                            <i class="fas fa-box fs-4"></i>
+                        </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Dashboard Overview -->
-                    <h1 class="mb-4">Visão Geral do Painel Administrativo</h1>
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card p-3">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-uppercase text-muted fw-bold small mb-1">Categorias</p>
+                            <h3 class="fw-bold mb-0" th:text="${categories.totalElements}">0</h3>
+                        </div>
+                        <div class="icon-shape bg-warning text-white shadow">
+                            <i class="fas fa-tags fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    <!-- Statistics Cards -->
-                    <div class="row mb-4">
-                        <div class="col-md-3">
-                            <div class="card text-white bg-primary">
-                                <div class="card-body">
-                                    <h5 class="card-title"><i class="fa-solid fa-users me-2"></i>Usuários</h5>
-                                    <p class="card-text fs-4" th:text="${users.totalElements}">0</p>
-                                </div>
-                            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card p-3">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-uppercase text-muted fw-bold small mb-1">Receita</p>
+                            <h3 class="fw-bold mb-0">R$ 0,00</h3>
                         </div>
-                        <div class="col-md-3">
-                            <div class="card text-white bg-success">
-                                <div class="card-body">
-                                    <h5 class="card-title"><i class="fa-solid fa-box me-2"></i>Produtos</h5>
-                                    <p class="card-text fs-4">0</p> <!-- TODO: Add product count -->
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card text-white bg-warning">
-                                <div class="card-body">
-                                    <h5 class="card-title"><i class="fa-solid fa-tags me-2"></i>Categorias</h5>
-                                    <p class="card-text fs-4" th:text="${categories.totalElements}">0</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card text-white bg-info">
-                                <div class="card-body">
-                                    <h5 class="card-title"><i class="fa-solid fa-shopping-cart me-2"></i>Pedidos</h5>
-                                    <p class="card-text fs-4">0</p> <!-- TODO: Add order count -->
-                                </div>
-                            </div>
+                        <div class="icon-shape bg-info text-white shadow">
+                            <i class="fas fa-money-bill-trend-up fs-4"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card admin-table-card">
+                    <div class="card-header bg-white border-0 py-3 d-flex justify-content-between">
+                        <h5 class="fw-bold mb-0">Usuários Recentes</h5>
+                        <a href="/admin/users" class="btn btn-sm btn-light text-primary fw-bold">Ver todos</a>
+                    </div>
+                    <div class="table-responsive p-3">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="user : ${recentUsers.content}">
+                                <td class="fw-bold" th:text="${user.name}">Nome</td>
+                                <td th:text="${user.email}">email@teste.com</td>
+                                <td><span class="badge" th:classappend="${user.active} ? 'bg-success' : 'bg-danger'"
+                                          th:text="${user.active} ? 'Ativo' : 'Inativo'">Status</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card admin-table-card p-4">
+                    <h5 class="fw-bold mb-4">Ações Rápidas</h5>
+                    <div class="d-grid gap-2">
+                        <a href="/admin/products/add" class="btn btn-outline-primary text-start p-3">
+                            <i class="fas fa-cart-plus me-2"></i> Gerenciar Estoque
+                        </a>
+                        <a href="/admin/reports" class="btn btn-outline-dark text-start p-3">
+                            <i class="fas fa-file-invoice-dollar me-2"></i> Relatórios de Vendas
+                        </a>
+                        <a href="/admin/settings" class="btn btn-outline-secondary text-start p-3">
+                            <i class="fas fa-gears me-2"></i> Configurações da Loja
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-<footer th:replace="~{fragments :: footer}"></footer>
 </html>

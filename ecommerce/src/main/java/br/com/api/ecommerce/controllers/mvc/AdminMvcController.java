@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,7 +50,11 @@ public class AdminMvcController {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserDtoList> users = userService.getAll(pageable);
 
+        Pageable recentPageable = PageRequest.of(0, 7, Sort.by("timestamp").descending());
+        Page<UserDtoList> recentUsers = userService.getAll(recentPageable);
+
         model.addAttribute("users", users);
+        model.addAttribute("recentUsers", recentUsers);
         model.addAttribute("currentPage", users.getNumber());
         model.addAttribute("totalPages", users.getTotalPages());
         model.addAttribute("categories", categoryService.getAll(PageRequest.of(0, 100)));

@@ -177,28 +177,107 @@
 
 
 <!-- Admin Sidebar -->
-<div th:fragment="sidebar" class="bg-dark text-white vh-100" style="width: 250px; position: fixed; left: 0; top: 56px; overflow-y: auto;">
-    <div class="p-3">
-        <h5 class="text-center mb-4">Administração</h5>
+<div th:fragment="sidebar" class="admin-sidebar shadow">
+    <style>
+        .admin-sidebar {
+            width: 260px;
+            position: fixed;
+            left: 0;
+            top: 56px;
+            height: calc(100vh - 56px);
+            background-color: #1a1c23;
+            color: #9e9e9e;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s;
+            border-right: 1px solid #2d2f39;
+        }
+
+        .sidebar-link {
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            color: #9e9e9e;
+            text-decoration: none;
+            transition: 0.2s ease;
+            margin: 0.2rem 0.8rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .sidebar-link i {
+            width: 25px;
+            font-size: 1.1rem;
+            margin-right: 10px;
+            transition: 0.2s;
+        }
+
+        .sidebar-link:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-link.active {
+            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+        }
+
+        .sidebar-link.active i {
+            color: #fff;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+            padding: 1rem 1.5rem 0.5rem;
+            color: #5d616d;
+            font-weight: 700;
+        }
+    </style>
+
+    <div class="sidebar-content">
+        <div class="sidebar-section-title">Principal</div>
+
         <ul class="nav flex-column">
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white d-flex align-items-center" href="/admin">
-                    <i class="fa-solid fa-tachometer-alt me-2"></i> Visão Geral
+            <li class="nav-item">
+                <a class="sidebar-link" th:href="@{/admin}">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Visão Geral</span>
                 </a>
             </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white d-flex align-items-center" href="/admin/products">
-                    <i class="fa-solid fa-box me-2"></i> Produtos
+        </ul>
+
+        <div class="sidebar-section-title">Gerenciamento</div>
+
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="sidebar-link" th:href="@{/admin/products}">
+                    <i class="fa-solid fa-box-open"></i>
+                    <span>Produtos</span>
                 </a>
             </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white d-flex align-items-center" href="/admin/categories">
-                    <i class="fa-solid fa-tags me-2"></i> Categorias
+            <li class="nav-item">
+                <a class="sidebar-link" th:href="@{/admin/categories}">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Categorias</span>
                 </a>
             </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white d-flex align-items-center" href="/admin/users">
-                    <i class="fa-solid fa-users me-2"></i> Usuários
+            <li class="nav-item">
+                <a class="sidebar-link" th:href="@{/admin/users}">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span>Usuários</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-section-title">Vendas</div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="sidebar-link" th:href="@{/admin/orders}">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>Pedidos</span>
                 </a>
             </li>
         </ul>
