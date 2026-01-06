@@ -71,6 +71,16 @@ public class ProductController {
         return ResponseEntity.ok(productDtoList);
     }
 
+    @Operation(summary = "Get all products by category ID", description = "Retrieves all product by a specific category by its ID. Admins see all products, users see only active ones.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
+    })
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<Page<ProductDtoList>> getAllByCategoryId(@PathVariable UUID categoryId, Pageable pageable){
+        Page<ProductDtoList> products = service.getAllByCategoryId(categoryId, pageable);
+        return ResponseEntity.ok(products);
+    }
+
     @Operation(summary = "Search products", description = "Searches for products by name or description. Returns paginated results.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Search completed successfully"),
