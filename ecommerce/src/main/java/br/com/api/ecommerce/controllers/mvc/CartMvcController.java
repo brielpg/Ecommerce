@@ -17,8 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.UUID;
 
-@Controller("cartMvcController")
-public class CartController {
+@Controller
+public class CartMvcController {
 
     @Autowired
     private CartService cartService;
