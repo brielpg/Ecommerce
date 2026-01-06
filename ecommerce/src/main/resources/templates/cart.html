@@ -89,6 +89,7 @@
                         <div class="col-auto ps-4">
                             <form th:action="@{/cart/remove}" method="post">
                                 <input type="hidden" name="productId" th:value="${item.product.id}">
+                                <input type="hidden" name="quantity" th:value="1">
                                 <button type="submit" class="btn btn-outline-danger btn-sm border-0" title="Remover item">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
@@ -136,10 +137,6 @@
                         <a th:href="@{/}" class="btn btn-outline-secondary">
                             Continuar Comprando
                         </a>
-                    </div>
-
-                    <div class="mt-4 text-center">
-                        <img src="https://logodownload.org/wp-content/uploads/2014/07/cartoes-visa-mastercard-3.png" height="25" style="opacity: 0.6;" alt="Pagamentos">
                     </div>
                 </div>
             </div>
