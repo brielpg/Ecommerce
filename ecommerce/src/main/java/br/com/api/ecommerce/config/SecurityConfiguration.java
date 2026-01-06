@@ -54,6 +54,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/favorites/**", "/profile/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/cart", "/profile", "/favorites").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/css/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(f -> f.loginPage("/login").defaultSuccessUrl("/", true))

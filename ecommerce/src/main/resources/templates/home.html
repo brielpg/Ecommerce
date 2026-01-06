@@ -1,15 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Home - Ecommerce</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Inter', sans-serif; }
-
-        /* Hero Section */
         .hero-section {
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
             url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2070&auto=format&fit=crop');
@@ -23,69 +20,6 @@
             text-align: center;
             margin-bottom: 50px;
             border-radius: 0 0 20px 20px;
-        }
-
-        /* Categorias Estilizadas */
-        .category-pill {
-            background: white;
-            border: 1px solid #eee;
-            border-radius: 50px;
-            padding: 15px 30px;
-            transition: 0.3s;
-            text-decoration: none;
-            color: #333;
-            font-weight: 600;
-            display: inline-block;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-        .category-pill:hover {
-            background: #0d6efd;
-            color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(13, 110, 253, 0.2);
-        }
-
-        /* Card de Produto */
-        .product-card {
-            border: none;
-            border-radius: 15px;
-            transition: 0.3s;
-            background: #fff;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-        .product-card .img-container {
-            height: 250px;
-            overflow: hidden;
-            background: #fdfdfd;
-        }
-        .product-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: 0.5s;
-        }
-        .product-card:hover img { transform: scale(1.1); }
-
-        .favorite-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            color: #ff4757;
-            z-index: 10;
         }
     </style>
 </head>
@@ -133,32 +67,7 @@
 
             <div class="row g-4">
                 <div class="col-sm-6 col-lg-4 col-xl-3" th:each="product : ${bestSellers}">
-                    <div class="card product-card h-100 border-0 shadow-sm position-relative">
-                    <span class="badge bg-danger position-absolute top-0 start-0 m-3 z-index-2 px-3 py-2">
-                        <i class="fas fa-star me-1"></i> POPULAR
-                    </span>
-
-                        <div class="img-container">
-                            <img src="https://via.placeholder.com/400x400" th:alt="${product.name}">
-                        </div>
-
-                        <div class="card-body d-flex flex-column p-4">
-                            <h5 class="card-title fw-bold mb-1" th:text="${product.name}">Nome do Produto</h5>
-                            <div class="fw-bold text-primary mb-3 d-flex align-items-center gap-1">
-                                <h4>R$</h4>
-                                <h4 th:text="${#numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
-                            </div>
-
-                            <div class="mt-auto">
-                                <form th:action="@{/cart/add}" method="post">
-                                    <input type="hidden" th:name="productId" th:value="${product.id}">
-                                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2 shadow-sm">
-                                        <i class="fas fa-cart-plus me-2"></i>ADICIONAR
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <div th:replace="~{fragments :: best-seller-card(product=${product})}"></div>
                 </div>
             </div>
         </section>
@@ -174,35 +83,7 @@
 
             <div class="row g-4">
                 <div class="col-sm-6 col-lg-4 col-xl-3" th:each="product : ${products.content}">
-                    <div class="card product-card h-100 border-0 shadow-sm position-relative">
-                        <form th:action="@{/favorites/{productId}(productId=${product.id})}" method="post" sec:authorize="isAuthenticated()">
-                            <button type="submit" class="favorite-btn">
-                                <i th:class="${favoriteIds.contains(product.id)} ? 'fas fa-heart' : 'fa-regular fa-heart'"></i>
-                            </button>
-                        </form>
-
-                        <div class="img-container">
-                            <img src="https://via.placeholder.com/400x400" th:alt="${product.name}">
-                        </div>
-
-                        <div class="card-body d-flex flex-column p-4">
-                            <h5 class="card-title fw-bold mb-1" th:text="${product.name}">Nome do Produto</h5>
-                            <p class="text-muted small text-truncate-2 mb-3" th:text="${product.description}">Descrição.</p>
-
-                            <div class="mt-auto">
-                                <div class="fw-bold text-dark mb-3 d-flex align-items-center gap-1">
-                                    <h4>R$</h4>
-                                    <h4 th:text="${#numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
-                                </div>
-                                <form th:action="@{/cart/add}" method="post">
-                                    <input type="hidden" th:name="productId" th:value="${product.id}">
-                                    <button type="submit" class="btn btn-outline-primary w-100 py-2">
-                                        <i class="fas fa-cart-plus me-2"></i>ADICIONAR
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <div th:replace="~{fragments :: product-card(product=${product})}"></div>
                 </div>
             </div>
         </section>
