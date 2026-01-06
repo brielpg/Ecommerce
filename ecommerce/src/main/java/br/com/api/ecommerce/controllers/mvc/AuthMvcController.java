@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
-@PreAuthorize("permitAll()")
 public class AuthMvcController {
 
     @Autowired

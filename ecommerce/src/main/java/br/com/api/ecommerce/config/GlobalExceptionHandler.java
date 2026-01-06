@@ -5,6 +5,7 @@ import br.com.api.ecommerce.exceptions.BadRequestException;
 import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.dtos.ErrorDto;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.FieldError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -79,9 +81,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorDto> handleGeneralException(Exception ex) {
+    public Object handleGeneralException(Exception ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), List.of(ex.getMessage()));
+
+        String accept = request.getHeader("Accept");
+        if (accept != null && accept.contains("text/html")) {
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.addObject("errorMessage", ex.getMessage());
+            modelAndView.setViewName("error");
+            return modelAndView;
+        }
+
         return ResponseEntity.status(httpStatus).body(errorDto);
     }
 }

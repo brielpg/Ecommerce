@@ -23,13 +23,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
 @Controller
-@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/admin")
 public class AdminMvcController {
 
     @Autowired
@@ -41,7 +42,7 @@ public class AdminMvcController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/admin")
+    @GetMapping
     public String admin(@RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "10") int size,
                         Model model) {
@@ -57,7 +58,7 @@ public class AdminMvcController {
     }
 
     // CATEGORIES
-    @GetMapping("/admin/categories")
+    @GetMapping("/categories")
     public String categories(@RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "10") int size,
                             Model model) {
@@ -72,7 +73,7 @@ public class AdminMvcController {
         return "admin_categories";
     }
 
-    @PostMapping("/admin/categories")
+    @PostMapping("/categories")
     public String createOrUpdateCategory(@Valid CategoryDtoForm dtoForm, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar categoria: " + result.getAllErrors().get(0).getDefaultMessage());
@@ -95,7 +96,7 @@ public class AdminMvcController {
     }
 
     // PRODUCTS
-    @GetMapping("/admin/products")
+    @GetMapping("/products")
     public String products(@RequestParam(defaultValue = "0") int page,
                           @RequestParam(defaultValue = "10") int size,
                           @RequestParam(required = false) String search,
@@ -113,7 +114,7 @@ public class AdminMvcController {
         return "admin_products";
     }
 
-    @PostMapping("/admin/products")
+    @PostMapping("/products")
     public String createOrUpdateProduct(@Valid ProductDtoForm dtoForm, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar categoria: " + result.getAllErrors().get(0).getDefaultMessage());
@@ -137,7 +138,7 @@ public class AdminMvcController {
     }
 
     // USERS
-    @GetMapping("/admin/users")
+    @GetMapping("/users")
     public String users(@RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "10") int size,
                        @RequestParam(required = false) String search,

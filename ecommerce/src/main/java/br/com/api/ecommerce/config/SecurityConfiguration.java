@@ -51,9 +51,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
 
                         // Front
-                        .requestMatchers(HttpMethod.POST, "/logout").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/error").permitAll()
-                        .requestMatchers("/css/**").permitAll()
+                        .requestMatchers("/login", "/", "/register", "/products/**", "/error", "/css/**").permitAll()
+                        .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(f -> f.loginPage("/login").defaultSuccessUrl("/", true))
