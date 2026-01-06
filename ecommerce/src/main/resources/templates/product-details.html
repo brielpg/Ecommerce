@@ -35,7 +35,7 @@
         <h1 class="display-5 fw-bold mb-3" th:text="${product.name}">Nome do Produto</h1>
 
         <div class="d-flex align-items-center mb-4 gap-3">
-          <a th:each="category : ${product.categories}" th:href="@{/categories/{id}(id=${category.id})}" class="badge-category">
+          <a th:each="category : ${product.categories}" th:href="@{/category/{id}(id=${category.id})}" class="badge-category">
             <i class="fas fa-tag me-2"></i> <span th:text="${category.name}">Nome da Categoria</span>
           </a>
           <span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i> Em estoque</span>

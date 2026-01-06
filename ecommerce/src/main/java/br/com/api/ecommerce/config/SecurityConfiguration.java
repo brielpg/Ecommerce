@@ -49,7 +49,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
-                        .requestMatchers("/login", "/", "/register", "/products/**", "/error", "/css/**").permitAll()
+                        .requestMatchers("/login", "/", "/register", "/products/**", "/error", "/category/**", "/css/**").permitAll()
                         .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
