@@ -99,6 +99,19 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    public Page<ProductDtoList> getAllByCategoryId(UUID categoryId, Pageable pageable) {
+        Page<Product> products;
+
+        if (authorizationService.validateAdminUser()) {
+            products = repository.findAllByCategoryId(categoryId, true, pageable);
+        } else {
+            products = repository.findAllByCategoryId(categoryId, false, pageable);
+        }
+
+        return products.map(this::entityToDto);
+    }
+
+    @Transactional(readOnly = true)
     @Cacheable("best-sellers")
     public List<ProductDtoList> getBestSellers(int limit) {
         Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "purchaseCount"));
