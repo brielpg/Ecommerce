@@ -23,13 +23,6 @@ public class UserMvcController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/profile")
-    public String profile(@AuthenticationPrincipal User user, Model model) {
-        model.addAttribute("user", user);
-
-        return "profile";
-    }
-
     @GetMapping("/favorites")
     public String favorites(@AuthenticationPrincipal User user, Model model) {
         List<ProductDtoList> favorites = userService.getFavorites(user.getId());
@@ -49,6 +42,13 @@ public class UserMvcController {
         }
 
         return "redirect:" + request.getHeader("Referer");
+    }
+
+    @GetMapping("/profile")
+    public String profile(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("user", user);
+
+        return "profile";
     }
 
     @PostMapping("/profile/update")

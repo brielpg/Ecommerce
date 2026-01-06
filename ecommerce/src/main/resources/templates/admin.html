@@ -8,10 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body style="background-color: rgb(250, 250, 250); display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
-    <nav th:replace="~{navbar :: navbar}"></nav>
-
-    <!-- Sidebar -->
-    <div th:replace="~{admin_sidebar :: sidebar}"></div>
+    <nav th:replace="~{fragments :: navbar}"></nav>
+    <div th:replace="~{fragments :: sidebar}"></div>
 
     <!-- Main Content -->
     <div style="flex-grow: 1; margin-left: 250px; padding-top: 80px;">
@@ -73,5 +71,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-<footer th:replace="~{footer :: footer}"></footer>
+<footer th:replace="~{fragments :: footer}"></footer>
 </html>

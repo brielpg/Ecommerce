@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -18,12 +19,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
+@RequestMapping("/cart")
 public class CartMvcController {
 
     @Autowired
     private CartService cartService;
 
-    @GetMapping("/cart")
+    @GetMapping
     public String cart(@AuthenticationPrincipal User user, Model model) {
         Cart cart = cartService.getByUserId(user.getId());
         CartDtoList cartDto = cartService.entityToDto(cart);
@@ -33,7 +35,7 @@ public class CartMvcController {
         return "cart";
     }
 
-    @PostMapping("/cart/add")
+    @PostMapping("/add")
     public String addToCart(@AuthenticationPrincipal User user,
                             @RequestParam UUID productId,
                             @RequestParam(defaultValue = "1") Integer quantity,
@@ -48,7 +50,7 @@ public class CartMvcController {
         return "redirect:/cart";
     }
 
-    @PostMapping("/cart/remove")
+    @PostMapping("/remove")
     public String removeFromCart(@AuthenticationPrincipal User user,
                                  @RequestParam UUID productId,
                                  @RequestParam Integer quantity,
@@ -63,7 +65,7 @@ public class CartMvcController {
         return "redirect:/cart";
     }
 
-    @PostMapping("/cart/clear")
+    @PostMapping("/clear")
     public String clearCart(@AuthenticationPrincipal User user,
                             RedirectAttributes redirectAttributes) {
         try {
