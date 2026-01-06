@@ -24,4 +24,7 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     @Query("SELECT c FROM Category c WHERE c.id IN :ids AND c.active = true")
     List<Category> findAllByIdInAndActiveTrue(List<UUID> ids);
+
+    @Query("SELECT c FROM Category c JOIN c.products p WHERE p.id = :productId AND (:isAdmin = true OR (p.active = true AND c.active = true))")
+    Page<Category> findAllByProductId(UUID productId, boolean isAdmin, Pageable pageable);
 }

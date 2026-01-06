@@ -123,8 +123,8 @@ public class ReviewService {
     public ReviewDtoList entityToDto(Review entity) {
         return new ReviewDtoList(
                 entity.getId(),
-                entity.getUser().getId(),
-                entity.getProduct().getId(),
+                userService.entityToDto(entity.getUser()),
+                productService.entityToDto(entity.getProduct()),
                 entity.getRating(),
                 entity.getReview(),
                 entity.getTimestamp()

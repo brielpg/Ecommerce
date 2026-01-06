@@ -101,6 +101,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("permitAll()")
     public Page<ProductDtoList> getAllByCategoryId(UUID categoryId, Pageable pageable) {
         Page<Product> products;
 

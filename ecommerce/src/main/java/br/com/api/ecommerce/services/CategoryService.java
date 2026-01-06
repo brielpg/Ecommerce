@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,6 +66,20 @@ public class CategoryService {
 
         return repository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new NotFoundException("exception.category.not.found"));
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("permitAll()")
+    public Page<CategoryDtoList> getAllByProductId(UUID productId, Pageable pageable) {
+        Page<Category> categories;
+
+        if (authorizationService.validateAdminUser()){
+            categories = repository.findAllByProductId(productId, true, pageable);
+        } else {
+            categories = repository.findAllByProductId(productId, false, pageable);
+        }
+
+        return categories.map(this::entityToDto);
     }
 
     @Transactional
