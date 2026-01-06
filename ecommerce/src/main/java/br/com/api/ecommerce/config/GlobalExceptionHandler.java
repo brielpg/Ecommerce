@@ -79,8 +79,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleGeneralException(Exception ex, Model model) {
-//        model.addAttribute("errorMessage", ex.getMessage());
-        return "error";
+    public ResponseEntity<ErrorDto> handleGeneralException(Exception ex) {
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), List.of(ex.getMessage()));
+        return ResponseEntity.status(httpStatus).body(errorDto);
     }
 }

@@ -4,6 +4,7 @@ import br.com.api.ecommerce.models.dtos.Address.AddressDtoCreate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
+@PreAuthorize("permitAll()")
 public class AuthMvcController {
 
     @Autowired

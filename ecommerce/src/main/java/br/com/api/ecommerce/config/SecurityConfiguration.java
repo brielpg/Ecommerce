@@ -49,11 +49,10 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/login", "/logout", "/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/", "/login", "/register", "/error").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/favorites/**", "/profile/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/cart", "/profile", "/favorites").authenticated()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // Front
+                        .requestMatchers(HttpMethod.POST, "/logout").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/error").permitAll()
                         .requestMatchers("/css/**").permitAll()
                         .anyRequest().authenticated()
                 )

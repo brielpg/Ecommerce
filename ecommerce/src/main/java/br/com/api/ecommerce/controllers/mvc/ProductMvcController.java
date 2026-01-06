@@ -6,6 +6,7 @@ import br.com.api.ecommerce.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/products")
+@PreAuthorize("permitAll()")
 public class ProductMvcController {
 
     @Autowired
