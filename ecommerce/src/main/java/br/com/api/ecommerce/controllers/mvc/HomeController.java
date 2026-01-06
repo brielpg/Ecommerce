@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,16 +35,19 @@ public class HomeController {
     public String home(@AuthenticationPrincipal User user, Model model) {
         Pageable pageable = PageRequest.of(0, 10); // Página 0, tamanho 10
         Page<ProductDtoList> products = productService.getAll(pageable);
+        List<ProductDtoList> bestSellers = productService.getBestSellers(10);
         Page<CategoryDtoList> categories = categoryService.getAll(pageable);
 
+        List<UUID> favoriteIds = new ArrayList<>();
         if (user != null) {
             List<ProductDtoList> favorites = userService.getFavorites(user.getId());
-            List<UUID> favoriteIds = favorites.stream().map(ProductDtoList::id).toList();
-            model.addAttribute("favoriteIds", favoriteIds);
+            favoriteIds = favorites.stream().map(ProductDtoList::id).toList();
         }
 
         model.addAttribute("products", products);
+        model.addAttribute("bestSellers", bestSellers);
         model.addAttribute("categories", categories);
+        model.addAttribute("favoriteIds", favoriteIds);
         return "home";
     }
 }

@@ -45,7 +45,7 @@ public class CartController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erro ao adicionar produto ao carrinho: " + e.getMessage());
         }
-        return "redirect:/";
+        return "redirect:/cart";
     }
 
     @PostMapping("/cart/remove")

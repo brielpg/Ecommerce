@@ -96,7 +96,7 @@
     <div class="container">
         <h1 class="display-3 fw-bold">Ofertas de Verão</h1>
         <p class="lead mb-4">Descubra as melhores tendências com preços que você só encontra aqui.</p>
-        <a href="#produtos" class="btn btn-primary btn-lg px-5">Explorar Agora</a>
+        <a href="#todos-produtos" class="btn btn-primary btn-lg px-5">Explorar Agora</a>
     </div>
 </header>
 
@@ -118,47 +118,95 @@
         </div>
     </section>
 
-    <section id="produtos">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold m-0">Produtos em Destaque</h3>
-            <a href="/products" class="btn btn-link text-decoration-none fw-bold">Ver todos <i class="fas fa-arrow-right"></i></a>
-        </div>
+    <div id="produtos" class="container mb-5">
 
-        <div class="row g-4">
-            <div class="col-sm-6 col-lg-4 col-xl-3" th:each="product : ${products.content}">
-                <div class="card product-card h-100 position-relative">
-                    <form th:action="@{/favorites/{productId}(productId=${product.id})}" method="post" sec:authorize="isAuthenticated()">
-                        <button type="submit" class="favorite-btn">
-                            <i th:class="${favoriteIds.contains(product.id)} ? 'fas fa-heart' : 'fa-regular fa-heart'"></i>
-                        </button>
-                    </form>
+        <section th:if="${!#lists.isEmpty(bestSellers)}" class="mb-5 pb-4" style="background: #fff8e1; border-radius: 20px; padding: 30px;">
+            <div class="d-flex align-items-center mb-4">
+                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                    <i class="fas fa-fire fs-5"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold m-0 text-dark">Best Sellers</h3>
+                    <p class="text-muted mb-0 small text-uppercase fw-bold">Os favoritos da nossa comunidade</p>
+                </div>
+            </div>
 
-                    <div class="img-container">
-                        <img src="https://via.placeholder.com/400x400" th:alt="${product.name}">
-                    </div>
+            <div class="row g-4">
+                <div class="col-sm-6 col-lg-4 col-xl-3" th:each="product : ${bestSellers}">
+                    <div class="card product-card h-100 border-0 shadow-sm position-relative">
+                    <span class="badge bg-danger position-absolute top-0 start-0 m-3 z-index-2 px-3 py-2">
+                        <i class="fas fa-star me-1"></i> POPULAR
+                    </span>
 
-                    <div class="card-body d-flex flex-column p-4">
-                        <small class="text-primary fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Novidade</small>
-                        <h5 class="card-title fw-bold mb-2" th:text="${product.name}">Nome do Produto</h5>
-                        <p class="card-text text-muted small mb-3 text-truncate-2" th:text="${product.description}" style="height: 40px; overflow: hidden;">
-                            Descrição.
-                        </p>
+                        <div class="img-container">
+                            <img src="https://via.placeholder.com/400x400" th:alt="${product.name}">
+                        </div>
 
-                        <div class="mt-auto">
-                            <h4 class="fw-bold text-dark" th:text="${#numbers.formatCurrency(product.price)}">R$ 0,00</h4>
-                            <form th:action="@{/cart/add}" method="post">
-                                <input type="hidden" th:name="productId" th:value="${product.id}">
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="btn btn-primary w-100 py-2 mt-2">
-                                    <i class="fas fa-cart-plus me-2"></i>Comprar
-                                </button>
-                            </form>
+                        <div class="card-body d-flex flex-column p-4">
+                            <h5 class="card-title fw-bold mb-1" th:text="${product.name}">Nome do Produto</h5>
+                            <div class="fw-bold text-primary mb-3 d-flex align-items-center gap-1">
+                                <h4>R$</h4>
+                                <h4 th:text="${#numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
+                            </div>
+
+                            <div class="mt-auto">
+                                <form th:action="@{/cart/add}" method="post">
+                                    <input type="hidden" th:name="productId" th:value="${product.id}">
+                                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2 shadow-sm">
+                                        <i class="fas fa-cart-plus me-2"></i>ADICIONAR
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <section id="todos-produtos" class="mt-5">
+            <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3">
+                <div>
+                    <h3 class="fw-bold m-0">Nossa Vitrine Completa</h3>
+                    <p class="text-muted mb-0">Explore todos os nossos produtos selecionados</p>
+                </div>
+                <span class="badge bg-light text-dark border px-3 py-2" th:text="${products.totalElements + ' itens encontrados'}">0 itens</span>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-sm-6 col-lg-4 col-xl-3" th:each="product : ${products.content}">
+                    <div class="card product-card h-100 border-0 shadow-sm position-relative">
+                        <form th:action="@{/favorites/{productId}(productId=${product.id})}" method="post" sec:authorize="isAuthenticated()">
+                            <button type="submit" class="favorite-btn">
+                                <i th:class="${favoriteIds.contains(product.id)} ? 'fas fa-heart' : 'fa-regular fa-heart'"></i>
+                            </button>
+                        </form>
+
+                        <div class="img-container">
+                            <img src="https://via.placeholder.com/400x400" th:alt="${product.name}">
+                        </div>
+
+                        <div class="card-body d-flex flex-column p-4">
+                            <h5 class="card-title fw-bold mb-1" th:text="${product.name}">Nome do Produto</h5>
+                            <p class="text-muted small text-truncate-2 mb-3" th:text="${product.description}">Descrição.</p>
+
+                            <div class="mt-auto">
+                                <div class="fw-bold text-dark mb-3 d-flex align-items-center gap-1">
+                                    <h4>R$</h4>
+                                    <h4 th:text="${#numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
+                                </div>
+                                <form th:action="@{/cart/add}" method="post">
+                                    <input type="hidden" th:name="productId" th:value="${product.id}">
+                                    <button type="submit" class="btn btn-outline-primary w-100 py-2">
+                                        <i class="fas fa-cart-plus me-2"></i>ADICIONAR
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 </div>
 
 <footer th:replace="~{footer :: footer}"></footer>
