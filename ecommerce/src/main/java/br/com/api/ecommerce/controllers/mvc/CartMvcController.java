@@ -50,31 +50,4 @@ public class CartMvcController {
         }
         return "redirect:/cart";
     }
-
-    @PostMapping("/remove")
-    public String removeFromCart(@AuthenticationPrincipal User user,
-                                 @RequestParam UUID productId,
-                                 @RequestParam Integer quantity,
-                                 RedirectAttributes redirectAttributes) {
-        try {
-            DtoItemRequest itemRequest = new DtoItemRequest(productId, quantity);
-            cartService.removeItemsFromUserCart(user.getId(), List.of(itemRequest));
-            redirectAttributes.addFlashAttribute("success", "Produto removido do carrinho!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Erro ao remover produto do carrinho: " + e.getMessage());
-        }
-        return "redirect:/cart";
-    }
-
-    @PostMapping("/clear")
-    public String clearCart(@AuthenticationPrincipal User user,
-                            RedirectAttributes redirectAttributes) {
-        try {
-            cartService.clearUserCart(user.getId());
-            redirectAttributes.addFlashAttribute("success", "Carrinho limpo!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Erro ao limpar carrinho: " + e.getMessage());
-        }
-        return "redirect:/cart";
-    }
 }

@@ -56,22 +56,4 @@ public class UserMvcController {
 
         return "profile";
     }
-
-    @PostMapping("/profile/update")
-    public String updateProfile(@AuthenticationPrincipal User user, @Valid UserDtoUpdate dto, Model model) {
-        try {
-            userService.update(dto);
-            model.addAttribute("success", "Perfil atualizado com sucesso!");
-        } catch (Exception e) {
-            model.addAttribute("error", "Erro ao atualizar perfil: " + e.getMessage());
-        }
-        model.addAttribute("user", userService.getById(user.getId()));
-        return "profile";
-    }
-
-    @PostMapping("/profile/delete")
-    public String deleteProfile(@AuthenticationPrincipal User user) {
-        userService.delete(user.getId());
-        return "redirect:/logout";
-    }
 }
