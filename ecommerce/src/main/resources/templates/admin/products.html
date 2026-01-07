@@ -42,7 +42,7 @@
                 <h2 class="fw-bold text-dark mb-1">Produtos</h2>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="/admin" class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/admin}" class="text-decoration-none">Dashboard</a></li>
                         <li class="breadcrumb-item active">Produtos</li>
                     </ol>
                 </nav>
@@ -76,7 +76,7 @@
                         <button type="submit" class="btn btn-dark w-100">Filtrar</button>
                     </div>
                     <div class="col-md-2">
-                        <a href="/admin/produtos" class="btn btn-outline-secondary w-100">Limpar</a>
+                        <a th:href="@{/admin/produtos}" class="btn btn-outline-secondary w-100">Limpar</a>
                     </div>
                 </form>
             </div>
