@@ -20,7 +20,7 @@ public class AuthMvcController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "auth/login";
     }
 
     @PostMapping("/login")
@@ -28,12 +28,12 @@ public class AuthMvcController {
         return "redirect:/";
     }
 
-    @GetMapping("/register")
+    @GetMapping("/registrar")
     public String register() {
-        return "register";
+        return "auth/register";
     }
 
-    @PostMapping("/register")
+    @PostMapping("/registrar")
     public String registerPost(
             String name,
             String email,
@@ -55,10 +55,10 @@ public class AuthMvcController {
                     name, email, password, phone, LocalDate.parse(birthDate), addresses);
             userService.create(userDto);
             redirectAttributes.addFlashAttribute("success", "Usuário registrado com sucesso! Faça login.");
-            return "redirect:/login";
+            return "redirect:/auth/login";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erro ao registrar usuário: " + e.getMessage());
-            return "redirect:/register";
+            return "redirect:/auth/register";
         }
     }
 }

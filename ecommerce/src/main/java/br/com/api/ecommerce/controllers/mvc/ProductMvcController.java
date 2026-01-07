@@ -1,5 +1,6 @@
 package br.com.api.ecommerce.controllers.mvc;
 
+import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/products")
+@RequestMapping("/produtos")
 public class ProductMvcController {
 
     @Autowired
@@ -39,7 +40,7 @@ public class ProductMvcController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/search")
+    @GetMapping("/buscar")
     public String searchProducts(@RequestParam(value = "q", required = false) String query, Pageable pageable, Model model, @AuthenticationPrincipal User user) {
         Page<ProductDtoList> products = productService.search(query, pageable);
 
@@ -52,7 +53,7 @@ public class ProductMvcController {
         model.addAttribute("products", products);
         model.addAttribute("query", query);
 
-        return "product-search";
+        return "product/search";
     }
 
     @GetMapping("/{id}")
@@ -68,6 +69,17 @@ public class ProductMvcController {
         model.addAttribute("product", product);
         model.addAttribute("categories", categories);
         model.addAttribute("reviews", reviews);
-        return "product-details";
+        return "product/details";
+    }
+
+    @GetMapping("/categoria/{categoryId}")
+    public String getProductsByCategory(@PathVariable UUID categoryId, Pageable pageable, Model model) {
+        Page<ProductDtoList> products = productService.getAllByCategoryId(categoryId, pageable);
+        Category category = categoryService.getById(categoryId);
+
+        model.addAttribute("products", products);
+        model.addAttribute("categoryName", category.getName());
+
+        return "product/category";
     }
 }

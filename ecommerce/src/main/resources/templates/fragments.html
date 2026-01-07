@@ -13,16 +13,16 @@
             onclick="toggleFavorite(this)">
         <i th:class="${favoriteIds != null && favoriteIds.contains(product.id)} ? 'fas fa-heart' : 'fa-regular fa-heart'"></i>
     </button>
-    <a th:href="@{/products/{id}(id=${product.id})}" class="text-decoration-none">
+    <a th:href="@{/produtos/{id}(id=${product.id})}" class="text-decoration-none">
         <div class="img-container">
             <img th:src="@{/api/products/{id}/image(id=${product.id})}" th:alt="${product.name}" class="card-img-top">
         </div>
     </a>
     <div class="card-body d-flex flex-column p-4">
-        <a th:href="@{/products/{id}(id=${product.id})}" class="text-decoration-none text-dark">
+        <a th:href="@{/produtos/{id}(id=${product.id})}" class="text-decoration-none text-dark">
             <h5 class="card-title fw-bold mb-1 text-truncate" th:text="${product.name}">Nome</h5>
         </a>
-        <a th:href="@{/products/{id}(id=${product.id})}" class="text-decoration-none text-dark">
+        <a th:href="@{/produtos/{id}(id=${product.id})}" class="text-decoration-none text-dark">
             <p class="text-muted small text-truncate-2 mb-3" th:text="${product.description}">Descrição</p>
         </a>
         <div class="mt-auto">
@@ -49,14 +49,14 @@
         <i class="fas fa-star me-1"></i> POPULAR
     </span>
 
-    <a th:href="@{/products/{id}(id=${product.id})}" class="text-decoration-none">
+    <a th:href="@{/produtos/{id}(id=${product.id})}" class="text-decoration-none">
         <div class="img-container">
             <img th:src="@{/api/products/{id}/image(id=${product.id})}" th:alt="${product.name}">
         </div>
     </a>
 
     <div class="card-body d-flex flex-column p-4">
-        <a th:href="@{/products/{id}(id=${product.id})}" class="text-decoration-none text-dark">
+        <a th:href="@{/produtos/{id}(id=${product.id})}" class="text-decoration-none text-dark">
             <h5 class="card-title fw-bold mb-1" th:text="${product.name}">Nome</h5>
         </a>
 
@@ -80,9 +80,9 @@
 <!-- Navbar -->
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="/">Ecommerce</a>
+        <a class="navbar-brand" th:href="@{/}">Ecommerce</a>
 
-        <form class="d-flex mx-auto col-12 col-lg-5 my-2 my-lg-0" th:action="@{/products/search}" method="get">
+        <form class="d-flex mx-auto col-12 col-lg-5 my-2 my-lg-0" th:action="@{/produtos/buscar}" method="get">
             <div class="input-group">
                 <input class="form-control border-0 shadow-none" type="search" name="q"
                        placeholder="Buscar produtos..." aria-label="Search" th:value="${query}">
@@ -98,7 +98,7 @@
 
         <div class="navbar-nav ms-auto">
             <div class="d-flex align-items-center">
-                <a class="nav-link d-flex align-items-center" href="/favorites">
+                <a class="nav-link d-flex align-items-center" th:href="@{/favoritos}">
                     <i class="fa-solid fa-heart me-2"></i> Favoritos
                 </a>
 
@@ -109,22 +109,22 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                         <li sec:authorize="!isAuthenticated()">
-                            <a class="dropdown-item d-flex align-items-center" href="/login">
+                            <a class="dropdown-item d-flex align-items-center" th:href="@{/login}">
                                 <i class="fa-solid fa-user-lock me-2"></i> Login
                             </a>
                         </li>
                         <li sec:authorize="!isAuthenticated()">
-                            <a class="dropdown-item d-flex align-items-center" href="/register">
+                            <a class="dropdown-item d-flex align-items-center" th:href="@{/registrar}">
                                 <i class="fa-solid fa-user-plus me-2"></i> Criar Conta
                             </a>
                         </li>
                         <li sec:authorize="hasRole('ADMIN')">
-                            <a class="dropdown-item d-flex align-items-center" href="/admin">
+                            <a class="dropdown-item d-flex align-items-center" th:href="@{/admin}">
                                 <i class="fa-solid fa-cogs me-2"></i> Administração
                             </a>
                         </li>
                         <li sec:authorize="isAuthenticated()">
-                            <a class="dropdown-item d-flex align-items-center" href="/profile">
+                            <a class="dropdown-item d-flex align-items-center" th:href="@{/perfil}">
                                 <i class="fa-solid fa-user me-2"></i> Meu Perfil
                             </a>
                         </li>
@@ -138,7 +138,7 @@
                     </ul>
                 </div>
 
-                <a class="nav-link d-flex align-items-center" href="/cart">
+                <a class="nav-link d-flex align-items-center" th:href="@{/carrinho}">
                     <i class="fa-solid fa-cart-shopping me-2"></i> Carrinho
                 </a>
             </div>
@@ -158,9 +158,9 @@
             <div class="col-md-3">
                 <h5>Links Úteis</h5>
                 <ul class="list-unstyled">
-                    <li><a href="/" class="text-light">Home</a></li>
-                    <li><a href="/cart" class="text-light">Carrinho</a></li>
-                    <li><a href="/profile" class="text-light">Perfil</a></li>
+                    <li><a th:href="@{/}" class="text-light">Home</a></li>
+                    <li><a th:href="@{/carrinho}" class="text-light">Carrinho</a></li>
+                    <li><a th:href="@{/perfil}" class="text-light">Perfil</a></li>
                 </ul>
             </div>
             <div class="col-md-3">
@@ -254,19 +254,19 @@
 
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="sidebar-link" th:href="@{/admin/products}">
+                <a class="sidebar-link" th:href="@{/admin/produtos}">
                     <i class="fa-solid fa-box-open"></i>
                     <span>Produtos</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="sidebar-link" th:href="@{/admin/categories}">
+                <a class="sidebar-link" th:href="@{/admin/categorias}">
                     <i class="fa-solid fa-layer-group"></i>
                     <span>Categorias</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="sidebar-link" th:href="@{/admin/users}">
+                <a class="sidebar-link" th:href="@{/admin/usuarios}">
                     <i class="fa-solid fa-user-gear"></i>
                     <span>Usuários</span>
                 </a>
@@ -276,7 +276,7 @@
         <div class="sidebar-section-title">Vendas</div>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="sidebar-link" th:href="@{/admin/orders}">
+                <a class="sidebar-link" th:href="@{/admin/pedidos}">
                     <i class="fa-solid fa-receipt"></i>
                     <span>Pedidos</span>
                 </a>

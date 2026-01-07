@@ -61,11 +61,11 @@
             <div class="col-lg-8">
                 <div th:each="item : ${cart.items}" class="card cart-item-card p-3">
                     <div class="row align-items-center">
-                        <a th:href="@{/products/{id}(id=${item.product.id})}" class="text-decoration-none col-auto">
+                        <a th:href="@{/produtos/{id}(id=${item.product.id})}" class="text-decoration-none col-auto">
                             <img src="https://via.placeholder.com/100" class="product-img" alt="Produto">
                         </a>
                         <div class="col">
-                            <a th:href="@{/products/{id}(id=${item.product.id})}" class="text-decoration-none text-dark">
+                            <a th:href="@{/produtos/{id}(id=${item.product.id})}" class="text-decoration-none text-dark">
                                 <h5 class="fw-bold mb-1" th:text="${item.product.name}">Nome do Produto</h5>
                             </a>
                             <p class="text-muted small mb-0">Preço unitário:

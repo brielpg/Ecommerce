@@ -17,7 +17,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Ajuste do conteúdo principal para a Sidebar fixa */
         .main-wrapper {
             margin-left: var(--sidebar-width);
             padding-top: 80px;
@@ -25,7 +24,6 @@
             transition: all 0.3s;
         }
 
-        /* Estilização dos Cards de Estatística */
         .stat-card {
             border: none;
             border-radius: 15px;
@@ -142,7 +140,7 @@
                 <div class="card admin-table-card">
                     <div class="card-header bg-white border-0 py-3 d-flex justify-content-between">
                         <h5 class="fw-bold mb-0">Usuários Recentes</h5>
-                        <a href="/admin/users" class="btn btn-sm btn-light text-primary fw-bold">Ver todos</a>
+                        <a th:href="@{/admin/usuarios}" class="btn btn-sm btn-light text-primary fw-bold">Ver todos</a>
                     </div>
                     <div class="table-responsive p-3">
                         <table class="table table-hover align-middle">
@@ -174,13 +172,13 @@
                 <div class="card admin-table-card p-4">
                     <h5 class="fw-bold mb-4">Ações Rápidas</h5>
                     <div class="d-grid gap-2">
-                        <a href="/admin/products/add" class="btn btn-outline-primary text-start p-3">
+                        <a th:href="@{/admin/estoque}" class="btn btn-outline-primary text-start p-3">
                             <i class="fas fa-cart-plus me-2"></i> Gerenciar Estoque
                         </a>
-                        <a href="/admin/reports" class="btn btn-outline-dark text-start p-3">
+                        <a th:href="@{/admin/relatorios}" class="btn btn-outline-dark text-start p-3">
                             <i class="fas fa-file-invoice-dollar me-2"></i> Relatórios de Vendas
                         </a>
-                        <a href="/admin/settings" class="btn btn-outline-secondary text-start p-3">
+                        <a th:href="@{/admin/configuracoes}" class="btn btn-outline-secondary text-start p-3">
                             <i class="fas fa-gears me-2"></i> Configurações da Loja
                         </a>
                     </div>

@@ -35,7 +35,7 @@ public class AdminMvcController {
     private UserService userService;
 
     @GetMapping
-    public String admin(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
+    public String adminDashboard(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserDtoList> users = userService.getAll(pageable);
 
@@ -49,11 +49,11 @@ public class AdminMvcController {
         model.addAttribute("totalCategories", categoryService.getAll(PageRequest.of(0, 100)));
         model.addAttribute("totalProducts", productService.getAll(PageRequest.of(0, 100)));
 
-        return "admin";
+        return "admin/dashboard";
     }
 
-    @GetMapping("/categories")
-    public String categories(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
+    @GetMapping("/categorias")
+    public String getCategories(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
         Page<CategoryDtoList> categories = categoryService.getAll(pageable);
 
@@ -62,11 +62,11 @@ public class AdminMvcController {
         model.addAttribute("totalPages", categories.getTotalPages());
         model.addAttribute("categoryDto", new CategoryDtoCreate("", ""));
 
-        return "admin_categories";
+        return "admin/categories";
     }
 
-    @GetMapping("/products")
-    public String products(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
+    @GetMapping("/produtos")
+    public String getProducts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ProductDtoList> products = productService.getAll(pageable);
 
@@ -76,14 +76,14 @@ public class AdminMvcController {
         model.addAttribute("productDto", new ProductDtoCreate("", "", null, null, List.of()));
         model.addAttribute("allCategories", categoryService.getAll(PageRequest.of(0, 100)).getContent());
 
-        return "admin_products";
+        return "admin/products";
     }
 
-    @GetMapping("/users")
-    public String listUsers(Pageable pageable, Model model) {
+    @GetMapping("/usuarios")
+    public String getUsers(Pageable pageable, Model model) {
         Page<UserDtoList> users = userService.getAll(pageable);
         model.addAttribute("users", users);
         model.addAttribute("currentPage", pageable.getPageNumber());
-        return "admin-users";
+        return "admin/users";
     }
 }

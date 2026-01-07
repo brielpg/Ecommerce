@@ -59,7 +59,7 @@
 
         <div class="card admin-card mb-4">
             <div class="card-body p-3">
-                <form method="get" th:action="@{/admin/products}" class="row g-2">
+                <form method="get" th:action="@{/admin/produtos}" class="row g-2">
                     <div class="col-md-5">
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
@@ -76,7 +76,7 @@
                         <button type="submit" class="btn btn-dark w-100">Filtrar</button>
                     </div>
                     <div class="col-md-2">
-                        <a href="/admin/products" class="btn btn-outline-secondary w-100">Limpar</a>
+                        <a href="/admin/produtos" class="btn btn-outline-secondary w-100">Limpar</a>
                     </div>
                 </form>
             </div>
@@ -142,13 +142,13 @@
                 <nav th:if="${totalPages > 1}">
                     <ul class="pagination justify-content-center mb-0">
                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin/products(page=${currentPage - 1}, search=${param.search}, categoryId=${param.categoryId})}">&laquo;</a>
+                            <a class="page-link" th:href="@{/admin/produtos(page=${currentPage - 1}, search=${param.search}, categoryId=${param.categoryId})}">&laquo;</a>
                         </li>
                         <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
-                            <a class="page-link" th:href="@{/admin/products(page=${i}, search=${param.search}, categoryId=${param.categoryId})}" th:text="${i + 1}"></a>
+                            <a class="page-link" th:href="@{/admin/produtos(page=${i}, search=${param.search}, categoryId=${param.categoryId})}" th:text="${i + 1}"></a>
                         </li>
                         <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin/products(page=${currentPage + 1}, search=${param.search}, categoryId=${param.categoryId})}">&raquo;</a>
+                            <a class="page-link" th:href="@{/admin/produtos(page=${currentPage + 1}, search=${param.search}, categoryId=${param.categoryId})}">&raquo;</a>
                         </li>
                     </ul>
                 </nav>

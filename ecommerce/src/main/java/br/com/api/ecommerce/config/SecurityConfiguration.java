@@ -49,8 +49,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
-                        .requestMatchers("/login", "/", "/register", "/products/**", "/error", "/category/**", "/css/**", "/javascript/**").permitAll()
-                        .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/login", "/", "/registrar", "/produtos/**", "/error", "/css/**", "/javascript/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(f -> f.loginPage("/login").defaultSuccessUrl("/", true))
