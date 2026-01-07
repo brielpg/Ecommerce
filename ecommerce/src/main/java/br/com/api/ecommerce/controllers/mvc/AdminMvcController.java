@@ -44,9 +44,7 @@ public class AdminMvcController {
     private UserService userService;
 
     @GetMapping
-    public String admin(@RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "10") int size,
-                        Model model) {
+    public String admin(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserDtoList> users = userService.getAll(pageable);
 
@@ -57,17 +55,16 @@ public class AdminMvcController {
         model.addAttribute("recentUsers", recentUsers);
         model.addAttribute("currentPage", users.getNumber());
         model.addAttribute("totalPages", users.getTotalPages());
-        model.addAttribute("categories", categoryService.getAll(PageRequest.of(0, 100)));
+        model.addAttribute("totalCategories", categoryService.getAll(PageRequest.of(0, 100)));
+        model.addAttribute("totalProducts", productService.getAll(PageRequest.of(0, 100)));
 
         return "admin";
     }
 
     // CATEGORIES
     @GetMapping("/categories")
-    public String categories(@RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "10") int size,
-                            Model model) {
-        Pageable pageable = PageRequest.of(page, size);
+    public String categories(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
         Page<CategoryDtoList> categories = categoryService.getAll(pageable);
 
         model.addAttribute("categories", categories);
@@ -102,13 +99,9 @@ public class AdminMvcController {
 
     // PRODUCTS
     @GetMapping("/products")
-    public String products(@RequestParam(defaultValue = "0") int page,
-                          @RequestParam(defaultValue = "10") int size,
-                          @RequestParam(required = false) String search,
-                          @RequestParam(required = false) String categoryId,
-                          Model model) {
+    public String products(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductDtoList> products = productService.getAll(pageable); // TODO: Add search and filter logic
+        Page<ProductDtoList> products = productService.getAll(pageable);
 
         model.addAttribute("products", products);
         model.addAttribute("currentPage", products.getNumber());
@@ -144,17 +137,10 @@ public class AdminMvcController {
 
     // USERS
     @GetMapping("/users")
-    public String users(@RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "10") int size,
-                       @RequestParam(required = false) String search,
-                       Model model) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<UserDtoList> users = userService.getAll(pageable); // TODO: Add search logic
-
+    public String listUsers(Pageable pageable, Model model) {
+        Page<UserDtoList> users = userService.getAll(pageable);
         model.addAttribute("users", users);
-        model.addAttribute("currentPage", users.getNumber());
-        model.addAttribute("totalPages", users.getTotalPages());
-
-        return "admin_users";
+        model.addAttribute("currentPage", pageable.getPageNumber());
+        return "admin-users";
     }
 }

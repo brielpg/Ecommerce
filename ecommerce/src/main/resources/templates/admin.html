@@ -99,7 +99,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <p class="text-uppercase text-muted fw-bold small mb-1">Produtos</p>
-                            <h3 class="fw-bold mb-0" th:text="${totalProducts != null ? totalProducts : 0}">0</h3>
+                            <h3 class="fw-bold mb-0" th:text="${totalProducts.totalElements}">0</h3>
                         </div>
                         <div class="icon-shape bg-success text-white shadow">
                             <i class="fas fa-box fs-4"></i>
@@ -113,7 +113,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <p class="text-uppercase text-muted fw-bold small mb-1">Categorias</p>
-                            <h3 class="fw-bold mb-0" th:text="${categories.totalElements}">0</h3>
+                            <h3 class="fw-bold mb-0" th:text="${totalCategories.totalElements}">0</h3>
                         </div>
                         <div class="icon-shape bg-warning text-white shadow">
                             <i class="fas fa-tags fs-4"></i>
@@ -150,19 +150,19 @@
                             <tr>
                                 <th>Usuário</th>
                                 <th>Email</th>
+                                <th>Contato</th>
+                                <th>Cadastro</th>
                                 <th>Status</th>
-                                <th>Ações</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="user : ${recentUsers.content}">
                                 <td class="fw-bold" th:text="${user.name}">Nome</td>
                                 <td th:text="${user.email}">email@teste.com</td>
+                                <td th:text="${user.phone}">Telefone</td>
+                                <td th:text="${#temporals.format(user.timestamp, 'dd/MM/yyyy')}">01/01/2024</td>
                                 <td><span class="badge" th:classappend="${user.active} ? 'bg-success' : 'bg-danger'"
                                           th:text="${user.active} ? 'Ativo' : 'Inativo'">Status</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i></button>
-                                </td>
                             </tr>
                             </tbody>
                         </table>

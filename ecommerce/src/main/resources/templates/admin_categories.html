@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Admin - Categorias | Ecommerce</title>
@@ -60,7 +60,7 @@
                     <div class="col-md-10">
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-filter"></i></span>
-                            <input type="text" class="form-control border-start-0 ps-0" name="search" th:value="${param.search}" placeholder="Filtrar categorias por nome...">
+                            <input type="text" class="form-control border-start-0 ps-0" name="search" th:value="${param.search}" placeholder="Filtrar categorias por nome, descrição...">
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -85,7 +85,7 @@
                     <tr th:each="category : ${categories.content}">
                         <td class="ps-4">
                             <div class="fw-bold text-dark" th:text="${category.name}">Eletrônicos</div>
-                            <div class="text-muted small" th:text="${#strings.abbreviate(category.id, 8)}">ID</div>
+                            <div class="text-muted small" th:text="${'ID: ' + #strings.abbreviate(category.id, 8)}">ID</div>
                         </td>
                         <td class="text-muted" th:text="${#strings.abbreviate(category.description, 50)}">Descrição curta...</td>
                         <td>
@@ -149,11 +149,11 @@
                     <input type="hidden" id="categoryId" name="id">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nome da Categoria</label>
-                        <input type="text" class="form-control form-control-lg" id="categoryName" name="name" placeholder="Ex: Informática" required>
+                        <input type="text" class="form-control form-control-lg" id="categoryName" name="name" required>
                     </div>
                     <div class="mb-0">
                         <label class="form-label fw-bold">Descrição</label>
-                        <textarea class="form-control" id="categoryDescription" name="description" rows="4" placeholder="Breve resumo das finalidades desta categoria..." required></textarea>
+                        <textarea class="form-control" id="categoryDescription" name="description" rows="4" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0 p-4">
