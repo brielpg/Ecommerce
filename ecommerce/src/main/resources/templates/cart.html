@@ -87,23 +87,17 @@
                             </div>
                         </div>
                         <div class="col-auto ps-4">
-                            <form th:action="@{/cart/remove}" method="post">
-                                <input type="hidden" name="productId" th:value="${item.product.id}">
-                                <input type="hidden" name="quantity" th:value="1">
-                                <button type="submit" class="btn btn-outline-danger btn-sm border-0" title="Remover item">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
+                            <button onclick="removeItem(this)" th:data-userId="${userId}" th:data-itemId="${item.product.id}" class="btn btn-outline-danger btn-sm border-0" title="Remover item">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-4">
-                    <form th:action="@{/cart/clear}" method="post">
-                        <button type="submit" class="btn btn-link text-muted text-decoration-none small">
-                            <i class="fas fa-eraser me-1"></i> Limpar todo o carrinho
-                        </button>
-                    </form>
+                    <button onclick="clearCart(this)" th:data-userId="${userId}" class="btn btn-link text-muted text-decoration-none small">
+                        <i class="fas fa-eraser me-1"></i> Limpar todo o carrinho
+                    </button>
                 </div>
             </div>
 
@@ -146,5 +140,59 @@
 
 <footer th:replace="~{fragments :: footer}"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function removeItem(button) {
+        if (!confirm("Remover este item do carrinho?")) return;
+        const userId = button.getAttribute('data-userId');
+        const itemId = button.getAttribute('data-itemId');
+
+        const itemsToRemove = [{
+            productId: itemId,
+            quantity: 1
+        }];
+
+        fetch(`/api/carts/${userId}/items`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(itemsToRemove)
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao remover item');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro ao remover item');
+            });
+    }
+
+    function clearCart(button) {
+        if (!confirm("Deseja realmente esvaziar seu carrinho?")) return;
+        const userId = button.getAttribute('data-userId');
+
+        fetch(`/api/carts/${userId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao esvaziar carrinho');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro ao esvaziar carrinho');
+            });
+    }
+</script>
 </body>
 </html>

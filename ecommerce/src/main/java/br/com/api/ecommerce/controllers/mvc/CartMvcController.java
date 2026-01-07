@@ -31,6 +31,7 @@ public class CartMvcController {
         CartDtoList cartDto = cartService.entityToDto(cart);
 
         model.addAttribute("cart", cartDto);
+        model.addAttribute("userId", user.getId());
 
         return "cart";
     }
