@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +31,8 @@ public class UserMvcController {
     @GetMapping("/favorites")
     public String favorites(@AuthenticationPrincipal User user, Model model) {
         List<ProductDtoList> favorites = userService.getFavorites(user.getId());
+
+        model.addAttribute("favoriteIds", favorites.stream().map(ProductDtoList::id).toList());
         model.addAttribute("favorites", favorites);
         return "favorites";
     }

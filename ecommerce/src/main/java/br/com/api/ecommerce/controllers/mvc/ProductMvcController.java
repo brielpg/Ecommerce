@@ -7,6 +7,7 @@ import br.com.api.ecommerce.models.dtos.Review.ReviewDtoList;
 import br.com.api.ecommerce.services.CategoryService;
 import br.com.api.ecommerce.services.ProductService;
 import br.com.api.ecommerce.services.ReviewService;
+import br.com.api.ecommerce.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -35,13 +38,19 @@ public class ProductMvcController {
     @Autowired
     private ReviewService reviewService;
 
-    @GetMapping("/search")
-    public String searchProducts(@RequestParam(value = "q", required = false) String query,
-                                 Pageable pageable,
-                                 Model model) {
+    @Autowired
+    private UserService userService;
 
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam(value = "q", required = false) String query, Pageable pageable, Model model, @AuthenticationPrincipal User user) {
         Page<ProductDtoList> products = productService.search(query, pageable);
 
+        List<UUID> favoriteIds = new ArrayList<>();
+        if (user != null) {
+            List<ProductDtoList> favorites = userService.getFavorites(user.getId());
+            favoriteIds = favorites.stream().map(ProductDtoList::id).toList();
+        }
+        model.addAttribute("favoriteIds", favoriteIds);
         model.addAttribute("products", products);
         model.addAttribute("query", query);
 
