@@ -83,11 +83,11 @@
 
         <div sec:authorize="isAuthenticated()" class="card border-0 shadow-sm mb-5 p-4 bg-light">
           <h5 class="fw-bold mb-3"><i class="fas fa-pen-fancy me-2"></i>Deixe sua opinião</h5>
-          <form th:action="@{/reviews/save}" method="post">
-            <input type="hidden" name="productId" th:value="${product.id}">
+          <form id="reviewForm" th:data-user-id="${#authentication.principal != 'anonymousUser' ? #authentication.principal.id : ''}">
+            <input type="hidden" id="productId" name="productId" th:value="${product.id}">
             <div class="mb-3">
               <label class="form-label fw-bold">Nota (1 a 5)</label>
-              <select name="rating" class="form-select w-25" required>
+              <select id="rating" name="rating" class="form-select w-25" required>
                 <option value="5">5 - Excelente</option>
                 <option value="4">4 - Muito Bom</option>
                 <option value="3">3 - Regular</option>
@@ -97,9 +97,9 @@
             </div>
             <div class="mb-3">
               <label class="form-label fw-bold">Sua Review</label>
-              <textarea name="review" class="form-control" rows="3" placeholder="O que você achou deste produto?" required></textarea>
+              <textarea id="reviewText" name="review" class="form-control" rows="3" placeholder="O que você achou deste produto?" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary px-4 fw-bold">Publicar Avaliação</button>
+            <button type="button" onclick="submitReview(this)" class="btn btn-primary px-4 fw-bold">Publicar Avaliação</button>
           </form>
         </div>
 
@@ -119,15 +119,13 @@
             </div>
 
             <div th:if="${currentUserId == rev.user.id or #authorization.expression('hasRole(''ADMIN'')')}" class="d-flex gap-2">
-              <button class="btn btn-sm btn-outline-secondary" title="Editar">
+              <button class="btn btn-sm btn-outline-secondary" th:data-id="${rev.id}" th:data-rating="${rev.rating}" th:data-review="${rev.review}" title="Editar" onclick="openEditModal(this)">
                 <i class="fas fa-edit"></i>
               </button>
-              <form th:action="@{/reviews/delete/{id}(id=${rev.id})}" method="post" onsubmit="return confirm('Excluir esta avaliação?')">
-                <input type="hidden" name="productId" th:value="${product.id}">
-                <button type="submit" class="btn btn-sm btn-outline-danger">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </form>
+
+              <button type="button" class="btn btn-sm btn-outline-danger" th:data-id="${rev.id}" onclick="deleteReview(this)">
+                <i class="fas fa-trash"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -146,7 +144,40 @@
   </div>
 </div>
 
+<div class="modal fade" id="editReviewModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Avaliação</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editReviewId">
+        <div class="mb-3">
+          <label class="form-label">Nota</label>
+          <select id="editRating" class="form-select">
+            <option value="5">5 - Excelente</option>
+            <option value="4">4 - Muito Bom</option>
+            <option value="3">3 - Regular</option>
+            <option value="2">2 - Ruim</option>
+            <option value="1">1 - Muito Ruim</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Review</label>
+          <textarea id="editReviewText" class="form-control" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="updateReview()">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer th:replace="~{fragments :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.x/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/javascript/script.js}"></script>
 </body>
 </html>

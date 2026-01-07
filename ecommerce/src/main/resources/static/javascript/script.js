@@ -543,3 +543,86 @@ async function addToCart(button) {
         alert("Erro de conexão com o servidor.");
     }
 }
+
+// details.html
+
+async function submitReview(button) {
+    const form = button.closest('form');
+    const userId = form.getAttribute('data-user-id');
+    const productId = form.querySelector('input[name="productId"]').value;
+    const rating = document.getElementById('rating').value;
+    const reviewText = document.getElementById('reviewText').value;
+
+    const data = {
+        userId: userId,
+        productId: productId,
+        rating: parseInt(rating),
+        review: reviewText
+    };
+
+    try {
+        const response = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            const errorData = await response.json();
+            alert("Erro: " + (errorData.message || "Não foi possível avaliar o produto."));
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+        alert("Erro de conexão com o servidor.");
+    }
+}
+
+function openEditModal(button) {
+    const id = button.dataset.id;
+    const rating = button.dataset.rating;
+    const review = button.dataset.review;
+
+    document.getElementById('editReviewId').value = id;
+    document.getElementById('editRating').value = rating;
+    document.getElementById('editReviewText').value = review;
+
+    new bootstrap.Modal(document.getElementById('editReviewModal')).show();
+}
+
+async function updateReview() {
+    const data = {
+        id: document.getElementById('editReviewId').value,
+        rating: document.getElementById('editRating').value,
+        review: document.getElementById('editReviewText').value
+    };
+
+    const response = await fetch('/api/reviews', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+        location.reload();
+    } else {
+        alert('Erro ao atualizar avaliação.');
+    }
+}
+
+async function deleteReview(button) {
+    if (!confirm('Deseja realmente excluir esta avaliação?')) return;
+
+    const id = button.dataset.id;
+
+    const response = await fetch(`/api/reviews/${id}`, {
+        method: 'DELETE'
+    });
+
+    if (response.ok) {
+        location.reload();
+    } else {
+        alert('Erro ao deletar avaliação.');
+    }
+}
