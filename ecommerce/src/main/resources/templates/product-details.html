@@ -57,7 +57,7 @@
         </div>
 
         <div class="card p-4 border-0 shadow-sm bg-light">
-          <form th:action="@{/cart/add}" method="post">
+          <form th:data-user-id="${#authentication.principal != 'anonymousUser' ? #authentication.principal.id : ''}">
             <input type="hidden" name="productId" th:value="${product.id}">
             <div class="row g-3">
               <div class="col-md-4">
@@ -65,7 +65,7 @@
                 <input type="number" name="quantity" value="1" min="1" class="form-control form-control-lg text-center">
               </div>
               <div class="col-md-8 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold">
+                <button onclick="addToCart(this)" type="button" class="btn btn-primary btn-lg w-100 py-3 fw-bold">
                   <i class="fas fa-shopping-cart me-2"></i>ADICIONAR AO CARRINHO
                 </button>
               </div>

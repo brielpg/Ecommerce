@@ -1,17 +1,18 @@
 package br.com.api.ecommerce.controllers.mvc;
 
+import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.User;
+import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
+import br.com.api.ecommerce.services.CartService;
 import br.com.api.ecommerce.services.CategoryService;
 import br.com.api.ecommerce.services.ProductService;
 import br.com.api.ecommerce.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +31,9 @@ public class HomeMvcController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private CartService cartService;
 
     @Autowired
     private UserService userService;
@@ -62,5 +66,16 @@ public class HomeMvcController {
         model.addAttribute("categoryName", category.getName());
 
         return "product-category";
+    }
+
+    @GetMapping("/cart")
+    public String cart(@AuthenticationPrincipal User user, Model model) {
+        Cart cart = cartService.getByUserId(user.getId());
+        CartDtoList cartDto = cartService.entityToDto(cart);
+
+        model.addAttribute("cart", cartDto);
+        model.addAttribute("userId", user.getId());
+
+        return "cart";
     }
 }

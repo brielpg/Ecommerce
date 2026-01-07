@@ -1,32 +1,23 @@
 package br.com.api.ecommerce.controllers.mvc;
 
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoCreate;
-import br.com.api.ecommerce.models.dtos.Category.CategoryDtoForm;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
-import br.com.api.ecommerce.models.dtos.Category.CategoryDtoUpdate;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
-import br.com.api.ecommerce.models.dtos.Product.ProductDtoForm;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
-import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.services.CategoryService;
 import br.com.api.ecommerce.services.ProductService;
 import br.com.api.ecommerce.services.UserService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 

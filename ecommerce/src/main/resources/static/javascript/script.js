@@ -503,3 +503,43 @@ document.getElementById('editProfileForm').addEventListener('submit', function(e
             alert('Erro de conexão com o servidor.');
         });
 });
+
+
+async function addToCart(button) {
+    const form = button.closest('form');
+    const userId = form.getAttribute('data-user-id');
+    const productId = form.querySelector('input[name="productId"]').value;
+    const quantityInput = form.querySelector('input[name="quantity"]');
+
+    let quantity = (quantityInput && quantityInput.value) ? quantityInput.value : 1;
+    quantity = parseInt(quantity);
+    if (isNaN(quantity) || quantity <= 0) {
+        quantity = 1;
+    }
+
+    const payload = [{
+        productId: productId,
+        quantity: quantity
+    }];
+
+    try {
+        const response = await fetch(`/api/carts/${userId}/items`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            window.location.href = '/cart';
+            console.log("Produto adicionado ao carrinho!");
+        } else {
+            const errorData = await response.json();
+            alert("Erro: " + (errorData.message || "Não foi possível adicionar o produto."));
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+        alert("Erro de conexão com o servidor.");
+    }
+}

@@ -31,9 +31,9 @@
                 <h4 class="mb-0" th:text="${#numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">0,00</h4>
             </div>
             <div class="d-flex gap-2">
-                <form th:action="@{/cart/add}" method="post" class="flex-grow-1">
+                <form th:data-user-id="${#authentication.principal != 'anonymousUser' ? #authentication.principal.id : ''}" class="flex-grow-1">
                     <input type="hidden" name="productId" th:value="${product.id}">
-                    <button type="submit" class="btn btn-outline-primary w-100 py-2">
+                    <button onclick="addToCart(this)" type="button" class="btn btn-outline-primary w-100 py-2">
                         <i class="fas fa-cart-plus me-2"></i>ADICIONAR
                     </button>
                 </form>
@@ -66,9 +66,9 @@
         </div>
 
         <div class="mt-auto">
-            <form th:action="@{/cart/add}" method="post">
+            <form th:data-user-id="${#authentication.principal != 'anonymousUser' ? #authentication.principal.id : ''}">
                 <input type="hidden" name="productId" th:value="${product.id}">
-                <button type="submit" class="btn btn-warning w-100 fw-bold py-2 shadow-sm">
+                <button onclick="addToCart(this)" type="button" class="btn btn-warning w-100 fw-bold py-2 shadow-sm">
                     <i class="fas fa-cart-plus me-2"></i>ADICIONAR
                 </button>
             </form>
