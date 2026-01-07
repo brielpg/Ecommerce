@@ -62,7 +62,7 @@
                 <div th:each="item : ${cart.items}" class="card cart-item-card p-3">
                     <div class="row align-items-center">
                         <a th:href="@{/produtos/{id}(id=${item.product.id})}" class="text-decoration-none col-auto">
-                            <img th:src="@{/api/products/{id}/image(id=${item.product.id})}" class="product-img" alt="Produto">
+                            <img th:src="@{/api/products/{id}/image(id=${item.product.id})}" th:onerror="|this.onerror=null;this.src='@{/images/noimage.png}';|" class="product-img" alt="Produto">
                         </a>
                         <div class="col">
                             <a th:href="@{/produtos/{id}(id=${item.product.id})}" class="text-decoration-none text-dark">

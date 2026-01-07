@@ -26,7 +26,7 @@
   <div class="row g-5">
     <div class="col-lg-6">
       <div class="product-img-container text-center">
-        <img th:src="@{/api/products/{id}/image(id=${product.id})}" class="img-fluid rounded" th:alt="${product.name}">
+        <img th:src="@{/api/products/{id}/image(id=${product.id})}" th:onerror="|this.onerror=null;this.src='@{/images/noimage.png}';|" class="img-fluid rounded" th:alt="${product.name}">
       </div>
     </div>
 

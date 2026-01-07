@@ -15,7 +15,7 @@
     </button>
     <a th:href="@{/produtos/{id}(id=${product.id})}" class="text-decoration-none">
         <div class="img-container">
-            <img th:src="@{/api/products/{id}/image(id=${product.id})}" th:alt="${product.name}" class="card-img-top">
+            <img th:src="@{/api/products/{id}/image(id=${product.id})}" th:onerror="|this.onerror=null;this.src='@{/images/noimage.png}';|" th:alt="${product.name}" class="card-img-top">
         </div>
     </a>
     <div class="card-body d-flex flex-column p-4">
@@ -51,7 +51,7 @@
 
     <a th:href="@{/produtos/{id}(id=${product.id})}" class="text-decoration-none">
         <div class="img-container">
-            <img th:src="@{/api/products/{id}/image(id=${product.id})}" th:alt="${product.name}">
+            <img th:src="@{/api/products/{id}/image(id=${product.id})}" th:onerror="|this.onerror=null;this.src='@{/images/noimage.png}';|" th:alt="${product.name}">
         </div>
     </a>
 
