@@ -61,7 +61,6 @@ public class AdminMvcController {
         return "admin";
     }
 
-    // CATEGORIES
     @GetMapping("/categories")
     public String categories(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
@@ -73,28 +72,6 @@ public class AdminMvcController {
         model.addAttribute("categoryDto", new CategoryDtoCreate("", ""));
 
         return "admin_categories";
-    }
-
-    @PostMapping("/categories")
-    public String createOrUpdateCategory(@Valid CategoryDtoForm dtoForm, BindingResult result, RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar categoria: " + result.getAllErrors().get(0).getDefaultMessage());
-            return "redirect:/admin/categories";
-        }
-        try {
-            if (dtoForm.id() != null) {
-                CategoryDtoUpdate dtoUpdate = new CategoryDtoUpdate(dtoForm.id(), dtoForm.name(), dtoForm.description());
-                categoryService.update(dtoUpdate);
-                redirectAttributes.addFlashAttribute("successMessage", "Categoria atualizada com sucesso!");
-            } else {
-                CategoryDtoCreate dtoCreate = new CategoryDtoCreate(dtoForm.name(), dtoForm.description());
-                categoryService.create(dtoCreate);
-                redirectAttributes.addFlashAttribute("successMessage", "Categoria criada com sucesso!");
-            }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar categoria: " + e.getMessage());
-        }
-        return "redirect:/admin/categories";
     }
 
     // PRODUCTS

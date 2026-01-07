@@ -144,7 +144,7 @@
                 <h5 class="modal-title fw-bold" id="createCategoryModalLabel">Nova Categoria</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form id="categoryForm" method="post" th:action="@{/admin/categories}" th:object="${categoryDto}">
+            <form id="categoryForm">
                 <div class="modal-body p-4">
                     <input type="hidden" id="categoryId" name="id">
                     <div class="mb-3">
@@ -201,10 +201,11 @@
             document.getElementById('categoryName').value = name;
             document.getElementById('categoryDescription').value = description;
 
-            document.getElementById('saveCategoryBtn').innerHTML = 'Atualizar';
+            document.getElementById('saveCategoryBtn').innerHTML = 'Atualizar Categoria';
             document.getElementById('createCategoryModalLabel').innerHTML = 'Editar Categoria';
 
-            const modal = new bootstrap.Modal(document.getElementById('createCategoryModal'));
+            const modalElement = document.getElementById('createCategoryModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
             modal.show();
         }
 
@@ -234,14 +235,50 @@
         }
 
         document.getElementById('createCategoryModal').addEventListener('hidden.bs.modal', function () {
-            // Limpa os valores
             document.getElementById('categoryId').value = '';
-            document.getElementById('categoryName').value = '';
-            document.getElementById('categoryDescription').value = '';
+            document.getElementById('categoryForm').reset();
+            document.getElementById('saveCategoryBtn').innerText = 'Salvar Categoria';
+            document.getElementById('createCategoryModalLabel').innerText = 'Nova Categoria';
+        });
 
-            // Restaura o visual para Criação
-            document.getElementById('saveCategoryBtn').innerHTML = 'Salvar';
-            document.getElementById('createCategoryModalLabel').innerHTML = 'Criar Nova Categoria';
+        document.getElementById('categoryForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const id = document.getElementById('categoryId').value;
+            const name = document.getElementById('categoryName').value;
+            const description = document.getElementById('categoryDescription').value;
+
+            const categoryData = {
+                name: name,
+                description: description
+            };
+
+            let method = 'POST';
+            let url = '/api/categories';
+
+            if (id) {
+                method = 'PUT';
+                categoryData.id = id;
+            }
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(categoryData)
+            })
+                .then(async response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        const errorData = await response.json();
+                        alert('Erro: ' + (errorData.message || 'Falha na operação'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Erro de conexão com o servidor');
+                });
         });
     </script>
 </body>
