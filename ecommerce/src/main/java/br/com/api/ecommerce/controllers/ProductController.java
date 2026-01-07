@@ -98,7 +98,7 @@ public class ProductController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/best-sellers")
-    public ResponseEntity<List<ProductDtoList>> getBestSellers(@RequestParam(value = "limit", defaultValue = "10") int limit){
+    public ResponseEntity<List<ProductDtoList>> getBestSellers(@RequestParam(value = "limit", defaultValue = "5") int limit){
         List<ProductDtoList> products = service.getBestSellers(limit);
         return ResponseEntity.ok(products);
     }
