@@ -35,8 +35,7 @@ public class HomeMvcController {
     private UserService userService;
 
     @GetMapping("/")
-    public String home(@AuthenticationPrincipal User user, Model model) {
-        Pageable pageable = PageRequest.of(0, 10); // Página 0, tamanho 10
+    public String home(@AuthenticationPrincipal User user, Model model, Pageable pageable) {
         Page<ProductDtoList> products = productService.getAll(pageable);
         List<ProductDtoList> bestSellers = productService.getBestSellers(10);
         Page<CategoryDtoList> categories = categoryService.getAll(pageable);

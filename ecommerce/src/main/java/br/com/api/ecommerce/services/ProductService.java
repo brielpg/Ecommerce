@@ -164,6 +164,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("permitAll()")
     public byte[] getImageById(UUID id) {
         Product product = this.getById(id);
 
