@@ -1,0 +1,464 @@
+async function toggleFavorite(btn) {
+    const userId = btn.getAttribute('data-user-id');
+    const productId = btn.getAttribute('data-product-id');
+    const isFavorite = btn.getAttribute('data-active') === 'true';
+
+    if (!userId || userId === 'null') {
+        window.location.href = '/login';
+        return;
+    }
+
+    const url = `/api/users/${userId}/favorites/${productId}`;
+    const method = isFavorite ? 'DELETE' : 'POST';
+
+    try {
+        const response = await fetch(url, { method: method });
+
+        if (response.ok) {
+            const icon = btn.querySelector('i');
+            const newStatus = !isFavorite;
+
+            btn.setAttribute('data-active', newStatus);
+
+            icon.classList.toggle('fas');
+            icon.classList.toggle('fa-regular');
+            icon.classList.toggle('text-danger');
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+    }
+}
+
+function removeItem(button) {
+    if (!confirm("Remover este item do carrinho?")) return;
+    const userId = button.getAttribute('data-userId');
+    const itemId = button.getAttribute('data-itemId');
+
+    const itemsToRemove = [{
+        productId: itemId,
+        quantity: 1
+    }];
+
+    fetch(`/api/carts/${userId}/items`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(itemsToRemove)
+    })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Erro ao remover item');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro ao remover item');
+        });
+}
+
+function clearCart(button) {
+    if (!confirm("Deseja realmente esvaziar seu carrinho?")) return;
+    const userId = button.getAttribute('data-userId');
+
+    fetch(`/api/carts/${userId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Erro ao esvaziar carrinho');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro ao esvaziar carrinho');
+        });
+}
+
+function restoreProduct(button) {
+    const id = button.getAttribute('data-id');
+    const name = button.getAttribute('data-name');
+
+    if (confirm(`Tem certeza que deseja restaurar o produto "${name}"?`)) {
+        fetch(`/api/products/${id}/restore`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao restaurar produto');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro ao restaurar produto');
+            });
+    }
+}
+
+function editProduct(button) {
+    const id = button.getAttribute('data-id');
+    const name = button.getAttribute('data-name');
+    const price = button.getAttribute('data-price');
+    const description = button.getAttribute('data-description');
+    const stock = button.getAttribute('data-stock');
+    const categoriesString = button.getAttribute('data-categories');
+    const categories = categoriesString ? categoriesString.split(',') : [];
+
+    const form = document.getElementById('productForm');
+    form.dataset.originalId = id;
+    form.dataset.originalName = name;
+    form.dataset.originalPrice = parseFloat(price).toFixed(2);
+    form.dataset.originalDescription = description;
+    form.dataset.originalStock = stock;
+    form.dataset.originalCategories = categories.join(',');
+
+    document.getElementById('productId').value = id;
+    document.getElementById('productName').value = name;
+    document.getElementById('productPrice').value = form.dataset.originalPrice;
+    document.getElementById('productDescription').value = description;
+    document.getElementById('productStock').value = stock;
+
+    const categorySelect = document.getElementById('productCategories');
+    for (let option of categorySelect.options) {
+        option.selected = categories.includes(option.value);
+    }
+
+    form.dataset.mode = 'edit';
+    document.getElementById('saveProductBtn').innerHTML = 'Atualizar';
+    document.getElementById('createProductModalLabel').innerHTML = 'Editar Produto';
+    document.getElementById('productImage').required = false;
+
+    const modal = new bootstrap.Modal(document.getElementById('createProductModal'));
+    modal.show();
+}
+
+function deleteProduct(button) {
+    const id = button.getAttribute('data-id');
+    const name = button.getAttribute('data-name');
+
+    if (confirm(`Tem certeza que deseja excluir o produto "${name}"?`)) {
+        fetch(`/api/products/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao excluir produto');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro ao excluir produto');
+            });
+    }
+}
+
+document.getElementById('productForm').addEventListener('submit', function (event) {
+    const form = event.target;
+    const productId = document.getElementById('productId').value;
+    const mode = form.dataset.mode;
+
+    if (mode === 'edit' && productId) {
+        event.preventDefault();
+
+        const currentPrice = document.getElementById('productPrice').value.replace(',', '.');
+        const currentStock = document.getElementById('productStock').value;
+        const currentName = document.getElementById('productName').value;
+        const currentDescription = document.getElementById('productDescription').value;
+        const originalName = form.dataset.originalName;
+        const originalDescription = form.dataset.originalDescription;
+        const originalPrice = form.dataset.originalPrice;
+        const originalStock = form.dataset.originalStock;
+
+        const productData = {
+            id: productId
+        };
+
+        if (currentName !== originalName) { productData.name = currentName; }
+        if (currentDescription !== originalDescription) { productData.description = currentDescription; }
+        if (currentPrice !== originalPrice) {  productData.price = parseFloat(currentPrice); }
+        if (currentStock !== originalStock) { productData.stock = parseInt(currentStock); }
+
+        const keysToUpdate = Object.keys(productData).filter(key => key !== 'id');
+
+        if (keysToUpdate.length === 0) {
+            alert('Nenhuma alteração detectada para o produto.');
+            bootstrap.Modal.getInstance(document.getElementById('createProductModal')).hide();
+            return;
+        }
+
+        fetch('/api/products', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    return response.json().then(err => {
+                        alert(`Erro ao atualizar produto: ${err.message || response.statusText}`);
+                    }).catch(() => {
+                        alert(`Erro ao atualizar produto: ${response.statusText}`);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro de rede ao atualizar produto.');
+            });
+    }
+});
+
+document.getElementById('createProductModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('productId').value = '';
+    document.getElementById('productName').value = '';
+    document.getElementById('productPrice').value = '';
+    document.getElementById('productDescription').value = '';
+    document.getElementById('productStock').value = '';
+    document.getElementById('productImage').value = '';
+
+    const categorySelect = document.getElementById('productCategories');
+    for (let option of categorySelect.options) {
+        option.selected = false;
+    }
+
+    document.getElementById('saveProductBtn').innerHTML = 'Salvar';
+    document.getElementById('createProductModalLabel').innerHTML = 'Criar Novo Produto';
+});
+
+function restoreCategory(button) {
+    const id = button.getAttribute('data-id');
+    const name = button.getAttribute('data-name');
+
+    if (confirm(`Tem certeza que deseja restaurar a categoria "${name}"?`)) {
+        fetch(`/api/categories/${id}/restore`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao restaurar categoria');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro ao restaurar categoria');
+            });
+    }
+}
+
+function editCategory(button) {
+    const id = button.getAttribute('data-id');
+    const name = button.getAttribute('data-name');
+    const description = button.getAttribute('data-description');
+
+    document.getElementById('categoryId').value = id;
+    document.getElementById('categoryName').value = name;
+    document.getElementById('categoryDescription').value = description;
+
+    document.getElementById('saveCategoryBtn').innerHTML = 'Atualizar Categoria';
+    document.getElementById('createCategoryModalLabel').innerHTML = 'Editar Categoria';
+
+    const modalElement = document.getElementById('createCategoryModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    modal.show();
+}
+
+function deleteCategory(button) {
+    const id = button.getAttribute('data-id');
+    const name = button.getAttribute('data-name');
+
+    if (confirm(`Tem certeza que deseja excluir a categoria "${name}"?`)) {
+        fetch(`/api/categories/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao excluir categoria');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro ao excluir categoria');
+            });
+    }
+}
+
+document.getElementById('createCategoryModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('categoryId').value = '';
+    document.getElementById('categoryForm').reset();
+    document.getElementById('saveCategoryBtn').innerText = 'Salvar Categoria';
+    document.getElementById('createCategoryModalLabel').innerText = 'Nova Categoria';
+});
+
+document.getElementById('categoryForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const id = document.getElementById('categoryId').value;
+    const name = document.getElementById('categoryName').value;
+    const description = document.getElementById('categoryDescription').value;
+
+    const categoryData = {
+        name: name,
+        description: description
+    };
+
+    let method = 'POST';
+    let url = '/api/categories';
+
+    if (id) {
+        method = 'PUT';
+        categoryData.id = id;
+    }
+
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(categoryData)
+    })
+        .then(async response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                const errorData = await response.json();
+                alert('Erro: ' + (errorData.message || 'Falha na operação'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro de conexão com o servidor');
+        });
+});
+
+function restoreUser(button) {
+    const id = button.getAttribute('data-id');
+
+    if (confirm(`Tem certeza que deseja restaurar o usuário?`)) {
+        fetch(`/api/users/${id}/restore`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao restaurar usuário');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro ao restaurar usuário');
+            });
+    }
+}
+
+function deleteUser(button) {
+    const id = button.getAttribute('data-id');
+
+    if (confirm(`Tem certeza que deseja excluir a usuário`)) {
+        fetch(`/api/users/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao excluir usuário');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erro ao excluir usuário');
+            });
+    }
+}
+
+function deleteUserProfile(button) {
+    const id = button.getAttribute('data-id');
+
+    fetch(`/api/users/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Erro ao excluir conta');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro ao excluir conta');
+        });
+}
+
+document.getElementById('editProfileForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const userData = {
+        id: document.getElementById('userId').value,
+        name: document.getElementById('userName').value,
+        email: document.getElementById('userEmail').value,
+        phone: document.getElementById('userPhone').value,
+        birthDate: document.getElementById('userBirthDate').value,
+        currentPassword: document.getElementById('currentPassword').value,
+        newPassword: document.getElementById('newPassword').value || null
+    };
+
+    fetch('/api/users', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+    })
+        .then(async response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                const errorData = await response.json();
+                alert('Erro ao atualizar: ' + (errorData.message || 'Verifique sua senha atual.'));
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição:', error);
+            alert('Erro de conexão com o servidor.');
+        });
+});

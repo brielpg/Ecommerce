@@ -7,11 +7,12 @@
 
 <!-- Default Product Card-->
 <div th:fragment="product-card(product)" class="card product-card h-100 border-0 shadow-sm position-relative">
-    <form th:action="@{/favorites/{productId}(productId=${product.id})}" method="post">
-        <button type="submit" class="favorite-btn">
-            <i th:class="${favoriteIds != null && favoriteIds.contains(product.id)} ? 'fas fa-heart' : 'fa-regular fa-heart'"></i>
-        </button>
-    </form>
+    <button class="favorite-btn"
+            th:data-user-id="${#authentication.principal != 'anonymousUser' ? #authentication.principal.id : ''}"
+            th:data-product-id="${product.id}" th:data-active="${favoriteIds != null && favoriteIds.contains(product.id)}"
+            onclick="toggleFavorite(this)">
+        <i th:class="${favoriteIds != null && favoriteIds.contains(product.id)} ? 'fas fa-heart' : 'fa-regular fa-heart'"></i>
+    </button>
     <a th:href="@{/products/{id}(id=${product.id})}" class="text-decoration-none">
         <div class="img-container">
             <img src="https://via.placeholder.com/400x400" th:alt="${product.name}" class="card-img-top">
