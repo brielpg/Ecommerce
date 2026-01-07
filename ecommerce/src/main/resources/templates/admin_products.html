@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Admin - Produtos | Ecommerce</title>
@@ -164,7 +164,7 @@
                 <h5 class="modal-title fw-bold" id="createProductModalLabel">Novo Produto</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form id="productForm" method="post" th:action="@{/admin/products}" th:object="${productDto}" enctype="multipart/form-data">
+            <form id="productForm" enctype="multipart/form-data">
                 <div class="modal-body p-4">
                     <input type="hidden" id="productId" name="id">
                     <div class="row g-3">
@@ -181,7 +181,7 @@
                             <textarea class="form-control" id="productDescription" name="description" rows="3" required></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Estoque Inicial</label>
+                            <label class="form-label fw-bold">Estoque Atual</label>
                             <input type="number" class="form-control" id="productStock" name="stock" required>
                         </div>
                         <div class="col-md-6">

@@ -169,14 +169,14 @@ function deleteProduct(button) {
     }
 }
 
-document.getElementById('productForm').addEventListener('submit', function (event) {
-    const form = event.target;
+document.getElementById('productForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    // EDIT
+    const form = e.target;
     const productId = document.getElementById('productId').value;
     const mode = form.dataset.mode;
-
     if (mode === 'edit' && productId) {
-        event.preventDefault();
-
         const currentPrice = document.getElementById('productPrice').value.replace(',', '.');
         const currentStock = document.getElementById('productStock').value;
         const currentName = document.getElementById('productName').value;
@@ -224,6 +224,47 @@ document.getElementById('productForm').addEventListener('submit', function (even
             .catch(error => {
                 console.error('Error:', error);
                 alert('Erro de rede ao atualizar produto.');
+            });
+    } else {
+
+        // CREATE
+        const productData = {
+            name: document.getElementById('productName').value,
+            description: document.getElementById('productDescription').value,
+            price: parseFloat(document.getElementById('productPrice').value),
+            stock: parseInt(document.getElementById('productStock').value),
+            categories: Array.from(document.getElementById('productCategories').selectedOptions).map(opt => opt.value)
+        };
+
+        const formData = new FormData();
+
+        const jsonBlob = new Blob([JSON.stringify(productData)], {
+            type: 'application/json'
+        });
+
+        formData.append('product', jsonBlob);
+
+        const imageFile = document.getElementById('productImage').files[0];
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+
+        fetch('/api/products', {
+            method: 'POST',
+            body: formData
+        })
+            .then(async response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    console.error('Erro na API:', errorData);
+                    alert('Erro ao salvar produto. Verifique os campos.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro de conexão:', error);
+                alert('Erro ao conectar com o servidor.');
             });
     }
 });

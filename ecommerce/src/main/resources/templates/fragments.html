@@ -15,7 +15,7 @@
     </button>
     <a th:href="@{/products/{id}(id=${product.id})}" class="text-decoration-none">
         <div class="img-container">
-            <img src="https://via.placeholder.com/400x400" th:alt="${product.name}" class="card-img-top">
+            <img th:alt="${product.name}" class="card-img-top">
         </div>
     </a>
     <div class="card-body d-flex flex-column p-4">

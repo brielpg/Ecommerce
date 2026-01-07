@@ -74,7 +74,6 @@ public class AdminMvcController {
         return "admin_categories";
     }
 
-    // PRODUCTS
     @GetMapping("/products")
     public String products(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
         Pageable pageable = PageRequest.of(page, size);
@@ -89,30 +88,6 @@ public class AdminMvcController {
         return "admin_products";
     }
 
-    @PostMapping("/products")
-    public String createOrUpdateProduct(@Valid ProductDtoForm dtoForm, BindingResult result, RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar categoria: " + result.getAllErrors().get(0).getDefaultMessage());
-            return "redirect:/admin/categories";
-        }
-        try {
-            if (dtoForm.id() != null) {
-                ProductDtoUpdate dtoUpdate = new ProductDtoUpdate(dtoForm.id(), dtoForm.name(), dtoForm.description(), dtoForm.price(), dtoForm.stock());
-                System.out.println(dtoForm);
-                productService.update(dtoUpdate, null);
-                redirectAttributes.addFlashAttribute("successMessage", "Produto atualizado com sucesso!");
-            } else {
-                ProductDtoCreate dtoCreate = new ProductDtoCreate(dtoForm.name(), dtoForm.description(), dtoForm.price(), dtoForm.stock(), dtoForm.categories());
-                productService.create(dtoCreate, null);
-                redirectAttributes.addFlashAttribute("successMessage", "Produto criado com sucesso!");
-            }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar produto: " + e.getMessage());
-        }
-        return "redirect:/admin/products";
-    }
-
-    // USERS
     @GetMapping("/users")
     public String listUsers(Pageable pageable, Model model) {
         Page<UserDtoList> users = userService.getAll(pageable);
