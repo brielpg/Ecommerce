@@ -1,34 +1,4 @@
-async function toggleFavorite(btn) {
-    const userId = btn.getAttribute('data-user-id');
-    const productId = btn.getAttribute('data-product-id');
-    const isFavorite = btn.getAttribute('data-active') === 'true';
-
-    if (!userId || userId === 'null') {
-        window.location.href = '/login';
-        return;
-    }
-
-    const url = `/api/users/${userId}/favorites/${productId}`;
-    const method = isFavorite ? 'DELETE' : 'POST';
-
-    try {
-        const response = await fetch(url, { method: method });
-
-        if (response.ok) {
-            const icon = btn.querySelector('i');
-            const newStatus = !isFavorite;
-
-            btn.setAttribute('data-active', newStatus);
-
-            icon.classList.toggle('fas');
-            icon.classList.toggle('fa-regular');
-            icon.classList.toggle('text-danger');
-        }
-    } catch (error) {
-        console.error("Erro na requisição:", error);
-    }
-}
-
+// user\cart.html
 function removeItem(button) {
     if (!confirm("Remover este item do carrinho?")) return;
     const userId = button.getAttribute('data-userId');
@@ -82,6 +52,8 @@ function clearCart(button) {
         });
 }
 
+
+// admin\products.html
 function restoreProduct(button) {
     const id = button.getAttribute('data-id');
     const name = button.getAttribute('data-name');
@@ -286,6 +258,7 @@ document.getElementById('createProductModal').addEventListener('hidden.bs.modal'
     document.getElementById('createProductModalLabel').innerHTML = 'Criar Novo Produto';
 });
 
+// admin\categories.html
 function restoreCategory(button) {
     const id = button.getAttribute('data-id');
     const name = button.getAttribute('data-name');
@@ -400,6 +373,7 @@ document.getElementById('categoryForm').addEventListener('submit', function (e) 
         });
 });
 
+// admin\users.html
 function restoreUser(button) {
     const id = button.getAttribute('data-id');
 
@@ -448,6 +422,7 @@ function deleteUser(button) {
     }
 }
 
+// user\profile.html
 function deleteUserProfile(button) {
     const id = button.getAttribute('data-id');
 
@@ -504,6 +479,37 @@ document.getElementById('editProfileForm').addEventListener('submit', function(e
         });
 });
 
+// fragments.html
+async function toggleFavorite(btn) {
+    const userId = btn.getAttribute('data-user-id');
+    const productId = btn.getAttribute('data-product-id');
+    const isFavorite = btn.getAttribute('data-active') === 'true';
+
+    if (!userId || userId === 'null') {
+        window.location.href = '/login';
+        return;
+    }
+
+    const url = `/api/users/${userId}/favorites/${productId}`;
+    const method = isFavorite ? 'DELETE' : 'POST';
+
+    try {
+        const response = await fetch(url, { method: method });
+
+        if (response.ok) {
+            const icon = btn.querySelector('i');
+            const newStatus = !isFavorite;
+
+            btn.setAttribute('data-active', newStatus);
+
+            icon.classList.toggle('fas');
+            icon.classList.toggle('fa-regular');
+            icon.classList.toggle('text-danger');
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+    }
+}
 
 async function addToCart(button) {
     const form = button.closest('form');
@@ -544,8 +550,7 @@ async function addToCart(button) {
     }
 }
 
-// details.html
-
+// product\details.html
 async function submitReview(button) {
     const form = button.closest('form');
     const userId = form.getAttribute('data-user-id');
