@@ -2,9 +2,11 @@ package br.com.api.ecommerce.controllers.mvc;
 
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.User;
+import br.com.api.ecommerce.models.dtos.Address.AddressDtoCreate;
 import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
+import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,7 +15,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -82,5 +87,15 @@ public class UserMvcController {
         model.addAttribute("addresses", addresses);
 
         return "user/profile";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "auth/login";
+    }
+
+    @GetMapping("/registrar")
+    public String register() {
+        return "auth/register";
     }
 }

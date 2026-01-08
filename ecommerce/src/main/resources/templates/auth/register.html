@@ -65,7 +65,7 @@
                     <p class="text-muted small">Preencha os dados abaixo para começar</p>
                 </div>
                 <div class="card-body p-4">
-                    <form th:action="@{/register}" method="post">
+                    <form id="registerForm">
 
                         <div class="section-title">
                             <i class="fa-solid fa-user me-2"></i>Informações Pessoais
@@ -93,37 +93,45 @@
                             </div>
                         </div>
 
-                        <div class="section-title">
-                            <i class="fa-solid fa-location-dot me-2"></i>Endereço de Entrega
+                        <div class="section-title d-flex justify-content-between align-items-center">
+                            <span><i class="fa-solid fa-location-dot me-2"></i>Endereços de Entrega</span>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addAddress()">
+                                <i class="fa-solid fa-plus"></i> Adicionar outro
+                            </button>
                         </div>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="zipCode" class="form-label">CEP</label>
-                                <input type="text" class="form-control" id="zipCode" name="zipCode" placeholder="00000-000" required>
-                            </div>
-                            <div class="col-md-8 mb-3">
-                                <label for="streetName" class="form-label">Rua</label>
-                                <input type="text" class="form-control" id="streetName" name="streetName" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="number" class="form-label">Número</label>
-                                <input type="text" class="form-control" id="number" name="number" required>
-                            </div>
-                            <div class="col-md-5 mb-3">
-                                <label for="complement" class="form-label">Complemento</label>
-                                <input type="text" class="form-control" id="complement" name="complement">
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="neighborhood" class="form-label">Bairro</label>
-                                <input type="text" class="form-control" id="neighborhood" name="neighborhood" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="city" class="form-label">Cidade</label>
-                                <input type="text" class="form-control" id="city" name="city" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="state" class="form-label">Estado</label>
-                                <input type="text" class="form-control" id="state" name="state" required>
+
+                        <div id="addressesContainer">
+                            <div class="address-item border rounded p-3 mb-3 bg-light">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">CEP</label>
+                                        <input type="text" class="form-control zipCode" required>
+                                    </div>
+                                    <div class="col-md-8 mb-3">
+                                        <label class="form-label">Rua</label>
+                                        <input type="text" class="form-control streetName" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">Número</label>
+                                        <input type="text" class="form-control number" required>
+                                    </div>
+                                    <div class="col-md-5 mb-3">
+                                        <label class="form-label">Complemento</label>
+                                        <input type="text" class="form-control complement">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Bairro</label>
+                                        <input type="text" class="form-control neighborhood" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Cidade</label>
+                                        <input type="text" class="form-control city" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Estado</label>
+                                        <input type="text" class="form-control state" required>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
