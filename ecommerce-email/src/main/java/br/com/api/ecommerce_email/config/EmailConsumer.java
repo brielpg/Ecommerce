@@ -21,11 +21,12 @@ public class EmailConsumer {
     @RabbitListener(queues = "${email.queue.name}")
     public void listen(Map<String, Object> message, @Header(name = "traceId", required = false) String traceId, @Header(name = "userId", required = false) String userId) {
         try {
-            MDC.put("traceId", traceId != null ? traceId : UUID.randomUUID().toString().substring(0,8));
-            MDC.put("userId", userId);
-
             String eventType = (String) message.get("eventType");
             Map<String, Object> data = (Map<String, Object>) message.get("data");
+
+            MDC.put("traceId", traceId != null ? traceId : UUID.randomUUID().toString().substring(0,8));
+            MDC.put("userId", userId);
+            MDC.put("eventType", eventType);
 
             service.sendEmail(eventType, data);
         } finally {
