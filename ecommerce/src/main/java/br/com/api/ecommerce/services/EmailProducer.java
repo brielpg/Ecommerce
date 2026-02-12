@@ -1,6 +1,7 @@
 package br.com.api.ecommerce.services;
 
 import br.com.api.ecommerce.models.enums.EventTypes;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class EmailProducer {
 
     @Autowired
@@ -19,10 +21,15 @@ public class EmailProducer {
     private String queueName;
 
     public void publishEvent(EventTypes eventType, Map<String, Object> data) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("eventType", eventType.toString());
-        payload.put("data", data);
+        try {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("eventType", eventType.toString());
+            payload.put("data", data);
 
-        rabbitTemplate.convertAndSend(queueName, payload);
+            log.info("Publicando evento {} para a fila {}", eventType, queueName);
+            rabbitTemplate.convertAndSend(queueName, payload);
+        } catch (Exception e) {
+            log.error("Erro ao enviar mensagem para RabbitMQ. Tipo: {}, Erro: {}", eventType, e.getMessage());
+        }
     }
 }
