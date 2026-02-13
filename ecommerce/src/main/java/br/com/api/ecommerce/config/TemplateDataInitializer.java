@@ -4,12 +4,14 @@ import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.enums.UserRoles;
 import br.com.api.ecommerce.repositories.UserRepository;
 import br.com.api.ecommerce.services.AuthorizationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class TemplateDataInitializer implements CommandLineRunner {
 
     @Value("${api.setup.create-initial-admin:false}")
@@ -33,7 +35,7 @@ public class TemplateDataInitializer implements CommandLineRunner {
                 admin.setActive(true);
 
                 userRepository.save(admin);
-                System.out.println("Admin user created");
+                log.info("Setup inicial: Usuário ADMIN criado com sucesso");
             }
         }
     }

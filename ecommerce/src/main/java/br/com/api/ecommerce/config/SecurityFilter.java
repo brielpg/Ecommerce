@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -41,6 +43,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
                 if (user != null) {
                     MDC.put("userId", user.getId().toString());
+                    log.debug("Usuário {} autenticado com sucesso", login);
 
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

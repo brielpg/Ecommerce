@@ -10,6 +10,7 @@ import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.repositories.ProductRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
@@ -29,6 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class ProductService {
 
     @Autowired
@@ -52,11 +54,6 @@ public class ProductService {
     @Autowired
     private AuthorizationService authorizationService;
 
-    @Autowired
-    @Lazy
-    private ReviewService reviewService;
-
-
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public ProductDtoList create(ProductDtoCreate dto, MultipartFile imageFile){
@@ -67,10 +64,13 @@ public class ProductService {
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
                 product.setImage(imageFile.getBytes());
-            } catch (IOException ignored) {}
+            } catch (IOException e) {
+                log.error("Erro ao processar imagem do produto {}", dto.name(), e);
+            }
         }
 
         this.save(product);
+        log.info("Produto criado com sucesso, ID: {}", product.getId());
         return entityToDto(product);
     }
 
@@ -184,6 +184,7 @@ public class ProductService {
 
         product.setActive(false);
         this.save(product);
+        log.info("Produto ID: {} desativado com sucesso", id);
     }
 
     @Transactional

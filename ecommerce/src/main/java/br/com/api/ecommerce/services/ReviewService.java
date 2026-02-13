@@ -98,11 +98,6 @@ public class ReviewService {
             throw new ConflictException("exception.review.already.exists");
     }
 
-    @Transactional(readOnly = true)
-    public UUID getUserIdFromReview(UUID reviewId) {
-        return this.getById(reviewId).getUser().getId();
-    }
-
     @Transactional
     private void save(Review review){
         repository.save(review);

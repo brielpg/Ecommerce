@@ -29,7 +29,7 @@ public class EmailProducer {
             log.info("Publicando evento {} para a fila {}", eventType, queueName);
             rabbitTemplate.convertAndSend(queueName, payload);
         } catch (Exception e) {
-            log.error("Erro ao enviar mensagem para RabbitMQ. Tipo: {}, Erro: {}", eventType, e.getMessage());
+            log.error("Erro ao enviar mensagem para RabbitMQ. Tipo: {}", eventType, e);
         }
     }
 }

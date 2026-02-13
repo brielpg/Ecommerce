@@ -14,6 +14,7 @@ import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
 import br.com.api.ecommerce.models.enums.EventTypes;
 import br.com.api.ecommerce.repositories.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -64,6 +66,7 @@ public class UserService {
         this.emailSending(EventTypes.USER_WELCOME, user);
 
         this.save(user);
+        log.info("Usuário criado com sucesso. ID: {}", user.getId());
         return entityToDto(user);
     }
 
@@ -137,6 +140,8 @@ public class UserService {
         user.setActive(false);
         this.emailSending(EventTypes.USER_DEACTIVATED, user);
         this.save(user);
+
+        log.info("Usuário desativado com sucesso: {}", id);
     }
 
     @Transactional(readOnly = true)

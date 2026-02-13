@@ -9,6 +9,7 @@ import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.models.dtos.Item.ItemDtoList;
 import br.com.api.ecommerce.repositories.CartRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class CartService {
 
     @Autowired
@@ -51,6 +53,7 @@ public class CartService {
     @Transactional
     @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public void clearUserCart(UUID userId) {
+        log.info("Limpando carrinho do usuário");
         repository.deleteAllItemsFromUserCart(userId);
         repository.resetCartTotal(userId);
     }
@@ -123,6 +126,8 @@ public class CartService {
             this.recalculateCartTotal(cart);
             repository.save(cart);
         }
+
+        log.debug("Removido o produto [{}] de todos os carrinhos", productId);
     }
 
     public void recalculateCartTotal(Cart cart) {

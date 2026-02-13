@@ -4,11 +4,13 @@ import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Auth.AuthDtoLogin;
 import br.com.api.ecommerce.models.dtos.Auth.AuthReturnToken;
 import br.com.api.ecommerce.repositories.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class AuthorizationService implements UserDetailsService {
     @Autowired
     private UserRepository repository;
@@ -50,13 +53,19 @@ public class AuthorizationService implements UserDetailsService {
     }
 
     public AuthReturnToken login(AuthDtoLogin dto) {
-        UsernamePasswordAuthenticationToken usernamePassword =
-                new UsernamePasswordAuthenticationToken(dto.login(), dto.password());
+        try {
+            UsernamePasswordAuthenticationToken usernamePassword =
+                    new UsernamePasswordAuthenticationToken(dto.login(), dto.password());
 
-        Authentication auth = this.authenticationManager.authenticate(usernamePassword);
+            Authentication auth = this.authenticationManager.authenticate(usernamePassword);
 
-        String token = tokenService.generateToken((User) auth.getPrincipal());
+            String token = tokenService.generateToken((User) auth.getPrincipal());
 
-        return new AuthReturnToken(token);
+            log.info("Login bem-sucedido para o usuário: {}", dto.login());
+            return new AuthReturnToken(token);
+        } catch (AuthenticationException e) {
+            log.warn("Falha de autenticação para o usuário: {}", dto.login(), e);
+            throw e;
+        }
     }
 }

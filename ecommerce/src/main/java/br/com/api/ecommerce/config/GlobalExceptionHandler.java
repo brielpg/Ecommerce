@@ -5,6 +5,7 @@ import br.com.api.ecommerce.exceptions.BadRequestException;
 import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.dtos.ErrorDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.FieldError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @Autowired
@@ -30,6 +32,7 @@ public class GlobalExceptionHandler {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         String errorMessage = messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
         ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), List.of(errorMessage));
+        log.warn("Exceção de negócio [{}]: {}", httpStatus.value(), errorMessage);
         return ResponseEntity.status(httpStatus).body(errorDto);
     }
 
@@ -39,6 +42,7 @@ public class GlobalExceptionHandler {
         HttpStatus httpStatus = HttpStatus.FORBIDDEN;
         String errorMessage = messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
         ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), List.of(errorMessage));
+        log.warn("Tentativa de acesso negada: {}", ex.getMessage());
         return ResponseEntity.status(httpStatus).body(errorDto);
     }
 
@@ -48,6 +52,7 @@ public class GlobalExceptionHandler {
         HttpStatus httpStatus = HttpStatus.CONFLICT;
         String errorMessage = messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
         ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), List.of(errorMessage));
+        log.warn("Exceção de negócio [{}]: {}", httpStatus.value(), errorMessage);
         return ResponseEntity.status(httpStatus).body(errorDto);
     }
 
@@ -57,6 +62,7 @@ public class GlobalExceptionHandler {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         String errorMessage = messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
         ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), List.of(errorMessage));
+        log.warn("Exceção de negócio [{}]: {}", httpStatus.value(), errorMessage);
         return ResponseEntity.status(httpStatus).body(errorDto);
     }
 
@@ -73,6 +79,7 @@ public class GlobalExceptionHandler {
                 }).toList();
 
         ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), errors);
+        log.warn("Falha de validação nos campos da requisição: {}", ex.getBindingResult().getFieldErrorCount());
         return ResponseEntity.status(httpStatus).body(errorDto);
     }
 
@@ -81,6 +88,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleGeneralException(Exception ex) {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         ErrorDto errorDto = new ErrorDto(httpStatus.value(), httpStatus.name(), List.of(ex.getMessage()));
+        log.error("Erro interno não tratado no servidor", ex);
         return ResponseEntity.status(httpStatus).body(errorDto);
     }
 }
