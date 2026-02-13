@@ -2,6 +2,7 @@ package br.com.api.ecommerce_email.config;
 
 import br.com.api.ecommerce_email.models.EmailTemplate;
 import br.com.api.ecommerce_email.repositories.EmailTemplateRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
+@Slf4j
 public class TemplateDataInitializer {
 
     @Bean
@@ -22,7 +24,7 @@ public class TemplateDataInitializer {
                     template.setEventType(event);
 
                     repository.save(template);
-                    System.out.println(event + " template created");
+                    log.info("Setup inicial: Templates base criados com sucesso");
                 }
             }
         };

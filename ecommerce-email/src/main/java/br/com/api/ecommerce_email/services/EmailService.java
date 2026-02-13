@@ -9,6 +9,7 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class EmailService {
 
     @Autowired
@@ -38,9 +40,13 @@ public class EmailService {
 
     public void sendEmail(String eventType, Map<String, Object> data) {
         EmailTemplate template = templateRepository.findByEventType(eventType)
-                .orElseThrow(() -> new AmqpRejectAndDontRequeueException("Template not found: " + eventType));
+                .orElseThrow(() -> {
+                    log.warn("Template não encontrado para o evento");
+                    return new AmqpRejectAndDontRequeueException("Template not found: " + eventType);
+                });
 
         if (template.getHtmlContent() == null){
+            log.error("Template está sem conteúdo HTML");
             throw new RuntimeException("Template has no content: " + eventType);
         }
 
@@ -63,8 +69,10 @@ public class EmailService {
 
             mailSender.send(message);
             emailLog.setStatus(StatusEnum.SENT);
-        } catch (Exception e) {
+            log.info("E-mail enviado com sucesso");
+        } catch (Exception ex) {
             emailLog.setStatus(StatusEnum.ERROR);
+            log.error("Erro ao disparar e-mail", ex);
         } finally {
             logRepository.save(emailLog);
         }

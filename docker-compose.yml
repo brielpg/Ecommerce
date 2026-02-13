@@ -49,14 +49,47 @@ services:
     networks:
       - email-network
 
+  loki:
+    image: grafana/loki:3.2.0
+    container_name: loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - ecommerce-network
+      - email-network
+
+  promtail:
+    image: grafana/promtail:3.2.0
+    container_name: promtail
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./promtail-config.yaml:/etc/promtail/config.yaml
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - ecommerce-network
+      - email-network
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - loki
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - ecommerce-network
+      - email-network
+
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     ports:
-      - "${RABBITMQ_DASHBOARD_PORT}:${RABBITMQ_DASHBOARD_PORT}"
+      - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
@@ -84,6 +117,10 @@ services:
       - .env
     ports:
       - "8080:8080"
+    logging:
+      driver: "json-file"
+      options:
+        tag: "{{.Name}}"
     networks:
       - ecommerce-network
 
@@ -101,6 +138,10 @@ services:
       - .env
     ports:
       - "8081:8081"
+    logging:
+      driver: "json-file"
+      options:
+        tag: "{{.Name}}"
     networks:
       - email-network
 
