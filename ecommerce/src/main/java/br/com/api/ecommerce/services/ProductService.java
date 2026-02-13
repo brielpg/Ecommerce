@@ -4,7 +4,6 @@ import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.Product;
-import br.com.api.ecommerce.models.Review;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoAddCategory;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;

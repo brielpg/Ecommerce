@@ -7,7 +7,6 @@ import br.com.api.ecommerce.models.Item;
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
-import br.com.api.ecommerce.models.dtos.Item.ItemDtoList;
 import br.com.api.ecommerce.repositories.CartRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

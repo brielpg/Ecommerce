@@ -1,8 +1,8 @@
 package br.com.api.ecommerce.services;
 
+import br.com.api.ecommerce.exceptions.AccessDeniedException;
 import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
-import br.com.api.ecommerce.exceptions.AccessDeniedException;
 import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.Review;
 import br.com.api.ecommerce.models.dtos.Review.ReviewDtoCreate;
@@ -11,14 +11,12 @@ import br.com.api.ecommerce.models.dtos.Review.ReviewDtoUpdate;
 import br.com.api.ecommerce.models.enums.OrderStatus;
 import br.com.api.ecommerce.repositories.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
