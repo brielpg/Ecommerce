@@ -9,14 +9,15 @@ import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.repositories.ProductRepository;
+import br.com.api.ecommerce.services.mappers.ProductMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository repository;
+
+    @Autowired
+    private ProductMapper mapper;
 
     @Autowired
     private CategoryService categoryService;
@@ -58,7 +62,9 @@ public class ProductService {
     public ProductDtoList create(ProductDtoCreate dto, MultipartFile imageFile){
         this.existsByName(dto.name());
 
-        Product product = dtoToEntity(dto);
+        Product product = mapper.toEntity(dto);
+        if (!dto.categories().isEmpty())
+            product.setCategories(categoryService.getCategoriesByIds(dto.categories()));
 
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
@@ -70,7 +76,7 @@ public class ProductService {
 
         this.save(product);
         log.info("Produto criado com sucesso, ID: {}", product.getId());
-        return entityToDto(product);
+        return mapper.toDto(product);
     }
 
     @Transactional(readOnly = true)
@@ -83,7 +89,7 @@ public class ProductService {
             products = repository.findAllByActiveTrue(pageable);
         }
 
-        return products.map(this::entityToDto);
+        return products.map(product -> mapper.toDto(product));
     }
 
     @Transactional(readOnly = true)
@@ -107,7 +113,7 @@ public class ProductService {
             products = repository.findAllByCategoryId(categoryId, false, pageable);
         }
 
-        return products.map(this::entityToDto);
+        return products.map(product -> mapper.toDto(product));
     }
 
     @Transactional(readOnly = true)
@@ -126,9 +132,8 @@ public class ProductService {
             return this.getAll(pageable); 
         }
 
-        Page<Product> products = repository.searchProducts(query, pageable);
-
-        return products.map(this::entityToDto);
+        return repository.searchProducts(query, pageable)
+                .map(product -> mapper.toDto(product));
     }
 
     @Transactional
@@ -154,7 +159,7 @@ public class ProductService {
         }
 
         this.save(product);
-        return entityToDto(product);
+        return mapper.toDto(product);
     }
 
     @Transactional(readOnly = true)
@@ -234,31 +239,5 @@ public class ProductService {
     @Transactional
     public void save(Product product){
         repository.save(product);
-    }
-
-    private Product dtoToEntity(ProductDtoCreate dto){
-        Product product = new Product();
-        product.setName(dto.name());
-        product.setDescription(dto.description());
-        product.setPrice(dto.price());
-        product.setStock(dto.stock());
-        if (!dto.categories().isEmpty())
-            product.setCategories(categoryService.getCategoriesByIds(dto.categories()));
-
-        return product;
-    }
-
-    public ProductDtoList entityToDto(Product entity){
-        return new ProductDtoList(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getPrice(),
-                entity.getStock(),
-                entity.getRating(),
-                entity.getPurchaseCount(),
-                entity.getActive(),
-                entity.getTimestamp()
-        );
     }
 }

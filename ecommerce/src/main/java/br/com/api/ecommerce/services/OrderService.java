@@ -2,8 +2,8 @@ package br.com.api.ecommerce.services;
 
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.*;
-import br.com.api.ecommerce.models.enums.OrderStatus;
 import br.com.api.ecommerce.models.dtos.Order.OrderDtoCreate;
+import br.com.api.ecommerce.models.enums.OrderStatus;
 import br.com.api.ecommerce.repositories.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

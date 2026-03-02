@@ -3,12 +3,11 @@ package br.com.api.ecommerce.services;
 import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Category;
-import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoCreate;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoUpdate;
-import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.repositories.CategoryRepository;
+import br.com.api.ecommerce.services.mappers.CategoryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +26,9 @@ public class CategoryService {
     private CategoryRepository repository;
 
     @Autowired
+    private CategoryMapper mapper;
+
+    @Autowired
     private AuthorizationService authorizationService;
 
 
@@ -35,10 +37,10 @@ public class CategoryService {
     public CategoryDtoList create(CategoryDtoCreate dto){
         this.existsByName(dto.name());
 
-        Category category = dtoToEntity(dto);
+        Category category = mapper.toEntity(dto);
 
         this.save(category);
-        return entityToDto(category);
+        return mapper.toDto(category);
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +53,7 @@ public class CategoryService {
             categories = repository.findAllByActiveTrue(pageable);
         }
 
-        return categories.map(this::entityToDto);
+        return categories.map(category -> mapper.toDto(category));
     }
 
     @Transactional(readOnly = true)
@@ -75,7 +77,7 @@ public class CategoryService {
         if (dto.description() != null) category.setDescription(dto.description());
 
         this.save(category);
-        return entityToDto(category);
+        return mapper.toDto(category);
     }
 
     @Transactional
@@ -110,23 +112,5 @@ public class CategoryService {
     @Transactional
     public void save(Category category){
         repository.save(category);
-    }
-
-    private Category dtoToEntity(CategoryDtoCreate dto){
-        Category category = new Category();
-        category.setName(dto.name());
-        category.setDescription(dto.description());
-
-        return category;
-    }
-
-    public CategoryDtoList entityToDto(Category entity) {
-        return new CategoryDtoList(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getActive(),
-                entity.getTimestamp()
-        );
     }
 }

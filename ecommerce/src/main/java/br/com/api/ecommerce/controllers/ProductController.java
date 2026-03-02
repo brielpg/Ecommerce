@@ -1,16 +1,17 @@
 package br.com.api.ecommerce.controllers;
 
+import br.com.api.ecommerce.config.SecurityConfiguration;
 import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoAddCategory;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.services.ProductService;
-import br.com.api.ecommerce.config.SecurityConfiguration;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import br.com.api.ecommerce.services.mappers.ProductMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class ProductController {
 
     @Autowired
     private ProductService service;
+
+    @Autowired
+    private ProductMapper mapper;
 
     @Operation(summary = "Create a new product", description = "Creates a new product with optional image upload. Requires ADMIN role.")
     @ApiResponses(value = {
@@ -67,7 +71,7 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductDtoList> getById(@PathVariable UUID id){
         Product product = service.getById(id);
-        ProductDtoList productDtoList = service.entityToDto(product);
+        ProductDtoList productDtoList = mapper.toDto(product);
         return ResponseEntity.ok(productDtoList);
     }
 

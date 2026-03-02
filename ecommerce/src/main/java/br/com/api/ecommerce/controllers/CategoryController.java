@@ -1,15 +1,16 @@
 package br.com.api.ecommerce.controllers;
 
+import br.com.api.ecommerce.config.SecurityConfiguration;
 import br.com.api.ecommerce.models.Category;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoCreate;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoUpdate;
 import br.com.api.ecommerce.services.CategoryService;
-import br.com.api.ecommerce.config.SecurityConfiguration;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import br.com.api.ecommerce.services.mappers.CategoryMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class CategoryController {
 
     @Autowired
     private CategoryService service;
+
+    @Autowired
+    private CategoryMapper mapper;
 
     @Operation(summary = "Create category", description = "Creates a new category. Requires ADMIN role.")
     @ApiResponses(value = {
@@ -64,7 +68,7 @@ public class CategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDtoList> getById(@PathVariable UUID id){
         Category category = service.getById(id);
-        CategoryDtoList categoryDtoList = service.entityToDto(category);
+        CategoryDtoList categoryDtoList = mapper.toDto(category);
         return ResponseEntity.ok(categoryDtoList);
     }
 

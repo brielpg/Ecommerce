@@ -5,7 +5,6 @@ import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.Item;
 import br.com.api.ecommerce.models.User;
-import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.repositories.CartRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -135,13 +134,5 @@ public class CartService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         cart.setTotalPrice(newTotal);
-    }
-
-    public CartDtoList entityToDto(Cart cart) {
-        return new CartDtoList(
-                cart.getId(),
-                cart.getItems().stream().map(item -> itemService.entityToDto(item)).toList(),
-                cart.getTotalPrice()
-        );
     }
 }

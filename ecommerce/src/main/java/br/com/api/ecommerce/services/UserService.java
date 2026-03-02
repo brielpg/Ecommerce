@@ -4,18 +4,18 @@ import br.com.api.ecommerce.exceptions.BadRequestException;
 import br.com.api.ecommerce.exceptions.ConflictException;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import br.com.api.ecommerce.models.Address;
-import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.User;
-import br.com.api.ecommerce.models.dtos.Address.AddressDtoList;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
 import br.com.api.ecommerce.models.enums.EventTypes;
 import br.com.api.ecommerce.repositories.UserRepository;
+import br.com.api.ecommerce.services.mappers.AddressMapper;
+import br.com.api.ecommerce.services.mappers.ProductMapper;
+import br.com.api.ecommerce.services.mappers.UserMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +37,12 @@ public class UserService {
     private UserRepository repository;
 
     @Autowired
+    private UserMapper mapper;
+
+    @Autowired
+    private AddressMapper addressMapper;
+
+    @Autowired
     private AddressService addressService;
 
     @Autowired
@@ -44,6 +50,9 @@ public class UserService {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private ProductMapper productMapper;
 
     @Autowired
     private AuthorizationService authorizationService;
@@ -58,24 +67,24 @@ public class UserService {
     public UserDtoList create(UserDtoCreate dto){
         this.existsByEmail(dto.email());
 
-        User user = dtoToEntity(dto);
-        Cart cart = cartService.create(user);
-        user.setCart(cart);
+        User user = mapper.toEntity(dto);
+        user.setAddresses(addressMapper.toEntityList(dto.addresses(), user));
+
         user.setPassword(authorizationService.encodePassword(dto.password()));
+        user.setCart(cartService.create(user));
 
         this.emailSending(EventTypes.USER_WELCOME, user);
 
         this.save(user);
         log.info("Usuário criado com sucesso. ID: {}", user.getId());
-        return entityToDto(user);
+        return mapper.toDto(user);
     }
 
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ADMIN')")
     public Page<UserDtoList> getAll(Pageable pageable) {
-        Page<User> users = repository.findAll(pageable);
-
-        return users.map(this::entityToDto);
+        return repository.findAll(pageable)
+                .map(user -> mapper.toDto(user));
     }
 
     @Transactional(readOnly = true)
@@ -119,7 +128,7 @@ public class UserService {
         }
 
         this.save(user);
-        return entityToDto(user);
+        return mapper.toDto(user);
     }
 
     @Transactional
@@ -149,7 +158,7 @@ public class UserService {
     public List<ProductDtoList> getFavorites(UUID id) {
         List<Product> favorites = repository.getFavorites(id);
 
-        return favorites.stream().map(p -> productService.entityToDto(p)).toList();
+        return favorites.stream().map(p -> productMapper.toDto(p)).toList();
     }
 
     @Transactional
@@ -186,38 +195,5 @@ public class UserService {
                 "userName", user.getName(),
                 "userPhone", user.getPhone()
         ));
-    }
-
-    private User dtoToEntity(UserDtoCreate dto){
-        User user = new User();
-        user.setName(dto.name());
-        user.setEmail(dto.email());
-        user.setPhone(dto.phone());
-        user.setBirthDate(dto.birthDate());
-        user.setAddresses(addressService.create(dto.addresses(), user));
-
-        return user;
-    }
-
-    public UserDtoList entityToDto(User entity){
-        List<AddressDtoList> addressesDto;
-
-        try {
-            addressesDto = entity.getAddresses().stream().map(a -> addressService.entityToDto(a)).toList();
-        } catch (LazyInitializationException ex) {
-            addressesDto = addressService.findByUserId(entity.getId())
-                    .stream().map(addressService::entityToDto).toList();
-        }
-
-        return new UserDtoList(
-                entity.getId(),
-                entity.getName(),
-                entity.getEmail(),
-                entity.getPhone(),
-                entity.getBirthDate(),
-                addressesDto,
-                entity.getActive(),
-                entity.getTimestamp()
-        );
     }
 }

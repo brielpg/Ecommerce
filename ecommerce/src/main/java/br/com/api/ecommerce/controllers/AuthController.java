@@ -1,15 +1,15 @@
 package br.com.api.ecommerce.controllers;
 
+import br.com.api.ecommerce.config.SecurityConfiguration;
 import br.com.api.ecommerce.models.dtos.Auth.AuthDtoLogin;
 import br.com.api.ecommerce.models.dtos.Auth.AuthReturnToken;
 import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.services.AuthorizationService;
 import br.com.api.ecommerce.services.UserService;
-import br.com.api.ecommerce.config.SecurityConfiguration;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

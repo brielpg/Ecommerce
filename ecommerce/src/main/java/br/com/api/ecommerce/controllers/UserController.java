@@ -1,17 +1,16 @@
 package br.com.api.ecommerce.controllers;
 
-import br.com.api.ecommerce.models.Product;
+import br.com.api.ecommerce.config.SecurityConfiguration;
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
-import br.com.api.ecommerce.models.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
 import br.com.api.ecommerce.services.UserService;
-import br.com.api.ecommerce.config.SecurityConfiguration;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import br.com.api.ecommerce.services.mappers.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,9 @@ public class UserController {
 
     @Autowired
     private UserService service;
+
+    @Autowired
+    private UserMapper mapper;
 
     @GetMapping
     @Operation(summary = "Get all users", description = "Retrieves all users with pagination support. Requires ADMIN role.")
@@ -55,7 +57,7 @@ public class UserController {
     })
     public ResponseEntity<UserDtoList> getById(@PathVariable UUID id){
         User user = service.getById(id);
-        UserDtoList userDtoList = service.entityToDto(user);
+        UserDtoList userDtoList = mapper.toDto(user);
         return ResponseEntity.ok(userDtoList);
     }
 

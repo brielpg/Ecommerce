@@ -10,6 +10,7 @@ import br.com.api.ecommerce.models.dtos.Review.ReviewDtoList;
 import br.com.api.ecommerce.models.dtos.Review.ReviewDtoUpdate;
 import br.com.api.ecommerce.models.enums.OrderStatus;
 import br.com.api.ecommerce.repositories.ReviewRepository;
+import br.com.api.ecommerce.services.mappers.ReviewMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,9 @@ public class ReviewService {
 
     @Autowired
     private ReviewRepository repository;
+
+    @Autowired
+    private ReviewMapper mapper;
 
     @Autowired
     private ProductService productService;
@@ -43,18 +47,21 @@ public class ReviewService {
             throw new AccessDeniedException("exception.review.purchase.required");
         }
 
-        Review review = dtoToEntity(dto);
+        Review review = mapper.toEntity(dto);
+        review.setUser(userService.getById(dto.userId()));
+        review.setProduct(productService.getById(dto.productId()));
 
         this.save(review);
 
         productService.updateProductRating(dto.productId());
 
-        return entityToDto(review);
+        return mapper.toDto(review);
     }
 
     @Transactional(readOnly = true)
     public Page<ReviewDtoList> getAllByProduct(UUID productId, Pageable pageable) {
-        return repository.findAllByProductId(pageable, productId).map(this::entityToDto);
+        return repository.findAllByProductId(pageable, productId)
+                .map(review -> mapper.toDto(review));
     }
 
     @Transactional(readOnly = true)
@@ -75,7 +82,7 @@ public class ReviewService {
 
         productService.updateProductRating(review.getProduct().getId());
 
-        return entityToDto(review);
+        return mapper.toDto(review);
     }
 
     @Transactional
@@ -99,26 +106,5 @@ public class ReviewService {
     @Transactional
     private void save(Review review){
         repository.save(review);
-    }
-
-    public Review dtoToEntity(ReviewDtoCreate dto) {
-        Review review = new Review();
-        review.setRating(dto.rating());
-        review.setReview(dto.review());
-        review.setUser(userService.getById(dto.userId()));
-        review.setProduct(productService.getById(dto.productId()));
-
-        return review;
-    }
-
-    public ReviewDtoList entityToDto(Review entity) {
-        return new ReviewDtoList(
-                entity.getId(),
-                entity.getUser().getId(),
-                entity.getProduct().getId(),
-                entity.getRating(),
-                entity.getReview(),
-                entity.getTimestamp()
-        );
     }
 }

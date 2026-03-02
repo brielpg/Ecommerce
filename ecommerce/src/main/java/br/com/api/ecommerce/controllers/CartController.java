@@ -1,14 +1,15 @@
 package br.com.api.ecommerce.controllers;
 
+import br.com.api.ecommerce.config.SecurityConfiguration;
 import br.com.api.ecommerce.models.Cart;
 import br.com.api.ecommerce.models.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.services.CartService;
-import br.com.api.ecommerce.config.SecurityConfiguration;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import br.com.api.ecommerce.services.mappers.CartMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class CartController {
     @Autowired
     private CartService service;
 
+    @Autowired
+    private CartMapper mapper;
+
     @Operation(summary = "Get user cart", description = "Retrieves the cart for a specific user. The user can access their own cart or an ADMIN can access any user's cart.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Cart retrieved successfully"),
@@ -38,7 +42,7 @@ public class CartController {
     @GetMapping("/{userId}")
     public ResponseEntity<CartDtoList> getByUserId(@PathVariable UUID userId){
         Cart cart = service.getByUserId(userId);
-        return ResponseEntity.ok(service.entityToDto(cart));
+        return ResponseEntity.ok(mapper.toDto(cart));
     }
 
     @Operation(summary = "Clear user cart", description = "Removes all items from the user's cart. The user can clear their own cart or an ADMIN can clear any user's cart.")
