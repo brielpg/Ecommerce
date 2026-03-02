@@ -2,7 +2,7 @@ package br.com.api.ecommerce.config;
 
 import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.repositories.UserRepository;
-import br.com.api.ecommerce.services.TokenService;
+import br.com.api.ecommerce.services.interfaces.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ import java.util.UUID;
 public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
-    private TokenService tokenService;
+    private TokenProvider tokenProvider;
 
     @Autowired
     private UserRepository userRepository;
@@ -37,7 +37,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         try {
             var token = this.recoverToken(request);
             if (token != null) {
-                String login = tokenService.validateToken(token);
+                String login = tokenProvider.validateToken(token);
                 User user = (User) userRepository.findByEmail(login);
 
                 if (user != null) {

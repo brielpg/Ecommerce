@@ -12,6 +12,7 @@ import br.com.api.ecommerce.models.dtos.User.UserDtoList;
 import br.com.api.ecommerce.models.dtos.User.UserDtoUpdate;
 import br.com.api.ecommerce.models.enums.EventTypes;
 import br.com.api.ecommerce.repositories.UserRepository;
+import br.com.api.ecommerce.services.interfaces.MessagePublisher;
 import br.com.api.ecommerce.services.mappers.AddressMapper;
 import br.com.api.ecommerce.services.mappers.ProductMapper;
 import br.com.api.ecommerce.services.mappers.UserMapper;
@@ -61,7 +62,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private EmailProducer emailProducer;
+    private MessagePublisher messagePublisher;
 
     @Transactional
     public UserDtoList create(UserDtoCreate dto){
@@ -73,7 +74,7 @@ public class UserService {
         user.setPassword(authorizationService.encodePassword(dto.password()));
         user.setCart(cartService.create(user));
 
-        this.emailSending(EventTypes.USER_WELCOME, user);
+        messagePublisher.publishUserEvent(EventTypes.USER_WELCOME, user);
 
         this.save(user);
         log.info("Usuário criado com sucesso. ID: {}", user.getId());
@@ -137,7 +138,7 @@ public class UserService {
         User user = this.getById(id);
 
         user.setActive(true);
-        this.emailSending(EventTypes.USER_REACTIVATED, user);
+        messagePublisher.publishUserEvent(EventTypes.USER_REACTIVATED, user);
         this.save(user);
     }
 
@@ -147,7 +148,7 @@ public class UserService {
         User user = this.getById(id);
 
         user.setActive(false);
-        this.emailSending(EventTypes.USER_DEACTIVATED, user);
+        messagePublisher.publishUserEvent(EventTypes.USER_DEACTIVATED, user);
         this.save(user);
 
         log.info("Usuário desativado com sucesso: {}", id);
@@ -187,13 +188,5 @@ public class UserService {
     @Transactional
     private void save(User user) {
         repository.save(user);
-    }
-
-    private void emailSending(EventTypes eventType, User user) {
-        emailProducer.publishEvent(eventType, Map.of(
-                "emailTo", user.getEmail(),
-                "userName", user.getName(),
-                "userPhone", user.getPhone()
-        ));
     }
 }

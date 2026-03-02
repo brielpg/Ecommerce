@@ -4,6 +4,7 @@ import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Auth.AuthDtoLogin;
 import br.com.api.ecommerce.models.dtos.Auth.AuthReturnToken;
 import br.com.api.ecommerce.repositories.UserRepository;
+import br.com.api.ecommerce.services.interfaces.TokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -33,7 +34,7 @@ public class AuthorizationService implements UserDetailsService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private TokenService tokenService;
+    private TokenProvider tokenProvider;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -59,7 +60,7 @@ public class AuthorizationService implements UserDetailsService {
 
             Authentication auth = this.authenticationManager.authenticate(usernamePassword);
 
-            String token = tokenService.generateToken((User) auth.getPrincipal());
+            String token = tokenProvider.generateToken((User) auth.getPrincipal());
 
             log.info("Login bem-sucedido para o usuário: {}", dto.login());
             return new AuthReturnToken(token);

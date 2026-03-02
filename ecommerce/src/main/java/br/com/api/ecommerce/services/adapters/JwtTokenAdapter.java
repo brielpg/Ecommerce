@@ -1,20 +1,20 @@
-package br.com.api.ecommerce.services;
-
+package br.com.api.ecommerce.services.adapters;
 
 import br.com.api.ecommerce.models.User;
+import br.com.api.ecommerce.services.interfaces.TokenProvider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-@Service
-public class TokenService {
+@Component
+public class JwtTokenAdapter implements TokenProvider {
 
     @Value("${api.security.token.secret}")
     private String secret;
@@ -28,8 +28,8 @@ public class TokenService {
     @Value("${api.security.token.timezone}")
     private String timezone;
 
-
-    public String generateToken(User user){
+    @Override
+    public String generateToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
@@ -44,7 +44,8 @@ public class TokenService {
         }
     }
 
-    public String validateToken(String token){
+    @Override
+    public String validateToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
