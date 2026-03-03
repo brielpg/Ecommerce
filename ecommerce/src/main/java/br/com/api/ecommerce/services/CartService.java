@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,22 +61,10 @@ public class CartService {
         Cart cart = this.getByUserId(userId);
 
         for (DtoItemRequest itemRequest : itemsDto) {
-            Item existingItem = cart.getItems().stream()
-                    .filter(item -> item.getProduct().getId().equals(itemRequest.productId()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (existingItem != null) {
-                int newQuantity = existingItem.getQuantity() + itemRequest.quantity();
-                existingItem.setQuantity(newQuantity);
-                existingItem.setSubTotal(existingItem.getProduct().getPrice().multiply(BigDecimal.valueOf(newQuantity)));
-            } else {
-                Item item = itemService.create(itemRequest, cart);
-                cart.getItems().add(item);
-            }
+            Item item = itemService.create(itemRequest, cart);
+            cart.addItem(item);
         }
 
-        this.recalculateCartTotal(cart);
         this.save(cart);
     }
 
@@ -87,31 +74,8 @@ public class CartService {
         if (itemsToRemove.isEmpty()) throw new BadRequestException("exception.cart.items.is.empty");
 
         Cart cart = this.getByUserId(userId);
+        itemsToRemove.forEach(dto -> cart.removeItem(dto.productId(), dto.quantity()));
 
-        for (DtoItemRequest itemRequest : itemsToRemove) {
-            Item itemToRemove = cart.getItems().stream()
-                    .filter(item -> item.getProduct().getId().equals(itemRequest.productId()))
-                    .findFirst()
-                    .orElseThrow(() -> new NotFoundException("exception.cart.product.not.in"));
-
-
-            Integer availableQuantity = itemToRemove.getQuantity();
-            Integer quantityToRemove = itemRequest.quantity();
-
-            if (quantityToRemove > availableQuantity) throw new BadRequestException("exception.cart.quantity.not.available");
-
-            if (quantityToRemove.equals(availableQuantity)) {
-                // If the quantity to be removed is equal to the available one, we remove the item
-                cart.getItems().remove(itemToRemove);
-            } else {
-                // Otherwise, we reduce the amount
-                int newQuantity = availableQuantity - quantityToRemove;
-                itemToRemove.setQuantity(newQuantity);
-                itemToRemove.setSubTotal(itemToRemove.getProduct().getPrice().multiply(BigDecimal.valueOf(newQuantity)));
-            }
-        }
-
-        this.recalculateCartTotal(cart);
         this.save(cart);
     }
 
@@ -121,18 +85,10 @@ public class CartService {
 
         for (Cart cart : carts) {
             cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
-            this.recalculateCartTotal(cart);
+            cart.recalculateTotal();
             repository.save(cart);
         }
 
         log.debug("Removido o produto [{}] de todos os carrinhos", productId);
-    }
-
-    public void recalculateCartTotal(Cart cart) {
-        BigDecimal newTotal = cart.getItems().stream()
-                .map(Item::getSubTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        cart.setTotalPrice(newTotal);
     }
 }

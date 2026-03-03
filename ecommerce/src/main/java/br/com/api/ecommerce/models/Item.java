@@ -1,5 +1,6 @@
 package br.com.api.ecommerce.models;
 
+import br.com.api.ecommerce.exceptions.BadRequestException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,5 +40,24 @@ public class Item {
     @PrePersist
     public void prePersist(){
         this.timestamp = LocalDate.now();
+    }
+
+    public void updateSubTotal() {
+        if (this.product != null && this.quantity != null) {
+            this.subTotal = this.product.getPrice().multiply(BigDecimal.valueOf(this.quantity));
+        }
+    }
+
+    public void incrementQuantity(Integer quantity) {
+        this.quantity += quantity;
+        updateSubTotal();
+    }
+
+    public void decrementQuantity(Integer quantity) {
+        if (quantity > this.quantity) {
+            throw new BadRequestException("exception.cart.quantity.not.available");
+        }
+        this.quantity -= quantity;
+        updateSubTotal();
     }
 }

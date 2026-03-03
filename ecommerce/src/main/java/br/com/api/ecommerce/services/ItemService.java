@@ -8,7 +8,6 @@ import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.repositories.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,19 +23,15 @@ public class ItemService {
     @Autowired
     private ProductService productService;
 
-    @Autowired
-    @Lazy
-    private CartService cartService;
-
     @Transactional
     public Item create(DtoItemRequest itemRequest, Cart cart) {
-        Item item = new Item();
         Product product = productService.getById(itemRequest.productId());
 
+        Item item = new Item();
         item.setProduct(product);
-        item.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity())));
         item.setQuantity(itemRequest.quantity());
         item.setCart(cart);
+        item.updateSubTotal();
 
         return item;
     }
@@ -44,15 +39,15 @@ public class ItemService {
     @Transactional
     public List<Item> createListOfItems(List<DtoItemRequest> itemsRequest, Order order){
         return itemsRequest.stream().map(dto -> {
-            Item item = new Item();
             Product product = productService.getById(dto.productId());
 
             this.validateStock(product.getStock(), dto.quantity());
 
+            Item item = new Item();
             item.setProduct(product);
-            item.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(dto.quantity())));
             item.setQuantity(dto.quantity());
             item.setOrder(order);
+            item.updateSubTotal();
 
             return item;
         }).toList();
@@ -68,8 +63,8 @@ public class ItemService {
         List<Item> items = repository.findAllByProductId(product.getId());
 
         for (Item item : items) {
-            item.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
-            cartService.recalculateCartTotal(item.getCart());
+            item.updateSubTotal();
+            item.getCart().recalculateTotal();
         }
 
         repository.saveAll(items);
