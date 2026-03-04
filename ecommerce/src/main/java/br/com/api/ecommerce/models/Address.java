@@ -3,8 +3,9 @@ package br.com.api.ecommerce.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -12,7 +13,8 @@ import java.util.UUID;
 @Table(name = "tb_addresses")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -24,6 +26,7 @@ public class Address {
     private String city;
     private String state;
     private String zipCode;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore

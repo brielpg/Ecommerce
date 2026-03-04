@@ -1,24 +1,23 @@
 package br.com.api.ecommerce.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tb_reviews")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(of = "id")
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -27,10 +26,10 @@ public class Review {
     private Product product;
     private Double rating;
     private String review;
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
 
     @PrePersist
     public void prePersist(){
-        this.timestamp = LocalDate.now();
+        this.timestamp = LocalDateTime.now();
     }
 }

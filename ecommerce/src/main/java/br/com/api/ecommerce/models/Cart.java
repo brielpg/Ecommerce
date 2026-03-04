@@ -3,13 +3,10 @@ package br.com.api.ecommerce.models;
 import br.com.api.ecommerce.exceptions.NotFoundException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,25 +15,28 @@ import java.util.UUID;
 @Table(name = "tb_carts")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(of = "id")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
+
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Item> items = new ArrayList<>();
     private BigDecimal totalPrice;
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
 
     @PrePersist
     public void prePersist(){
         this.totalPrice = BigDecimal.ZERO;
-        this.timestamp = LocalDate.now();
+        this.timestamp = LocalDateTime.now();
     }
 
     public void addItem(Item newItem) {

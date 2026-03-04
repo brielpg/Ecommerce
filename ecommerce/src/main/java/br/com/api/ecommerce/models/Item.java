@@ -3,43 +3,45 @@ package br.com.api.ecommerce.models;
 import br.com.api.ecommerce.exceptions.BadRequestException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tb_items")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(of = "id")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
     private Integer quantity;
     private BigDecimal subTotal;
+
     @ManyToOne
     @JoinColumn(name = "cart_id")
     @JsonIgnore
     private Cart cart;
+
     @ManyToOne
     @JoinColumn(name = "order_id")
     @JsonIgnore
     private Order order;
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
 
     @PrePersist
     public void prePersist(){
-        this.timestamp = LocalDate.now();
+        this.timestamp = LocalDateTime.now();
     }
 
     public void updateSubTotal() {

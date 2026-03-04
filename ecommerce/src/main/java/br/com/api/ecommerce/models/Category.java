@@ -2,12 +2,9 @@ package br.com.api.ecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,24 +12,27 @@ import java.util.UUID;
 @Table(name = "tb_categories")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(of = "id")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     @Column(unique = true)
     private String name;
     private String description;
+
     @ManyToMany(mappedBy = "categories")
     @JsonIgnore
     private List<Product> products;
     private Boolean active;
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
 
     @PrePersist
     public void prePersist(){
-        this.timestamp = LocalDate.now();
+        this.timestamp = LocalDateTime.now();
         this.active = true;
     }
 }
