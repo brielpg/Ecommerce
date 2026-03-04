@@ -1,35 +1,28 @@
 package br.com.api.ecommerce.models;
 
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tb_reviews")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id")
-public class Review {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+@AllArgsConstructor @NoArgsConstructor
+@Getter @Setter
+public class Review extends BaseEntity{
+
+    private Double rating;
+    private String review;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-    private Double rating;
-    private String review;
-    private LocalDateTime timestamp;
-
-    @PrePersist
-    public void prePersist(){
-        this.timestamp = LocalDateTime.now();
-    }
 }

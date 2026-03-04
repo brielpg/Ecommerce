@@ -3,34 +3,31 @@ package br.com.api.ecommerce.models;
 import br.com.api.ecommerce.models.enums.UserRoles;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "tb_users")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id")
-public class User implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+@AllArgsConstructor @NoArgsConstructor
+@Getter @Setter
+public class User extends BaseEntity implements UserDetails {
+
     private String name;
+    private String phone;
+    private LocalDate birthDate;
+    private Boolean active = true;
 
     @Column(unique = true)
     private String email;
-    private String phone;
-    private LocalDate birthDate;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;
@@ -49,21 +46,11 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<Product> favorites;
 
-    private Boolean active;
-    private LocalDateTime timestamp;
-
     @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserRoles role;
-
-    @PrePersist
-    public void prePersist(){
-        this.timestamp = LocalDateTime.now();
-        this.active = true;
-        this.role = UserRoles.CUSTOMER;
-    }
+    private UserRoles role = UserRoles.CUSTOMER;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -12,7 +12,6 @@ import br.com.api.ecommerce.models.enums.OrderStatus;
 import br.com.api.ecommerce.repositories.ReviewRepository;
 import br.com.api.ecommerce.services.mappers.ReviewMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;

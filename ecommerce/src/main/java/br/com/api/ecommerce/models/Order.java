@@ -3,27 +3,24 @@ package br.com.api.ecommerce.models;
 import br.com.api.ecommerce.models.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "tb_orders")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id")
-public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+@AllArgsConstructor @NoArgsConstructor
+@Getter @Setter
+public class Order extends BaseEntity{
+
+    private BigDecimal totalPrice;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus status = OrderStatus.NEW;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -42,12 +39,4 @@ public class Order {
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonIgnore
     private Payment payment;
-    private BigDecimal totalPrice;
-    private LocalDateTime timestamp;
-
-    @PrePersist
-    public void prePersist(){
-        this.status = OrderStatus.NEW;
-        this.timestamp = LocalDateTime.now();
-    }
 }

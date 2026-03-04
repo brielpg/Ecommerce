@@ -1,24 +1,21 @@
 package br.com.api.ecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "tb_addresses")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class Address {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+@AllArgsConstructor @NoArgsConstructor
+@Getter @Setter
+public class Address extends BaseEntity {
+
     private String streetName;
     private String number;
     private String complement;
