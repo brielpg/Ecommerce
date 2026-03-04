@@ -37,8 +37,8 @@ public class Cart extends BaseEntity{
                         itemExistente -> itemExistente.incrementQuantity(newItem.getQuantity()),
                         () -> {
                             newItem.setCart(this);
-                            newItem.updateSubTotal();
                             this.items.add(newItem);
+                            newItem.updateSubTotal();
                         }
                 );
         recalculateTotal();

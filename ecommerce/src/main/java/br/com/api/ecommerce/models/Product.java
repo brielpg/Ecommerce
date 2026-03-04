@@ -7,7 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_products")
@@ -31,8 +34,8 @@ public class Product extends BaseEntity{
     @ManyToMany
     @JoinTable(name = "tb_product_category",
             joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private List<Category> categories;
+    private Set<Category> categories = new HashSet<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews;
+    private List<Review> reviews = new ArrayList<>();
 }

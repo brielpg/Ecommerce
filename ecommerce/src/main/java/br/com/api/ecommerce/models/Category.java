@@ -10,7 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_categories")
@@ -26,5 +27,5 @@ public class Category extends BaseEntity{
 
     @ManyToMany(mappedBy = "categories")
     @JsonIgnore
-    private List<Product> products;
+    private Set<Product> products = new HashSet<>();
 }

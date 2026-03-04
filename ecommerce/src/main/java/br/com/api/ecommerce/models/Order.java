@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,7 @@ public class Order extends BaseEntity{
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Item> items;
+    private List<Item> items = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")

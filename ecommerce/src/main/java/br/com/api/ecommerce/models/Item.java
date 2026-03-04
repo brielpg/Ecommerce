@@ -37,9 +37,8 @@ public class Item extends BaseEntity{
     private Order order;
 
     public void updateSubTotal() {
-        if (this.product != null && this.quantity != null) {
-            this.subTotal = this.product.getPrice().multiply(BigDecimal.valueOf(this.quantity));
-        }
+        BigDecimal unitPrice = (product != null) ? product.getPrice() : BigDecimal.ZERO;
+        this.subTotal = unitPrice.multiply(BigDecimal.valueOf(quantity != null ? quantity : 0));
     }
 
     public void incrementQuantity(Integer quantity) {
