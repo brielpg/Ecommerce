@@ -5,8 +5,8 @@ import br.com.api.ecommerce.models.*;
 import br.com.api.ecommerce.models.dtos.Order.OrderDtoCreate;
 import br.com.api.ecommerce.models.enums.OrderStatus;
 import br.com.api.ecommerce.repositories.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,19 +19,13 @@ import java.util.UUID;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class OrderService {
 
-    @Autowired
-    private OrderRepository repository;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private AddressService addressService;
-
-    @Autowired
-    private ItemService itemService;
+    private final OrderRepository repository;
+    private final UserService userService;
+    private final AddressService addressService;
+    private final ItemService itemService;
 
     @Transactional(readOnly = true)
     @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")

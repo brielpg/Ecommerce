@@ -8,7 +8,7 @@ import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.models.dtos.Category.CategoryDtoUpdate;
 import br.com.api.ecommerce.repositories.CategoryRepository;
 import br.com.api.ecommerce.services.mappers.CategoryMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,17 +20,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
 
-    @Autowired
-    private CategoryRepository repository;
-
-    @Autowired
-    private CategoryMapper mapper;
-
-    @Autowired
-    private AuthorizationService authorizationService;
-
+    private final CategoryRepository repository;
+    private final CategoryMapper mapper;
+    private final AuthorizationService authorizationService;
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
@@ -53,7 +48,7 @@ public class CategoryService {
             categories = repository.findAllByActiveTrue(pageable);
         }
 
-        return categories.map(category -> mapper.toDto(category));
+        return categories.map(mapper::toDto);
     }
 
     @Transactional(readOnly = true)

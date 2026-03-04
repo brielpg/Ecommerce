@@ -2,17 +2,17 @@ package br.com.api.ecommerce.services.mappers;
 
 import br.com.api.ecommerce.models.Item;
 import br.com.api.ecommerce.models.dtos.Item.ItemDtoList;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ItemMapper {
 
-    @Autowired
-    private ProductMapper productMapper;
+    private final ProductMapper productMapper;
 
     public ItemDtoList toDto(Item entity) {
         if (entity == null) return null;

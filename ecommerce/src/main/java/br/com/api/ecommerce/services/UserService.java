@@ -16,8 +16,8 @@ import br.com.api.ecommerce.services.interfaces.MessagePublisher;
 import br.com.api.ecommerce.services.mappers.AddressMapper;
 import br.com.api.ecommerce.services.mappers.ProductMapper;
 import br.com.api.ecommerce.services.mappers.UserMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,43 +26,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository repository;
-
-    @Autowired
-    private UserMapper mapper;
-
-    @Autowired
-    private AddressMapper addressMapper;
-
-    @Autowired
-    private AddressService addressService;
-
-    @Autowired
-    private CartService cartService;
-
-    @Autowired
-    private ProductService productService;
-
-    @Autowired
-    private ProductMapper productMapper;
-
-    @Autowired
-    private AuthorizationService authorizationService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private MessagePublisher messagePublisher;
+    private final UserRepository repository;
+    private final UserMapper mapper;
+    private final AddressMapper addressMapper;
+    private final AddressService addressService;
+    private final CartService cartService;
+    private final ProductMapper productMapper;
+    private final AuthorizationService authorizationService;
+    private final PasswordEncoder passwordEncoder;
+    private final MessagePublisher messagePublisher;
 
     @Transactional
     public UserDtoList create(UserDtoCreate dto){
@@ -85,7 +65,7 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN')")
     public Page<UserDtoList> getAll(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(user -> mapper.toDto(user));
+                .map(mapper::toDto);
     }
 
     @Transactional(readOnly = true)
@@ -159,7 +139,7 @@ public class UserService {
     public List<ProductDtoList> getFavorites(UUID id) {
         List<Product> favorites = repository.getFavorites(id);
 
-        return favorites.stream().map(p -> productMapper.toDto(p)).toList();
+        return favorites.stream().map(productMapper::toDto).toList();
     }
 
     @Transactional

@@ -6,7 +6,7 @@ import br.com.api.ecommerce.models.User;
 import br.com.api.ecommerce.models.dtos.Address.AddressDtoCreate;
 import br.com.api.ecommerce.repositories.AddressRepository;
 import br.com.api.ecommerce.services.mappers.AddressMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +14,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AddressService {
 
-    @Autowired
-    private AddressRepository repository;
-
-    @Autowired
-    private AddressMapper mapper;
+    private final AddressRepository repository;
+    private final AddressMapper mapper;
 
     public List<Address> create(List<AddressDtoCreate> dtos, User user) {
         return mapper.toEntityList(dtos, user);

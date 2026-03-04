@@ -7,21 +7,18 @@ import br.com.api.ecommerce.models.Order;
 import br.com.api.ecommerce.models.Product;
 import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.repositories.ItemRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ItemService {
 
-    @Autowired
-    private ItemRepository repository;
-
-    @Autowired
-    private ProductService productService;
+    private final ItemRepository repository;
+    private final ProductService productService;
 
     @Transactional
     public Item create(DtoItemRequest itemRequest, Cart cart) {

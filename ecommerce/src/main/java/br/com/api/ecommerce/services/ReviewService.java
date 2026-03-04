@@ -11,6 +11,7 @@ import br.com.api.ecommerce.models.dtos.Review.ReviewDtoUpdate;
 import br.com.api.ecommerce.models.enums.OrderStatus;
 import br.com.api.ecommerce.repositories.ReviewRepository;
 import br.com.api.ecommerce.services.mappers.ReviewMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,22 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewService {
 
-    @Autowired
-    private ReviewRepository repository;
-
-    @Autowired
-    private ReviewMapper mapper;
-
-    @Autowired
-    private ProductService productService;
-
-    @Autowired
-    private OrderService orderService;
-
-    @Autowired
-    private UserService userService;
+    private final ReviewRepository repository;
+    private final ReviewMapper mapper;
+    private final ProductService productService;
+    private final OrderService orderService;
+    private final UserService userService;
 
     @Transactional
     @PreAuthorize("#dto.userId() == authentication.principal.id or hasRole('ADMIN')")
@@ -61,7 +54,7 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public Page<ReviewDtoList> getAllByProduct(UUID productId, Pageable pageable) {
         return repository.findAllByProductId(pageable, productId)
-                .map(review -> mapper.toDto(review));
+                .map(mapper::toDto);
     }
 
     @Transactional(readOnly = true)
