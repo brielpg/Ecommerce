@@ -40,4 +40,10 @@ public class Order extends BaseEntity{
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonIgnore
     private Payment payment;
+
+    public void calculateTotalPrice() {
+        this.totalPrice = this.items.stream()
+                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

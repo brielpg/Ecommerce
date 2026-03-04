@@ -49,17 +49,13 @@ public class OrderService {
         Address deliveryAddress = addressService.getById(dto.addressId());
 
         Order order = new Order();
-        List<Item> items = itemService.createListOfItems(dto.items(), order);
-
         order.setUser(user);
         order.setDeliveryAddress(deliveryAddress);
 
-        BigDecimal total = items.stream()
-                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+        List<Item> items = itemService.createListOfItems(dto.items(), order);
         order.setItems(items);
-        order.setTotalPrice(total);
+
+        order.calculateTotalPrice();
 
         items.forEach(item -> {
             Product product = item.getProduct();
