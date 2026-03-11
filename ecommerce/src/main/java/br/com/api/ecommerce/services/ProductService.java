@@ -1,15 +1,15 @@
 package br.com.api.ecommerce.services;
 
-import br.com.api.ecommerce.exceptions.ConflictException;
-import br.com.api.ecommerce.exceptions.NotFoundException;
-import br.com.api.ecommerce.models.Category;
-import br.com.api.ecommerce.models.Product;
-import br.com.api.ecommerce.models.dtos.Product.ProductDtoAddCategory;
-import br.com.api.ecommerce.models.dtos.Product.ProductDtoCreate;
-import br.com.api.ecommerce.models.dtos.Product.ProductDtoList;
-import br.com.api.ecommerce.models.dtos.Product.ProductDtoUpdate;
-import br.com.api.ecommerce.repositories.ProductRepository;
-import br.com.api.ecommerce.services.mappers.ProductMapper;
+import br.com.api.ecommerce.core.exceptions.ConflictException;
+import br.com.api.ecommerce.core.exceptions.NotFoundException;
+import br.com.api.ecommerce.core.models.Category;
+import br.com.api.ecommerce.core.models.Product;
+import br.com.api.ecommerce.core.dtos.Product.ProductDtoAddCategory;
+import br.com.api.ecommerce.core.dtos.Product.ProductDtoCreate;
+import br.com.api.ecommerce.core.dtos.Product.ProductDtoList;
+import br.com.api.ecommerce.core.dtos.Product.ProductDtoUpdate;
+import br.com.api.ecommerce.infrastructure.repositories.ProductRepository;
+import br.com.api.ecommerce.core.mappers.ProductMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;

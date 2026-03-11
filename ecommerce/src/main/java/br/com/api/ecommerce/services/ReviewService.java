@@ -1,16 +1,16 @@
 package br.com.api.ecommerce.services;
 
-import br.com.api.ecommerce.exceptions.AccessDeniedException;
-import br.com.api.ecommerce.exceptions.ConflictException;
-import br.com.api.ecommerce.exceptions.NotFoundException;
-import br.com.api.ecommerce.models.Product;
-import br.com.api.ecommerce.models.Review;
-import br.com.api.ecommerce.models.dtos.Review.ReviewDtoCreate;
-import br.com.api.ecommerce.models.dtos.Review.ReviewDtoList;
-import br.com.api.ecommerce.models.dtos.Review.ReviewDtoUpdate;
-import br.com.api.ecommerce.models.enums.OrderStatus;
-import br.com.api.ecommerce.repositories.ReviewRepository;
-import br.com.api.ecommerce.services.mappers.ReviewMapper;
+import br.com.api.ecommerce.core.exceptions.AccessDeniedException;
+import br.com.api.ecommerce.core.exceptions.ConflictException;
+import br.com.api.ecommerce.core.exceptions.NotFoundException;
+import br.com.api.ecommerce.core.models.Product;
+import br.com.api.ecommerce.core.models.Review;
+import br.com.api.ecommerce.core.dtos.Review.ReviewDtoCreate;
+import br.com.api.ecommerce.core.dtos.Review.ReviewDtoList;
+import br.com.api.ecommerce.core.dtos.Review.ReviewDtoUpdate;
+import br.com.api.ecommerce.core.models.enums.OrderStatus;
+import br.com.api.ecommerce.infrastructure.repositories.ReviewRepository;
+import br.com.api.ecommerce.core.mappers.ReviewMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,12 +1,12 @@
 package br.com.api.ecommerce.services;
 
-import br.com.api.ecommerce.exceptions.BadRequestException;
-import br.com.api.ecommerce.exceptions.NotFoundException;
-import br.com.api.ecommerce.models.Cart;
-import br.com.api.ecommerce.models.Item;
-import br.com.api.ecommerce.models.User;
-import br.com.api.ecommerce.models.dtos.Item.DtoItemRequest;
-import br.com.api.ecommerce.repositories.CartRepository;
+import br.com.api.ecommerce.core.exceptions.BadRequestException;
+import br.com.api.ecommerce.core.exceptions.NotFoundException;
+import br.com.api.ecommerce.core.models.Cart;
+import br.com.api.ecommerce.core.models.Item;
+import br.com.api.ecommerce.core.models.User;
+import br.com.api.ecommerce.core.dtos.Item.DtoItemRequest;
+import br.com.api.ecommerce.infrastructure.repositories.CartRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

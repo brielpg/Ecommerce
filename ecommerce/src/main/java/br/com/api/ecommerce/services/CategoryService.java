@@ -1,13 +1,13 @@
 package br.com.api.ecommerce.services;
 
-import br.com.api.ecommerce.exceptions.ConflictException;
-import br.com.api.ecommerce.exceptions.NotFoundException;
-import br.com.api.ecommerce.models.Category;
-import br.com.api.ecommerce.models.dtos.Category.CategoryDtoCreate;
-import br.com.api.ecommerce.models.dtos.Category.CategoryDtoList;
-import br.com.api.ecommerce.models.dtos.Category.CategoryDtoUpdate;
-import br.com.api.ecommerce.repositories.CategoryRepository;
-import br.com.api.ecommerce.services.mappers.CategoryMapper;
+import br.com.api.ecommerce.core.exceptions.ConflictException;
+import br.com.api.ecommerce.core.exceptions.NotFoundException;
+import br.com.api.ecommerce.core.models.Category;
+import br.com.api.ecommerce.core.dtos.Category.CategoryDtoCreate;
+import br.com.api.ecommerce.core.dtos.Category.CategoryDtoList;
+import br.com.api.ecommerce.core.dtos.Category.CategoryDtoUpdate;
+import br.com.api.ecommerce.infrastructure.repositories.CategoryRepository;
+import br.com.api.ecommerce.core.mappers.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
