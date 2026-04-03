@@ -1,10 +1,10 @@
 package br.com.api.ecommerce.services;
 
-import br.com.api.ecommerce.core.models.User;
-import br.com.api.ecommerce.core.dtos.Auth.AuthDtoLogin;
-import br.com.api.ecommerce.core.dtos.Auth.AuthReturnToken;
+import br.com.api.ecommerce.domain.models.User;
+import br.com.api.ecommerce.application.dtos.Auth.AuthDtoLogin;
+import br.com.api.ecommerce.application.dtos.Auth.AuthReturnToken;
 import br.com.api.ecommerce.infrastructure.repositories.UserRepository;
-import br.com.api.ecommerce.core.ports.TokenProvider;
+import br.com.api.ecommerce.application.interfaces.TokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

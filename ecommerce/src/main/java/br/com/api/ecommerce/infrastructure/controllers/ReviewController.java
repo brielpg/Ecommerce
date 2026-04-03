@@ -1,9 +1,9 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.infrastructure.security.SecurityConfiguration;
-import br.com.api.ecommerce.core.dtos.Review.ReviewDtoCreate;
-import br.com.api.ecommerce.core.dtos.Review.ReviewDtoList;
-import br.com.api.ecommerce.core.dtos.Review.ReviewDtoUpdate;
+import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
+import br.com.api.ecommerce.application.dtos.Review.ReviewDtoCreate;
+import br.com.api.ecommerce.application.dtos.Review.ReviewDtoList;
+import br.com.api.ecommerce.application.dtos.Review.ReviewDtoUpdate;
 import br.com.api.ecommerce.services.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

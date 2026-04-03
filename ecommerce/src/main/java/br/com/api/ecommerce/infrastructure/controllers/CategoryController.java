@@ -1,12 +1,12 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.infrastructure.security.SecurityConfiguration;
-import br.com.api.ecommerce.core.models.Category;
-import br.com.api.ecommerce.core.dtos.Category.CategoryDtoCreate;
-import br.com.api.ecommerce.core.dtos.Category.CategoryDtoList;
-import br.com.api.ecommerce.core.dtos.Category.CategoryDtoUpdate;
+import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
+import br.com.api.ecommerce.domain.models.Category;
+import br.com.api.ecommerce.application.dtos.Category.CategoryDtoCreate;
+import br.com.api.ecommerce.application.dtos.Category.CategoryDtoList;
+import br.com.api.ecommerce.application.dtos.Category.CategoryDtoUpdate;
 import br.com.api.ecommerce.services.CategoryService;
-import br.com.api.ecommerce.core.mappers.CategoryMapper;
+import br.com.api.ecommerce.application.mappers.CategoryMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

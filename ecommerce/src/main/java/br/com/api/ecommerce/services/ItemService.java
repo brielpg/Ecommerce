@@ -1,11 +1,11 @@
 package br.com.api.ecommerce.services;
 
-import br.com.api.ecommerce.core.exceptions.BadRequestException;
-import br.com.api.ecommerce.core.models.Cart;
-import br.com.api.ecommerce.core.models.Item;
-import br.com.api.ecommerce.core.models.Order;
-import br.com.api.ecommerce.core.models.Product;
-import br.com.api.ecommerce.core.dtos.Item.DtoItemRequest;
+import br.com.api.ecommerce.domain.exceptions.BadRequestException;
+import br.com.api.ecommerce.domain.models.Cart;
+import br.com.api.ecommerce.domain.models.Item;
+import br.com.api.ecommerce.domain.models.Order;
+import br.com.api.ecommerce.domain.models.Product;
+import br.com.api.ecommerce.application.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.infrastructure.repositories.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

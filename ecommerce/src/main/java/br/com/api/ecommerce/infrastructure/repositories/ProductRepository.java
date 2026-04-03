@@ -1,6 +1,6 @@
 package br.com.api.ecommerce.infrastructure.repositories;
 
-import br.com.api.ecommerce.core.models.Product;
+import br.com.api.ecommerce.domain.models.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,11 +1,11 @@
 package br.com.api.ecommerce.services;
 
-import br.com.api.ecommerce.core.exceptions.NotFoundException;
-import br.com.api.ecommerce.core.models.Address;
-import br.com.api.ecommerce.core.models.User;
-import br.com.api.ecommerce.core.dtos.Address.AddressDtoCreate;
+import br.com.api.ecommerce.domain.exceptions.NotFoundException;
+import br.com.api.ecommerce.domain.models.Address;
+import br.com.api.ecommerce.domain.models.User;
+import br.com.api.ecommerce.application.dtos.Address.AddressDtoCreate;
 import br.com.api.ecommerce.infrastructure.repositories.AddressRepository;
-import br.com.api.ecommerce.core.mappers.AddressMapper;
+import br.com.api.ecommerce.application.mappers.AddressMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

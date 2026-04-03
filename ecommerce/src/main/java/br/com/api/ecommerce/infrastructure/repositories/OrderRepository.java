@@ -1,7 +1,7 @@
 package br.com.api.ecommerce.infrastructure.repositories;
 
-import br.com.api.ecommerce.core.models.Order;
-import br.com.api.ecommerce.core.models.enums.OrderStatus;
+import br.com.api.ecommerce.domain.models.Order;
+import br.com.api.ecommerce.domain.enums.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

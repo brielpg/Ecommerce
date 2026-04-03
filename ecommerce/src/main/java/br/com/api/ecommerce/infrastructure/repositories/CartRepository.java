@@ -1,6 +1,6 @@
 package br.com.api.ecommerce.infrastructure.repositories;
 
-import br.com.api.ecommerce.core.models.Cart;
+import br.com.api.ecommerce.domain.models.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -1,0 +1,13 @@
+package br.com.api.ecommerce.application.dtos.Category;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record CategoryDtoList(
+        UUID id,
+        String name,
+        String description,
+        Boolean active,
+        LocalDateTime createdAt
+) {
+}

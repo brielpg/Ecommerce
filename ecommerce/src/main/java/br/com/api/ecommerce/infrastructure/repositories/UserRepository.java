@@ -1,7 +1,7 @@
 package br.com.api.ecommerce.infrastructure.repositories;
 
-import br.com.api.ecommerce.core.models.Product;
-import br.com.api.ecommerce.core.models.User;
+import br.com.api.ecommerce.domain.models.Product;
+import br.com.api.ecommerce.domain.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -1,10 +1,10 @@
 package br.com.api.ecommerce.infrastructure.handlers;
 
-import br.com.api.ecommerce.core.exceptions.AccessDeniedException;
-import br.com.api.ecommerce.core.exceptions.BadRequestException;
-import br.com.api.ecommerce.core.exceptions.ConflictException;
-import br.com.api.ecommerce.core.exceptions.NotFoundException;
-import br.com.api.ecommerce.core.dtos.ErrorDto;
+import br.com.api.ecommerce.domain.exceptions.AccessDeniedException;
+import br.com.api.ecommerce.domain.exceptions.BadRequestException;
+import br.com.api.ecommerce.domain.exceptions.ConflictException;
+import br.com.api.ecommerce.domain.exceptions.NotFoundException;
+import br.com.api.ecommerce.application.dtos.ErrorDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.FieldError;

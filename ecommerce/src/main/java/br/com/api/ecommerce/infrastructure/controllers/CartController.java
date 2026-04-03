@@ -1,11 +1,11 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.infrastructure.security.SecurityConfiguration;
-import br.com.api.ecommerce.core.models.Cart;
-import br.com.api.ecommerce.core.dtos.Cart.CartDtoList;
-import br.com.api.ecommerce.core.dtos.Item.DtoItemRequest;
+import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
+import br.com.api.ecommerce.domain.models.Cart;
+import br.com.api.ecommerce.application.dtos.Cart.CartDtoList;
+import br.com.api.ecommerce.application.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.services.CartService;
-import br.com.api.ecommerce.core.mappers.CartMapper;
+import br.com.api.ecommerce.application.mappers.CartMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

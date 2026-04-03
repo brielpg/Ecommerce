@@ -1,9 +1,9 @@
 package br.com.api.ecommerce.services;
 
-import br.com.api.ecommerce.core.models.*;
-import br.com.api.ecommerce.core.exceptions.NotFoundException;
-import br.com.api.ecommerce.core.dtos.Order.OrderDtoCreate;
-import br.com.api.ecommerce.core.models.enums.OrderStatus;
+import br.com.api.ecommerce.domain.exceptions.NotFoundException;
+import br.com.api.ecommerce.application.dtos.Order.OrderDtoCreate;
+import br.com.api.ecommerce.domain.models.*;
+import br.com.api.ecommerce.domain.enums.OrderStatus;
 import br.com.api.ecommerce.infrastructure.repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,9 +1,9 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.infrastructure.security.SecurityConfiguration;
-import br.com.api.ecommerce.core.dtos.Auth.AuthDtoLogin;
-import br.com.api.ecommerce.core.dtos.Auth.AuthReturnToken;
-import br.com.api.ecommerce.core.dtos.User.UserDtoCreate;
+import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
+import br.com.api.ecommerce.application.dtos.Auth.AuthDtoLogin;
+import br.com.api.ecommerce.application.dtos.Auth.AuthReturnToken;
+import br.com.api.ecommerce.application.dtos.User.UserDtoCreate;
 import br.com.api.ecommerce.services.AuthorizationService;
 import br.com.api.ecommerce.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;

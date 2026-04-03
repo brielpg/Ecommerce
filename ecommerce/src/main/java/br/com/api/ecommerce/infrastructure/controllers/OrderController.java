@@ -1,7 +1,7 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.core.models.Order;
-import br.com.api.ecommerce.core.dtos.Order.OrderDtoCreate;
+import br.com.api.ecommerce.domain.models.Order;
+import br.com.api.ecommerce.application.dtos.Order.OrderDtoCreate;
 import br.com.api.ecommerce.services.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
