@@ -1,4 +1,4 @@
-package br.com.api.ecommerce.presentation.controllers;
+package br.com.api.ecommerce.infrastructure.controllers;
 
 import br.com.api.ecommerce.infrastructure.security.SecurityConfiguration;
 import br.com.api.ecommerce.core.dtos.Review.ReviewDtoCreate;

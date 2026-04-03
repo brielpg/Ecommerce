@@ -1,4 +1,4 @@
-package br.com.api.ecommerce.presentation.handlers;
+package br.com.api.ecommerce.infrastructure.handlers;
 
 import br.com.api.ecommerce.core.exceptions.AccessDeniedException;
 import br.com.api.ecommerce.core.exceptions.BadRequestException;
