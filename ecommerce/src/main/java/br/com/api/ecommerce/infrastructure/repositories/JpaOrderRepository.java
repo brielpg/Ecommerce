@@ -1,7 +1,8 @@
 package br.com.api.ecommerce.infrastructure.repositories;
 
-import br.com.api.ecommerce.domain.models.Order;
+import br.com.api.ecommerce.application.repositories.OrderRepository;
 import br.com.api.ecommerce.domain.enums.OrderStatus;
+import br.com.api.ecommerce.domain.models.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, UUID> {
+public interface JpaOrderRepository extends OrderRepository, JpaRepository<Order, UUID> {
     @Query("SELECT o FROM Order o JOIN FETCH o.user u WHERE u.id = :userId AND u.active = true")
     Page<Order> findOrdersByUserId(@Param("userId") UUID userId, Pageable pageable);
 

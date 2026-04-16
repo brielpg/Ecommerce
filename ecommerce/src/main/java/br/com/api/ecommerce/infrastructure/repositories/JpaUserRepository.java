@@ -1,5 +1,6 @@
 package br.com.api.ecommerce.infrastructure.repositories;
 
+import br.com.api.ecommerce.application.repositories.UserRepository;
 import br.com.api.ecommerce.domain.models.Product;
 import br.com.api.ecommerce.domain.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,12 +15,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface JpaUserRepository extends UserRepository, JpaRepository<User, UUID> {
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.addresses a WHERE u.id = :id AND u.active = true")
     Optional<User> findByIdAndActiveTrue(UUID id);
-
-    @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.email = ?1")
-    boolean existsByEmail(String email);
 
     UserDetails findByEmail(String email);
 

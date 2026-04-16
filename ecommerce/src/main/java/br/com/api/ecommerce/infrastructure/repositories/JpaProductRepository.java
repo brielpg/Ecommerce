@@ -1,5 +1,6 @@
 package br.com.api.ecommerce.infrastructure.repositories;
 
+import br.com.api.ecommerce.application.repositories.ProductRepository;
 import br.com.api.ecommerce.domain.models.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,9 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, UUID> {
-    Page<Product> findAllByActiveTrue(Pageable pageable);
-
+public interface JpaProductRepository extends ProductRepository, JpaRepository<Product, UUID> {
     @Query("SELECT COUNT(p) > 0 FROM Product p WHERE p.name = :name")
     boolean existsByName(String name);
 

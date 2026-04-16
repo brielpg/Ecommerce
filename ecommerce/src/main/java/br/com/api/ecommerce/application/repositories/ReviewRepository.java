@@ -1,15 +1,12 @@
-package br.com.api.ecommerce.infrastructure.repositories;
+package br.com.api.ecommerce.application.repositories;
 
 import br.com.api.ecommerce.domain.models.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
-@Repository
-public interface ReviewRepository extends JpaRepository<Review, UUID> {
+public interface ReviewRepository {
     Page<Review> findAllByProductId(Pageable pageable, UUID productId);
     boolean existsByUserIdAndProductId(UUID userId, UUID productId);
 }

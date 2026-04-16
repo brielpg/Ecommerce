@@ -1,5 +1,6 @@
 package br.com.api.ecommerce.infrastructure.repositories;
 
+import br.com.api.ecommerce.application.repositories.CartRepository;
 import br.com.api.ecommerce.domain.models.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,7 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface CartRepository extends JpaRepository<Cart, UUID> {
+public interface JpaCartRepository extends CartRepository, JpaRepository<Cart, UUID> {
     @Query("SELECT DISTINCT c FROM Cart c JOIN FETCH c.user u LEFT JOIN FETCH c.items i WHERE u.id = :userId AND u.active = true")
     Optional<Cart> findCartByUserId(@Param("userId") UUID userId);
 
