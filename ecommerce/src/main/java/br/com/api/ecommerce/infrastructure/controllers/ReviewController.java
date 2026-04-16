@@ -1,9 +1,9 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
 import br.com.api.ecommerce.application.dtos.Review.ReviewDtoCreate;
 import br.com.api.ecommerce.application.dtos.Review.ReviewDtoList;
 import br.com.api.ecommerce.application.dtos.Review.ReviewDtoUpdate;
+import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
 import br.com.api.ecommerce.services.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,10 +24,9 @@ import java.util.UUID;
 @RequestMapping("/api/reviews")
 @Tag(name = "Review", description = "Endpoints for managing reviews")
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
+@RequiredArgsConstructor
 public class ReviewController {
-
-    @Autowired
-    private ReviewService service;
+    private final ReviewService service;
 
     @PostMapping
     @Operation(summary = "Create a new review", description = "Creates a new review for a product. Requires the user to have purchased and received the product.")

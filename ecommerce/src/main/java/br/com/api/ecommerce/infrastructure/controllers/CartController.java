@@ -1,18 +1,18 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
-import br.com.api.ecommerce.domain.models.Cart;
 import br.com.api.ecommerce.application.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.application.dtos.Item.DtoItemRequest;
-import br.com.api.ecommerce.services.CartService;
 import br.com.api.ecommerce.application.mappers.CartMapper;
+import br.com.api.ecommerce.domain.models.Cart;
+import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
+import br.com.api.ecommerce.services.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +24,10 @@ import java.util.UUID;
 @RequestMapping("/api/carts")
 @Tag(name = "Cart", description = "Endpoints for managing user carts")
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
+@RequiredArgsConstructor
 public class CartController {
-
-    @Autowired
-    private CartService service;
-
-    @Autowired
-    private CartMapper mapper;
+    private final CartService service;
+    private final CartMapper mapper;
 
     @Operation(summary = "Get user cart", description = "Retrieves the cart for a specific user. The user can access their own cart or an ADMIN can access any user's cart.")
     @ApiResponses(value = {

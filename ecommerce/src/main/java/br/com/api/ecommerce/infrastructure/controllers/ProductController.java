@@ -1,20 +1,20 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
-import br.com.api.ecommerce.domain.models.Product;
 import br.com.api.ecommerce.application.dtos.Product.ProductDtoAddCategory;
 import br.com.api.ecommerce.application.dtos.Product.ProductDtoCreate;
 import br.com.api.ecommerce.application.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.application.dtos.Product.ProductDtoUpdate;
-import br.com.api.ecommerce.services.ProductService;
 import br.com.api.ecommerce.application.mappers.ProductMapper;
+import br.com.api.ecommerce.domain.models.Product;
+import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
+import br.com.api.ecommerce.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -30,13 +30,10 @@ import java.util.UUID;
 @RequestMapping("/api/products")
 @Tag(name = "Product", description = "Endpoints for managing products")
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
+@RequiredArgsConstructor
 public class ProductController {
-
-    @Autowired
-    private ProductService service;
-
-    @Autowired
-    private ProductMapper mapper;
+    private final ProductService service;
+    private final ProductMapper mapper;
 
     @Operation(summary = "Create a new product", description = "Creates a new product with optional image upload. Requires ADMIN role.")
     @ApiResponses(value = {

@@ -1,19 +1,19 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
-import br.com.api.ecommerce.domain.models.User;
 import br.com.api.ecommerce.application.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.application.dtos.User.UserDtoList;
 import br.com.api.ecommerce.application.dtos.User.UserDtoUpdate;
-import br.com.api.ecommerce.services.UserService;
 import br.com.api.ecommerce.application.mappers.UserMapper;
+import br.com.api.ecommerce.domain.models.User;
+import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
+import br.com.api.ecommerce.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,13 +27,10 @@ import java.util.UUID;
 @RequestMapping("/api/users")
 @Tag(name = "User", description = "Endpoints for managing users")
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
+@RequiredArgsConstructor
 public class UserController {
-
-    @Autowired
-    private UserService service;
-
-    @Autowired
-    private UserMapper mapper;
+    private final UserService service;
+    private final UserMapper mapper;
 
     @GetMapping
     @Operation(summary = "Get all users", description = "Retrieves all users with pagination support. Requires ADMIN role.")

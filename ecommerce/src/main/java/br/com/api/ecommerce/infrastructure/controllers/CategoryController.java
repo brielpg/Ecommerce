@@ -1,19 +1,19 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
-import br.com.api.ecommerce.domain.models.Category;
 import br.com.api.ecommerce.application.dtos.Category.CategoryDtoCreate;
 import br.com.api.ecommerce.application.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.application.dtos.Category.CategoryDtoUpdate;
-import br.com.api.ecommerce.services.CategoryService;
 import br.com.api.ecommerce.application.mappers.CategoryMapper;
+import br.com.api.ecommerce.domain.models.Category;
+import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
+import br.com.api.ecommerce.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,13 +26,10 @@ import java.util.UUID;
 @RequestMapping("/api/categories")
 @Tag(name = "Category", description = "Endpoints for managing categories")
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
+@RequiredArgsConstructor
 public class CategoryController {
-
-    @Autowired
-    private CategoryService service;
-
-    @Autowired
-    private CategoryMapper mapper;
+    private final CategoryService service;
+    private final CategoryMapper mapper;
 
     @Operation(summary = "Create category", description = "Creates a new category. Requires ADMIN role.")
     @ApiResponses(value = {

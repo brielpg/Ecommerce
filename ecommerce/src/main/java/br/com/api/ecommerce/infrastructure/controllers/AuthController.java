@@ -1,9 +1,9 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
 import br.com.api.ecommerce.application.dtos.Auth.AuthDtoLogin;
 import br.com.api.ecommerce.application.dtos.Auth.AuthReturnToken;
 import br.com.api.ecommerce.application.dtos.User.UserDtoCreate;
+import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
 import br.com.api.ecommerce.services.AuthorizationService;
 import br.com.api.ecommerce.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,13 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication", description = "Endpoints for user authentication and registration")
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
+@RequiredArgsConstructor
 public class AuthController {
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private AuthorizationService authorizationService;
+    private final UserService userService;
+    private final AuthorizationService authorizationService;
 
     @Operation(summary = "User login", description = "Authenticates a user and returns a JWT token")
     @ApiResponses(value = {

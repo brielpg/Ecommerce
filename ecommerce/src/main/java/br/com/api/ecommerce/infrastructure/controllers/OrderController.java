@@ -1,10 +1,10 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
-import br.com.api.ecommerce.domain.models.Order;
 import br.com.api.ecommerce.application.dtos.Order.OrderDtoCreate;
+import br.com.api.ecommerce.domain.models.Order;
 import br.com.api.ecommerce.services.OrderService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,10 +15,9 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
-
-    @Autowired
-    private OrderService service;
+    private final OrderService service;
 
     @PostMapping
     public ResponseEntity<Order> create(@RequestBody @Valid OrderDtoCreate dto){
