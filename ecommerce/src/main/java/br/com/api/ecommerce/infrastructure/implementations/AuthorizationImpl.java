@@ -1,9 +1,10 @@
-package br.com.api.ecommerce.services;
+package br.com.api.ecommerce.infrastructure.implementations;
 
+import br.com.api.ecommerce.application.interfaces.AuthorizationProvider;
 import br.com.api.ecommerce.domain.models.User;
 import br.com.api.ecommerce.application.dtos.Auth.AuthDtoLogin;
 import br.com.api.ecommerce.application.dtos.Auth.AuthReturnToken;
-import br.com.api.ecommerce.infrastructure.repositories.UserRepository;
+import br.com.api.ecommerce.infrastructure.repositories.JpaUserRepository;
 import br.com.api.ecommerce.application.interfaces.TokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class AuthorizationService implements UserDetailsService {
+public class AuthorizationImpl implements UserDetailsService, AuthorizationProvider {
     @Autowired
-    private UserRepository repository;
+    private JpaUserRepository repository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -41,7 +42,8 @@ public class AuthorizationService implements UserDetailsService {
         return repository.findByEmail(username);
     }
 
-    public Boolean validateAdminUser() {
+    @Override
+    public boolean validateAdminUser() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
 
         return auth.getAuthorities().stream()
@@ -49,8 +51,14 @@ public class AuthorizationService implements UserDetailsService {
                 .anyMatch(role -> role.equals("ROLE_ADMIN"));
     }
 
-    public String encodePassword(String password){
+    @Override
+    public String encode(String password){
         return passwordEncoder.encode(password);
+    }
+
+    @Override
+    public boolean matches(String currentPassword, String userPassword) {
+        return passwordEncoder.matches(currentPassword, userPassword);
     }
 
     public AuthReturnToken login(AuthDtoLogin dto) {

@@ -30,7 +30,7 @@ public class CreateUserUseCase {
 
         User user = mapper.toEntity(dto);
         user.setAddresses(addressMapper.toEntityList(dto.addresses(), user));
-        user.setPassword(authorization.encodePassword(dto.password()));
+        user.setPassword(authorization.encode(dto.password()));
         user.setCart(createCartUseCase.execute(user));
 
         messagePublisher.publishUserEvent(EventTypes.USER_WELCOME, user);

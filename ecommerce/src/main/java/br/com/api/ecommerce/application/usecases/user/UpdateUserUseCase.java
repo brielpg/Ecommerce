@@ -39,7 +39,7 @@ public class UpdateUserUseCase {
         if (dto.birthDate() != null) user.setBirthDate(dto.birthDate());
 
         if (dto.newPassword() != null && !dto.newPassword().isBlank()) {
-            user.setPassword(authorization.encodePassword(dto.newPassword()));
+            user.setPassword(authorization.encode(dto.newPassword()));
         }
 
         if (dto.addresses() != null) {
