@@ -1,8 +1,10 @@
 package br.com.api.ecommerce.infrastructure.controllers;
 
 import br.com.api.ecommerce.application.dtos.Order.OrderDtoCreate;
+import br.com.api.ecommerce.application.usecases.order.CreateOrderUseCase;
+import br.com.api.ecommerce.application.usecases.order.GetOrderByIdUseCase;
+import br.com.api.ecommerce.application.usecases.order.GetOrdersByUserUseCase;
 import br.com.api.ecommerce.domain.models.Order;
-import br.com.api.ecommerce.services.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,23 +19,25 @@ import java.util.UUID;
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrderController {
-    private final OrderService service;
+    private final CreateOrderUseCase createOrderUseCase;
+    private final GetOrdersByUserUseCase getOrdersByUserUseCase;
+    private final GetOrderByIdUseCase getOrderByIdUseCase;
 
     @PostMapping
     public ResponseEntity<Order> create(@RequestBody @Valid OrderDtoCreate dto){
-        Order order = service.create(dto);
+        Order order = createOrderUseCase.execute(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<Page<Order>> getAllByUser(@PathVariable UUID userId, Pageable pageable){
-        Page<Order> orders = service.getAllByUser(userId, pageable);
+        Page<Order> orders = getOrdersByUserUseCase.execute(userId, pageable);
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Order> getById(@PathVariable UUID id){
-        Order order = service.getById(id);
+        Order order = getOrderByIdUseCase.execute(id);
         return ResponseEntity.ok(order);
     }
 }

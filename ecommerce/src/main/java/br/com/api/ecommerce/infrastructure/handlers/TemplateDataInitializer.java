@@ -1,9 +1,9 @@
 package br.com.api.ecommerce.infrastructure.handlers;
 
+import br.com.api.ecommerce.application.interfaces.AuthorizationProvider;
 import br.com.api.ecommerce.application.repositories.UserRepository;
 import br.com.api.ecommerce.domain.enums.UserRoles;
 import br.com.api.ecommerce.domain.models.User;
-import br.com.api.ecommerce.infrastructure.implementations.AuthorizationImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,7 @@ public class TemplateDataInitializer implements CommandLineRunner {
     private UserRepository userRepository;
 
     @Autowired
-    private AuthorizationImpl authorizationImpl;
+    private AuthorizationProvider authorization;
 
     @Override
     public void run(String... args) throws Exception {
@@ -30,7 +30,7 @@ public class TemplateDataInitializer implements CommandLineRunner {
                 User admin = new User();
                 admin.setName("Admin");
                 admin.setEmail("admin@email.com");
-                admin.setPassword(authorizationImpl.encode("123"));
+                admin.setPassword(authorization.encode("123"));
                 admin.setRole(UserRoles.ADMIN);
                 admin.setActive(true);
 

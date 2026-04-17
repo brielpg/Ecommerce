@@ -61,6 +61,7 @@ public class AuthorizationImpl implements UserDetailsService, AuthorizationProvi
         return passwordEncoder.matches(currentPassword, userPassword);
     }
 
+    @Override
     public AuthReturnToken login(AuthDtoLogin dto) {
         try {
             UsernamePasswordAuthenticationToken usernamePassword =

@@ -5,9 +5,9 @@ import br.com.api.ecommerce.application.dtos.Product.ProductDtoCreate;
 import br.com.api.ecommerce.application.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.application.dtos.Product.ProductDtoUpdate;
 import br.com.api.ecommerce.application.mappers.ProductMapper;
+import br.com.api.ecommerce.application.usecases.product.*;
 import br.com.api.ecommerce.domain.models.Product;
 import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
-import br.com.api.ecommerce.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -32,7 +32,18 @@ import java.util.UUID;
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
 @RequiredArgsConstructor
 public class ProductController {
-    private final ProductService service;
+    private final CreateProductUseCase createProductUseCase;
+    private final GetAllProductsUseCase getAllProductsUseCase;
+    private final GetProductByIdUseCase getProductByIdUseCase;
+    private final GetProductsByCategoryUseCase getProductsByCategoryUseCase;
+    private final SearchProductsUseCase searchProductsUseCase;
+    private final GetBestSellersUseCase getBestSellersUseCase;
+    private final UpdateProductUseCase updateProductUseCase;
+    private final GetProductImageUseCase getProductImageUseCase;
+    private final RestoreProductUseCase restoreProductUseCase;
+    private final DeleteProductUseCase deleteProductUseCase;
+    private final AddCategoriesToProductUseCase addCategoriesToProductUseCase;
+    private final RemoveCategoryFromProductUseCase removeCategoryFromProductUseCase;
     private final ProductMapper mapper;
 
     @Operation(summary = "Create a new product", description = "Creates a new product with optional image upload. Requires ADMIN role.")
@@ -45,7 +56,7 @@ public class ProductController {
     })
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<ProductDtoList> create(@RequestPart("product") @Valid ProductDtoCreate dto, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
-        ProductDtoList product = service.create(dto, imageFile);
+        ProductDtoList product = createProductUseCase.execute(dto, imageFile);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
@@ -55,7 +66,7 @@ public class ProductController {
     })
     @GetMapping
     public ResponseEntity<Page<ProductDtoList>> getAll(Pageable pageable){
-        Page<ProductDtoList> products = service.getAll(pageable);
+        Page<ProductDtoList> products = getAllProductsUseCase.execute(pageable);
         return ResponseEntity.ok(products);
     }
 
@@ -67,7 +78,7 @@ public class ProductController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<ProductDtoList> getById(@PathVariable UUID id){
-        Product product = service.getById(id);
+        Product product = getProductByIdUseCase.execute(id);
         ProductDtoList productDtoList = mapper.toDto(product);
         return ResponseEntity.ok(productDtoList);
     }
@@ -78,7 +89,7 @@ public class ProductController {
     })
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<Page<ProductDtoList>> getAllByCategoryId(@PathVariable UUID categoryId, Pageable pageable){
-        Page<ProductDtoList> products = service.getAllByCategoryId(categoryId, pageable);
+        Page<ProductDtoList> products = getProductsByCategoryUseCase.execute(categoryId, pageable);
         return ResponseEntity.ok(products);
     }
 
@@ -89,7 +100,7 @@ public class ProductController {
     })
     @GetMapping("/search")
     public ResponseEntity<Page<ProductDtoList>> search(@RequestParam(value = "q", required = false) String query, Pageable pageable) {
-        Page<ProductDtoList> products = service.search(query, pageable);
+        Page<ProductDtoList> products = searchProductsUseCase.execute(query, pageable);
         return ResponseEntity.ok(products);
     }
 
@@ -100,7 +111,7 @@ public class ProductController {
     })
     @GetMapping("/best-sellers")
     public ResponseEntity<List<ProductDtoList>> getBestSellers(@RequestParam(value = "limit", defaultValue = "10") int limit){
-        List<ProductDtoList> products = service.getBestSellers(limit);
+        List<ProductDtoList> products = getBestSellersUseCase.execute(limit);
         return ResponseEntity.ok(products);
     }
 
@@ -115,7 +126,7 @@ public class ProductController {
     })
     @PutMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<ProductDtoList> update(@RequestPart("product") @Valid ProductDtoUpdate dto, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
-        ProductDtoList product = service.update(dto, imageFile);
+        ProductDtoList product = updateProductUseCase.execute(dto, imageFile);
         return ResponseEntity.ok(product);
     }
 
@@ -127,7 +138,7 @@ public class ProductController {
     })
     @GetMapping("/{id}/image")
     public ResponseEntity<byte[]> getProductImage(@PathVariable UUID id) {
-        byte[] image = service.getImageById(id);
+        byte[] image = getProductImageUseCase.execute(id);
 
         if (image == null) return ResponseEntity.notFound().build();
 
@@ -143,7 +154,7 @@ public class ProductController {
     })
     @PostMapping("/{id}/restore")
     public ResponseEntity<Void> restore(@PathVariable UUID id){
-        service.restore(id);
+        restoreProductUseCase.execute(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -156,7 +167,7 @@ public class ProductController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id){
-        service.delete(id);
+        deleteProductUseCase.execute(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -169,7 +180,7 @@ public class ProductController {
     })
     @PostMapping("/{id}/categories")
     public ResponseEntity<Void> addCategoriesInProduct(@PathVariable UUID id, @RequestBody @Valid ProductDtoAddCategory dto){
-        service.addCategoriesInProduct(id, dto);
+        addCategoriesToProductUseCase.execute(id, dto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -182,7 +193,7 @@ public class ProductController {
     })
     @DeleteMapping("/{id}/categories/{categoryId}")
     public ResponseEntity<Void> removeCategoryFromProduct(@PathVariable UUID id, @PathVariable UUID categoryId){
-        service.removeCategoryFromProduct(id, categoryId);
+        removeCategoryFromProductUseCase.execute(id, categoryId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

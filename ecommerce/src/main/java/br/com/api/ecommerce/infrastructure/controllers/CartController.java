@@ -3,9 +3,12 @@ package br.com.api.ecommerce.infrastructure.controllers;
 import br.com.api.ecommerce.application.dtos.Cart.CartDtoList;
 import br.com.api.ecommerce.application.dtos.Item.DtoItemRequest;
 import br.com.api.ecommerce.application.mappers.CartMapper;
+import br.com.api.ecommerce.application.usecases.cart.AddItemsToCartUseCase;
+import br.com.api.ecommerce.application.usecases.cart.ClearUserCartUseCase;
+import br.com.api.ecommerce.application.usecases.cart.GetCartByUserIdUseCase;
+import br.com.api.ecommerce.application.usecases.cart.RemoveItemsFromCartUseCase;
 import br.com.api.ecommerce.domain.models.Cart;
 import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
-import br.com.api.ecommerce.services.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,7 +29,10 @@ import java.util.UUID;
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
 @RequiredArgsConstructor
 public class CartController {
-    private final CartService service;
+    private final AddItemsToCartUseCase addItemsToCartUseCase;
+    private final ClearUserCartUseCase clearUserCartUseCase;
+    private final GetCartByUserIdUseCase getCartByUserIdUseCase;
+    private final RemoveItemsFromCartUseCase removeItemsFromCartUseCase;
     private final CartMapper mapper;
 
     @Operation(summary = "Get user cart", description = "Retrieves the cart for a specific user. The user can access their own cart or an ADMIN can access any user's cart.")
@@ -38,7 +44,7 @@ public class CartController {
     })
     @GetMapping("/{userId}")
     public ResponseEntity<CartDtoList> getByUserId(@PathVariable UUID userId){
-        Cart cart = service.getByUserId(userId);
+        Cart cart = getCartByUserIdUseCase.execute(userId);
         return ResponseEntity.ok(mapper.toDto(cart));
     }
 
@@ -51,7 +57,7 @@ public class CartController {
     })
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> clearUserCart(@PathVariable UUID userId){
-        service.clearUserCart(userId);
+        clearUserCartUseCase.execute(userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -65,7 +71,7 @@ public class CartController {
     })
     @PostMapping("/{userId}/items")
     public ResponseEntity<Void> addItemsToUserCart(@PathVariable UUID userId, @RequestBody @Valid List<DtoItemRequest> dto){
-        service.addItemsToUserCart(userId, dto);
+        addItemsToCartUseCase.execute(userId, dto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -79,7 +85,7 @@ public class CartController {
     })
     @DeleteMapping("/{userId}/items")
     public ResponseEntity<Void> removeItemsFromUserCart(@PathVariable UUID userId, @RequestBody List<DtoItemRequest> itemsToRemove){
-        service.removeItemsFromUserCart(userId, itemsToRemove);
+        removeItemsFromCartUseCase.execute(userId, itemsToRemove);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

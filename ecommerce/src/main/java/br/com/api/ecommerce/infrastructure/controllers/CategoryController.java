@@ -4,9 +4,9 @@ import br.com.api.ecommerce.application.dtos.Category.CategoryDtoCreate;
 import br.com.api.ecommerce.application.dtos.Category.CategoryDtoList;
 import br.com.api.ecommerce.application.dtos.Category.CategoryDtoUpdate;
 import br.com.api.ecommerce.application.mappers.CategoryMapper;
+import br.com.api.ecommerce.application.usecases.category.*;
 import br.com.api.ecommerce.domain.models.Category;
 import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
-import br.com.api.ecommerce.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -28,7 +28,12 @@ import java.util.UUID;
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
 @RequiredArgsConstructor
 public class CategoryController {
-    private final CategoryService service;
+    private final CreateCategoryUseCase createCategoryUseCase;
+    private final GetAllCategoriesUseCase getAllCategoriesUseCase;
+    private final GetCategoryByIdUseCase getCategoryByIdUseCase;
+    private final UpdateCategoryUseCase updateCategoryUseCase;
+    private final RestoreCategoryUseCase restoreCategoryUseCase;
+    private final DeleteCategoryUseCase deleteCategoryUseCase;
     private final CategoryMapper mapper;
 
     @Operation(summary = "Create category", description = "Creates a new category. Requires ADMIN role.")
@@ -41,7 +46,7 @@ public class CategoryController {
     })
     @PostMapping
     public ResponseEntity<CategoryDtoList> create(@RequestBody @Valid CategoryDtoCreate dto){
-        CategoryDtoList category = service.create(dto);
+        CategoryDtoList category = createCategoryUseCase.execute(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
 
@@ -52,7 +57,7 @@ public class CategoryController {
     })
     @GetMapping
     public ResponseEntity<Page<CategoryDtoList>> getAll(Pageable pageable){
-        Page<CategoryDtoList> categories = service.getAll(pageable);
+        Page<CategoryDtoList> categories = getAllCategoriesUseCase.execute(pageable);
         return ResponseEntity.ok(categories);
     }
 
@@ -64,7 +69,7 @@ public class CategoryController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDtoList> getById(@PathVariable UUID id){
-        Category category = service.getById(id);
+        Category category = getCategoryByIdUseCase.execute(id);
         CategoryDtoList categoryDtoList = mapper.toDto(category);
         return ResponseEntity.ok(categoryDtoList);
     }
@@ -80,7 +85,7 @@ public class CategoryController {
     })
     @PutMapping
     public ResponseEntity<CategoryDtoList> update(@RequestBody @Valid CategoryDtoUpdate dto){
-        CategoryDtoList category = service.update(dto);
+        CategoryDtoList category = updateCategoryUseCase.execute(dto);
         return ResponseEntity.ok(category);
     }
 
@@ -93,7 +98,7 @@ public class CategoryController {
     })
     @PostMapping("/{id}/restore")
     public ResponseEntity<Void> restore(@PathVariable UUID id){
-        service.restore(id);
+        restoreCategoryUseCase.execute(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -106,7 +111,7 @@ public class CategoryController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id){
-        service.delete(id);
+        deleteCategoryUseCase.execute(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

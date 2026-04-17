@@ -3,9 +3,9 @@ package br.com.api.ecommerce.infrastructure.controllers;
 import br.com.api.ecommerce.application.dtos.Auth.AuthDtoLogin;
 import br.com.api.ecommerce.application.dtos.Auth.AuthReturnToken;
 import br.com.api.ecommerce.application.dtos.User.UserDtoCreate;
+import br.com.api.ecommerce.application.interfaces.AuthorizationProvider;
+import br.com.api.ecommerce.application.usecases.user.CreateUserUseCase;
 import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
-import br.com.api.ecommerce.services.AuthorizationService;
-import br.com.api.ecommerce.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
 @RequiredArgsConstructor
 public class AuthController {
-    private final UserService userService;
-    private final AuthorizationService authorizationService;
+    private final CreateUserUseCase createUserUseCase;
+    private final AuthorizationProvider authorization;
 
     @Operation(summary = "User login", description = "Authenticates a user and returns a JWT token")
     @ApiResponses(value = {
@@ -37,7 +37,7 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<AuthReturnToken> login(@RequestBody @Valid AuthDtoLogin dto){
-        AuthReturnToken token = authorizationService.login(dto);
+        AuthReturnToken token = authorization.login(dto);
         return ResponseEntity.ok(token);
     }
 
@@ -50,7 +50,7 @@ public class AuthController {
     })
     @PostMapping("/register")
     public ResponseEntity<AuthReturnToken> register(@RequestBody @Valid UserDtoCreate dto){
-        userService.create(dto);
+        createUserUseCase.execute(dto);
         AuthReturnToken token = login(new AuthDtoLogin(dto.email(), dto.password())).getBody();
         return ResponseEntity.status(HttpStatus.CREATED).body(token);
     }

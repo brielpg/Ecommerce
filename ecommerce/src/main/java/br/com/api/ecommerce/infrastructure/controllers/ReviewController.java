@@ -3,8 +3,11 @@ package br.com.api.ecommerce.infrastructure.controllers;
 import br.com.api.ecommerce.application.dtos.Review.ReviewDtoCreate;
 import br.com.api.ecommerce.application.dtos.Review.ReviewDtoList;
 import br.com.api.ecommerce.application.dtos.Review.ReviewDtoUpdate;
+import br.com.api.ecommerce.application.usecases.review.CreateReviewUseCase;
+import br.com.api.ecommerce.application.usecases.review.DeleteReviewUseCase;
+import br.com.api.ecommerce.application.usecases.review.GetReviewsByProductUseCase;
+import br.com.api.ecommerce.application.usecases.review.UpdateReviewUseCase;
 import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
-import br.com.api.ecommerce.services.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,7 +29,10 @@ import java.util.UUID;
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
 @RequiredArgsConstructor
 public class ReviewController {
-    private final ReviewService service;
+    private final CreateReviewUseCase createReviewUseCase;
+    private final GetReviewsByProductUseCase getReviewsByProductUseCase;
+    private final UpdateReviewUseCase updateReviewUseCase;
+    private final DeleteReviewUseCase deleteReviewUseCase;
 
     @PostMapping
     @Operation(summary = "Create a new review", description = "Creates a new review for a product. Requires the user to have purchased and received the product.")
@@ -38,7 +44,7 @@ public class ReviewController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<ReviewDtoList> create(@RequestBody @Valid ReviewDtoCreate dto) {
-        ReviewDtoList review = service.create(dto);
+        ReviewDtoList review = createReviewUseCase.execute(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(review);
     }
 
@@ -50,7 +56,7 @@ public class ReviewController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Page<ReviewDtoList>> getAllByProduct(@PathVariable UUID productId, Pageable pageable){
-        Page<ReviewDtoList> reviews = service.getAllByProduct(productId, pageable);
+        Page<ReviewDtoList> reviews = getReviewsByProductUseCase.execute(productId, pageable);
         return ResponseEntity.ok(reviews);
     }
 
@@ -64,7 +70,7 @@ public class ReviewController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<ReviewDtoList> update(@RequestBody @Valid ReviewDtoUpdate dto) {
-        ReviewDtoList review = service.update(dto);
+        ReviewDtoList review = updateReviewUseCase.execute(dto);
         return ResponseEntity.ok(review);
     }
 
@@ -77,7 +83,7 @@ public class ReviewController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Void> delete(@PathVariable UUID id){
-        service.delete(id);
+        deleteReviewUseCase.execute(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

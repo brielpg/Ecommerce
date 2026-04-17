@@ -4,9 +4,9 @@ import br.com.api.ecommerce.application.dtos.Product.ProductDtoList;
 import br.com.api.ecommerce.application.dtos.User.UserDtoList;
 import br.com.api.ecommerce.application.dtos.User.UserDtoUpdate;
 import br.com.api.ecommerce.application.mappers.UserMapper;
+import br.com.api.ecommerce.application.usecases.user.*;
 import br.com.api.ecommerce.domain.models.User;
 import br.com.api.ecommerce.infrastructure.config.SecurityConfiguration;
-import br.com.api.ecommerce.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -29,7 +29,14 @@ import java.util.UUID;
 @SecurityRequirement(name = SecurityConfiguration.SECURITY)
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService service;
+    private final GetAllUsersUseCase getAllUsersUseCase;
+    private final GetUserByIdUseCase getUserByIdUseCase;
+    private final UpdateUserUseCase updateUserUseCase;
+    private final RestoreUserUseCase restoreUserUseCase;
+    private final DeleteUserUseCase deleteUserUseCase;
+    private final GetUserFavoritesUseCase getUserFavoritesUseCase;
+    private final AddUserFavoriteUseCase addUserFavoriteUseCase;
+    private final RemoveUserFavoriteUseCase removeUserFavoriteUseCase;
     private final UserMapper mapper;
 
     @GetMapping
@@ -40,7 +47,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Page<UserDtoList>> getAll(Pageable pageable){
-        Page<UserDtoList> users = service.getAll(pageable);
+        Page<UserDtoList> users = getAllUsersUseCase.execute(pageable);
         return ResponseEntity.ok(users);
     }
 
@@ -53,7 +60,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<UserDtoList> getById(@PathVariable UUID id){
-        User user = service.getById(id);
+        User user = getUserByIdUseCase.execute(id);
         UserDtoList userDtoList = mapper.toDto(user);
         return ResponseEntity.ok(userDtoList);
     }
@@ -69,7 +76,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<UserDtoList> update(@RequestBody @Valid UserDtoUpdate dto){
-        UserDtoList user = service.update(dto);
+        UserDtoList user = updateUserUseCase.execute(dto);
         return ResponseEntity.ok(user);
     }
 
@@ -82,7 +89,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Void> restore(@PathVariable UUID id){
-        service.restore(id);
+        restoreUserUseCase.execute(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -95,7 +102,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Void> delete(@PathVariable UUID id){
-        service.delete(id);
+        deleteUserUseCase.execute(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -108,7 +115,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<List<ProductDtoList>> getFavorites(@PathVariable UUID id){
-        List<ProductDtoList> favorites = service.getFavorites(id);
+        List<ProductDtoList> favorites = getUserFavoritesUseCase.execute(id);
         return ResponseEntity.ok(favorites);
     }
 
@@ -121,7 +128,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Void> addFavorite(@PathVariable UUID id, @PathVariable UUID productId){
-        service.addFavorite(id, productId);
+        addUserFavoriteUseCase.execute(id, productId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -134,7 +141,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Void> removeFavorite(@PathVariable UUID id, @PathVariable UUID productId){
-        service.removeFavorite(id, productId);
+        removeUserFavoriteUseCase.execute(id, productId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
