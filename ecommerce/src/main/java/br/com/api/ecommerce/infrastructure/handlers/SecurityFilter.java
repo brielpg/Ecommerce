@@ -1,8 +1,8 @@
 package br.com.api.ecommerce.infrastructure.handlers;
 
-import br.com.api.ecommerce.domain.models.User;
-import br.com.api.ecommerce.infrastructure.repositories.UserRepository;
 import br.com.api.ecommerce.application.interfaces.TokenProvider;
+import br.com.api.ecommerce.application.repositories.UserRepository;
+import br.com.api.ecommerce.domain.models.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

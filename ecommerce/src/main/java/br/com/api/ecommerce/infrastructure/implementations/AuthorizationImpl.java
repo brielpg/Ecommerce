@@ -1,11 +1,11 @@
 package br.com.api.ecommerce.infrastructure.implementations;
 
-import br.com.api.ecommerce.application.interfaces.AuthorizationProvider;
-import br.com.api.ecommerce.domain.models.User;
 import br.com.api.ecommerce.application.dtos.Auth.AuthDtoLogin;
 import br.com.api.ecommerce.application.dtos.Auth.AuthReturnToken;
-import br.com.api.ecommerce.infrastructure.repositories.JpaUserRepository;
+import br.com.api.ecommerce.application.interfaces.AuthorizationProvider;
 import br.com.api.ecommerce.application.interfaces.TokenProvider;
+import br.com.api.ecommerce.application.repositories.UserRepository;
+import br.com.api.ecommerce.domain.models.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthorizationImpl implements UserDetailsService, AuthorizationProvider {
     @Autowired
-    private JpaUserRepository repository;
+    private UserRepository repository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
