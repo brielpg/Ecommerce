@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductRepository {
+    Optional<Product> findById(UUID id);
+    Page<Product> findAll(Pageable pageable);
     Page<Product> findAllByActiveTrue(Pageable pageable);
     boolean existsByName(String name);
     boolean existsCategoryInProduct(UUID productId, UUID categoryId);
@@ -17,4 +19,5 @@ public interface ProductRepository {
     Page<Product> searchProducts(String query, Pageable pageable);
     void addCategoryToProduct(UUID productId, UUID categoryId);
     void removeCategoryFromProduct(UUID productId, UUID categoryId);
+    Product save(Product product);
 }

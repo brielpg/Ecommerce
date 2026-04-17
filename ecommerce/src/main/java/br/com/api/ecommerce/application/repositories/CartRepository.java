@@ -12,4 +12,5 @@ public interface CartRepository {
     void deleteAllItemsFromUserCart(@Param("userId") UUID userId);
     void resetCartTotal(@Param("userId") UUID userId);
     List<Cart> findCartsContainingProduct(@Param("productId") UUID productId);
+    Cart save(Cart cart);
 }

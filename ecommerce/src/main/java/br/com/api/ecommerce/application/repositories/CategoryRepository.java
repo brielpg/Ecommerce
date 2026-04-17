@@ -9,8 +9,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CategoryRepository {
+    Optional<Category> findById(UUID id);
     boolean existsByName(String name);
     Optional<Category> findByIdAndActiveTrue(UUID id);
+    Page<Category> findAll(Pageable pageable);
     Page<Category> findAllByActiveTrue(Pageable pageable);
     List<Category> findAllByIdInAndActiveTrue(List<UUID> ids);
+    Category save(Category category);
 }

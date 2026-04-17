@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface ItemRepository {
     List<Item> findAllByProductId(UUID productId);
+    List<Item> saveAll(List<Item> items);
 }
